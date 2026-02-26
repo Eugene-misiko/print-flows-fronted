@@ -1,7 +1,7 @@
 import Register from "./registration";
 import Login from "./login";
 import React from 'react'
-import { logout } from "@/slices/authSlice";
+import { logout } from "@/slices/authslice";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./ui/button";

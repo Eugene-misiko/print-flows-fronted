@@ -4,8 +4,6 @@ import { loginUser, logout } from "@/slices/authslice";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Form } from "./ui/form";
-import { Label } from "./ui/label";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import backgroundImage from "../assets/backgroundImage.jpg";
