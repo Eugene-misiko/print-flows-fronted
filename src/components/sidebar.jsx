@@ -23,7 +23,7 @@ export default function Sidebar() {
         <Separator className="bg-zinc-800" />
         {user?.role.toLowerCase() ==="client" && (
           <>
-        <Link to="/profile">My profile</Link>
+        <Link to="/profile" className="">My profile</Link>
         <p className="cursor-pointer">My orders</p>
         <p className="cursor-pointer">Create Orders</p>
         <p className="cursor-pointer">Notifications</p>
@@ -34,10 +34,10 @@ export default function Sidebar() {
         {user?.role.toLowerCase() ==="admin" && (
           <>
         <p className="cursor-pointer">Orders</p>
-        <Link to="/profile">My profile</Link>
+        <Link to="/profile" className="">My profile</Link>
         <p className="cursor-pointer">Payments</p>
         <p className="cursor-pointer">Notifications</p>
-        <p className="cursor-pointer">Users</p> 
+        <Link to='/users' className="cursor-pointer">Users</Link> 
         <p className="cursor-pointer">Design Requests</p> 
          <p className="cursor-pointer">Open chats</p> 
          <p className="cursor-pointer">Make Deliveries</p> 

@@ -11,35 +11,67 @@ const UserList = () => {
   }, [dispatch]);
 
   return (
-    <div>
-      <h2>All Users (Admin)</h2>
+    <div className="p-6">
+      <div className="bg-white dark:bg-zinc-950 rounded-xl shadow-md p-6 transition-colors duration-300">
+        <h2 className="text-xl font-semibold mb-6 text-gray-800 dark:text-gray-100">
+          Users
+        </h2>
+        {loading && (
+          <p className="text-zinc-500 dark:text-zinc-400">
+            Loading users...
+          </p>
+        )}
 
-      {loading && <p>Loading users...</p>}
-      {error && <p style={{ color: "red" }}>{JSON.stringify(error)}</p>}
+        {error && (
+          <p className="text-red-500 mb-4">
+            {typeof error === "string"
+              ? error
+              : JSON.stringify(error)}
+          </p>
+        )}
 
-      <table border="1" cellPadding="8">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Role</th>
-          </tr>
-        </thead>
+        {!loading && users.length > 0 && (
+          <div className="overflow-x-auto">
+            <table className="w-full border-separate border-spacing-y-2 text-sm">
+              <thead>
+                <tr className="text-left text-zinc-500 dark:text-zinc-400 uppercase text-xs tracking-wide">
+                  <th className="px-4 py-2">Name</th>
+                  <th className="px-4 py-2">Email</th>
+                  <th className="px-4 py-2">Phone</th>
+                  <th className="px-4 py-2">Role</th>
+                </tr>
+              </thead>
 
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.username}</td>
-              <td>{user.email}</td>
-              <td>{user.phone}</td>
-              <td>{user.role}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              <tbody>
+                {users.map((user) => (
+                  <tr
+                    key={user.id}
+                    className="bg-gray-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition rounded-lg"
+                  >
+                    <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200 rounded-l-lg">
+                      {user.username}
+                    </td>
+
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                      {user.email}
+                    </td>
+
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                      {user.phone}
+                    </td>
+
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300 rounded-r-lg">
+                      {user.role}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+
+            </table>
+          </div>
+        )}
+
+      </div>
     </div>
   );
 };
