@@ -5,6 +5,7 @@ import Home from "./components/Home"
 import ItemOrderForm from "./components/ItemOrderForm"
 import ItemOrderList from "./components/ItemOrderList"
 import Layout from "./components/Layout"
+import Profile from "./components/Profile"
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/list" element={<ItemOrderList />} />
           <Route path="/create" element={<ItemOrderForm />} />
         </Route>
