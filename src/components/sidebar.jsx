@@ -34,6 +34,7 @@ export default function Sidebar() {
         {user?.role.toLowerCase() ==="admin" && (
           <>
         <p className="cursor-pointer">Orders</p>
+        <Link to="/profile">My profile</Link>
         <p className="cursor-pointer">Payments</p>
         <p className="cursor-pointer">Notifications</p>
         <p className="cursor-pointer">Users</p> 
@@ -43,6 +44,7 @@ export default function Sidebar() {
          </> )}
         {user?.role.toLowerCase() ==="designer" && (
           <>
+          <Link to="/profile">My profile</Link>
         <p className="cursor-pointer">Designes</p>
         <p className="cursor-pointer">Notifications</p>
         <p className="cursor-pointer">Open chats</p> 

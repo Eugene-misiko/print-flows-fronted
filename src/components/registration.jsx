@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import backgroundImage from "../assets/printImg.png";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 
 export default function Register() {

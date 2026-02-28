@@ -31,7 +31,7 @@ const Login = () => {
       style={{ backgroundImage: `url(${backgroundImage})` }}>
       <div class="absolute inset-0 bg-black opacity-40">
      </div>
-     <div class="absolute inset-0 flex items-center justify-center backdrop-blur-0">
+     <div className="absolute inset-0 flex items-center justify-center backdrop-blur-0">
      </div>
         <div className="relative z-10 w-full max-w-md p-8 rounded-2xl bg-white/20 backdrop-blur-xl border border-white/30 shadow-2xl shadow-black/40 h-120">
           <p className="text-cyan-500 font-bold text-center text-2xl">Login</p>
