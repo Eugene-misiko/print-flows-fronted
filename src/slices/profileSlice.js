@@ -1,20 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
-const API_URL = VITE_API_BASE_URL; 
-
+import api from "@/api";
 export const fetchProfile = createAsyncThunk(
   "profile/fetchProfile",
   async (_, thunkAPI) => {
     try {
-      const token = localStorage.getItem("token");
-
-      const response = await axios.get(API_URL, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      const response = await api.get("/profile/");
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
