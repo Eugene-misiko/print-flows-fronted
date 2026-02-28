@@ -14,6 +14,23 @@ export const fetchUsers = createAsyncThunk(
     }
   }
 );
+export const assignRole = createAsyncThunk(
+  "users/assignRole",
+  async ({ userId, role }, thunkAPI) => {
+    try {
+      const response = await api.put(
+        `/auth/users/${userId}/role/`,
+        { role }
+      );
+
+      return { userId, role };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Failed to update role"
+      );
+    }
+  }
+);
 
 const initialState = {
   users: [],
