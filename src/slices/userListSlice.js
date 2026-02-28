@@ -44,6 +44,14 @@ const userListSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+    .addCase(assignRole.fulfilled, (state, action) => {
+  const { userId, role } = action.payload;
+
+  const user = state.users.find((u) => u.id === userId);
+    if (user) {
+       user.role = role;
+    }
+   })
       .addCase(fetchUsers.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -56,6 +64,7 @@ const userListSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
+      
   },
 });
 
