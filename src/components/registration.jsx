@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser } from "@/slices/authSlice";
+import { registerUser } from "@/slices/authslice";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
-import backgroundImage from "../assets/backgroundImage.jpg";
+import backgroundImage from "../assets/printImg.png";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
@@ -27,16 +27,6 @@ export default function Register() {
   const handleSubmit = (e) => {
     e.preventDefault();
  const {password} = formData;
- const passwordRegex =  /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
- if(!passwordRegex.test(password)){
-    setError(
-        "password must be at least 8 characters long and  at leat one latter and one number"
-    );
-    return;
- }else if(password ==''){
-    setError('Please enter the password')
- }  
- setError("")
 
     dispatch(registerUser(formData));
   };
@@ -80,7 +70,6 @@ export default function Register() {
   </SelectContent>
 </Select>
 </div>
-{error && <p className="red-600">{error}</p>}
 <div className="">
       <button className="mt-10 shadow-[0_0_5px_cyan,0_0_25px_cyan] 
                     hover:shadow-[0_0_5px_cyan,0_0_25px_cyan,0_0_50px_cyan,0_0_100px_cyan,0_0_200px_cyan]
