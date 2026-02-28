@@ -2,6 +2,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { useState } from "react"
 import { useSelector } from "react-redux"
+import { Link } from "react-router-dom"
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true)
@@ -22,6 +23,7 @@ export default function Sidebar() {
         <Separator className="bg-zinc-800" />
         {user?.role.toLowerCase() ==="client" && (
           <>
+        <Link to="/profile">My profile</Link>
         <p className="cursor-pointer">My orders</p>
         <p className="cursor-pointer">Create Orders</p>
         <p className="cursor-pointer">Notifications</p>

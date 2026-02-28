@@ -30,7 +30,45 @@ const Profile = () => {
  }
   return (
     <div>
-      
+      <h2>User Profile</h2>
+      {loading && <p>Loading profile...</p>}
+      {error && <p>{error}</p>}
+      {profile &&(
+        <form onSubmit={handleSubmit}>
+            <div>
+                <label htmlFor="username">Username:</label>
+                <input type="text" name="username"
+                 value={formData.username}
+                  onChange={handleChange} />
+            
+            <label htmlFor="email">Email:</label>
+              <input type="email" 
+              name="email" value={formData.email}
+              onChange={handleChange} />
+              </div>
+                        <div>
+            <label>Phone:</label>
+            <input
+              type="text"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+            />
+          </div>
+                    <div>
+            <label>Role:</label>
+            <input
+              type="text"
+              value={profile.role}
+              disabled
+            />
+          </div>
+          <button type="submit" disabled={updateLoading}>
+            {updateLoading ? "Updating..." : "Update Profile"}
+          </button>
+          {updateError && <p style={{ color: "red" }}>{updateError}</p>}
+        </form>
+      )}
     </div>
   )
 }
