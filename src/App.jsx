@@ -8,6 +8,7 @@ import Layout from "./components/Layout"
 import Profile from "./components/Profile"
 import UserList from "./components/UserList"
 import AdminOrders from "./components/AdminOrders"
+import ClientOrder from "./components/ClientOrder"
 function App() {
   return (
     <Router>
@@ -21,6 +22,7 @@ function App() {
           <Route path="/list" element={<ItemOrderList />} />
           <Route path="/create" element={<ItemOrderForm />} />
           <Route path="/admin-orders" element={<AdminOrders />}/>
+          <Route path="/client-orders" element={<ClientOrder/>}/>
         </Route>
       </Routes>
     </Router>

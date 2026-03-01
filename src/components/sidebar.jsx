@@ -22,8 +22,8 @@ export default function Sidebar() {
         <Separator className="bg-zinc-800" />
         {user?.role.toLowerCase() ==="client" && (
           <>
-        <Link to="/profile" className="">My profile</Link>
-        <p className="cursor-pointer">My orders</p>
+        <Link to="/profile" className="">My profile</Link><br />
+        <Link to='/client-orders' className="cursor-pointer">My orders</Link>
         <p className="cursor-pointer">Create Orders</p>
         <p className="cursor-pointer">Notifications</p>
         <p className="cursor-pointer">Make Payment</p>
