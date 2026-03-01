@@ -17,7 +17,7 @@ const ProductCard = ({ product }) => {
           <p className="text-sm text-muted-foreground">
             {product.description}
           </p>
-          <p className="font-medium">Base Price: ${product.base_price}</p>
+          <p className="font-medium">Base Price: Ksh{product.base_price}</p>
         </div>
       </CardContent>
     </Card>
