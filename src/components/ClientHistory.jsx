@@ -1,6 +1,32 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOrders } from "@/slices/orderSlice";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+
+import { Badge } from "./ui/badge";
+import { Separator } from "./ui/separator";
+
+const getStatusVariant = (status) => {
+  switch (status) {
+    case "pending":
+      return "secondary";
+    case "approved":
+      return "default";
+    case "rejected":
+      return "bg-red-500";
+    case "in_design":
+      return "outline";
+    case "completed":
+      return "default";
+    default:
+      return "secondary";
+  }
+};
 
 const ClientOrders = () => {
   const dispatch = useDispatch();
@@ -10,63 +36,61 @@ const ClientOrders = () => {
     dispatch(fetchOrders());
   }, [dispatch]);
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "pending":
-        return "#999";
-      case "approved":
-        return "green";
-      case "rejected":
-        return "red";
-      case "in_design":
-        return "orange";
-      case "completed":
-        return "blue";
-      default:
-        return "black";
-    }
-  };
-
-  if (loading) return <p>Loading your orders...</p>;
-
   return (
-    <div>
-      <h2>My Orders</h2>
+    <div className="container mx-auto py-8 space-y-6">
+      <h2 className="text-3xl font-bold tracking-tight">My Orders</h2>
 
-      {orders.length === 0 && <p>You have no orders yet.</p>}
+      {loading && (
+        <p className="text-muted-foreground">Loading your orders...</p>
+      )}
 
-      {orders.map((order) => (
-        <div
-          key={order.id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "15px",
-            marginBottom: "15px",
-            borderRadius: "8px",
-          }}
-        >
-          <p><strong>Product:</strong> {order.product_name || order.product}</p>
-          <p><strong>Quantity:</strong> {order.quantity}</p>
-          <p>
-            <strong>Status:</strong>{" "}
-            <span style={{ color: getStatusColor(order.status) }}>
-              {order.status}
-            </span>
-          </p>
+      {!loading && orders.length === 0 && (
+        <Card>
+          <CardContent className="py-10 text-center text-muted-foreground">
+            You haven't placed any orders yet.
+          </CardContent>
+        </Card>
+      )}
 
-          {order.status === "rejected" && (
-            <p style={{ color: "red" }}>
-              <strong>Reason:</strong> {order.rejection_reason}
-            </p>
-          )}
+      <div className="grid gap-6 md:grid-cols-2">
+        {orders.map((order) => (
+          <Card
+            key={order.id}
+            className="rounded-2xl shadow-sm hover:shadow-md transition"
+          >
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-lg">
+                {order.product_name}
+              </CardTitle>
 
-          <p>
-            <small>
-              Ordered on: {new Date(order.created_at).toLocaleString()}
-            </small>
-          </p>
-        </div>
-      ))}
+              <Badge variant={getStatusVariant(order.status)}>
+                {order.status.replace("_", " ")}
+              </Badge>
+            </CardHeader>
+
+            <Separator />
+
+            <CardContent className="pt-4 space-y-2">
+              <p>
+                <span className="font-medium">Quantity:</span>{" "}
+                {order.quantity}
+              </p>
+
+              {order.status === "rejected" && (
+                <p className="text-red-500">
+                  <span className="font-medium text-green-500">Reason:</span>{" "}
+                  {order.rejection_reason}
+                </p>
+              )}
+
+              <p className="text-sm text-muted-foreground">
+                Ordered on{" "}
+                {new Date(order.created_at).toLocaleString()}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 };

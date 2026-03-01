@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { createOrder } from "@/slices/orderSlice";
-import { fetchProducts } from "@/slices/productSlice";
+import api from "@/api";
 
+import {Card,CardContent,CardHeader,CardTitle,} from "./ui/card";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Button } from "./ui/button";
+import { Checkbox } from "./ui/checkbox";
+import {Select,SelectContent,SelectItem,SelectTrigger,SelectValue,} from "./ui/select";
 const ClientOrder = () => {
   const dispatch = useDispatch();
 
-  const { products, loading } = useSelector((state) => state.products);
-
+  const [products, setProducts] = useState([]);
   const [formData, setFormData] = useState({
     product: "",
     quantity: 1,
@@ -17,20 +22,12 @@ const ClientOrder = () => {
   });
 
   useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
-
-  const handleChange = (e) => {
-    const { name, value, type, checked, files } = e.target;
-
-    if (type === "checkbox") {
-      setFormData({ ...formData, [name]: checked });
-    } else if (type === "file") {
-      setFormData({ ...formData, [name]: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-  };
+    const fetchProducts = async () => {
+      const response = await api.get("/products/");
+      setProducts(response.data);
+    };
+    fetchProducts();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -49,75 +46,88 @@ const ClientOrder = () => {
   };
 
   return (
-    <div>
-      <h2>Create Order</h2>
+    <div className="container mx-auto py-10">
+      <Card className="max-w-2xl mx-auto rounded-2xl shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">
+            Create New Order
+          </CardTitle>
+        </CardHeader>
 
-      {loading && <p>Loading products...</p>}
-
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Product:</label>
-          <select
-            name="product"
-            value={formData.product}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select product</option>
-            {products.map((product) => (
-              <option key={product.id} value={product.id}>
-                {product.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label>Quantity:</label>
-          <input
-            type="number"
-            name="quantity"
-            value={formData.quantity}
-            onChange={handleChange}
-            min="1"
-            required
-          />
-        </div>
-
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              name="needs_design"
-              checked={formData.needs_design}
-              onChange={handleChange}
-            />
-            Request Design
-          </label>
-        </div>
-
-        {!formData.needs_design && (
-          <div>
-            <label>Upload Design:</label>
-            <input
-              type="file"
-              name="design_file"
-              onChange={handleChange}
-            />
-          </div>
-        )}
-
-        <div>
-          <label>Notes:</label>
-          <textarea
-            name="notes"
-            value={formData.notes}
-            onChange={handleChange}
-          />
-        </div>
-
-        <button type="submit">Submit Order</button>
-      </form>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Product</label>
+              <Select
+                onValueChange={(value) =>
+                  setFormData({ ...formData, product: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a product" />
+                </SelectTrigger>
+                <SelectContent>
+                  {products.map((product) => (
+                    <SelectItem
+                      key={product.id}
+                      value={String(product.id)}>
+                      {product.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Quantity</label>
+              <Input
+                type="number"
+                min="1"
+                value={formData.quantity}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    quantity: e.target.value, })}/>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                checked={formData.needs_design}
+                onCheckedChange={(checked) =>
+                  setFormData({
+                    ...formData,
+                    needs_design: checked,})}/>
+              <label className="text-sm font-medium">
+                Request Design Service
+              </label>
+            </div>
+            {!formData.needs_design && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  Upload Your Design
+                </label>
+                <Input
+                  type="file"
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      design_file: e.target.files[0],})}/>
+              </div>
+            )}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Additional Notes
+              </label>
+              <Textarea
+                rows={4}
+                value={formData.notes}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    notes: e.target.value,})}/>
+            </div>
+            <Button type="submit" className="w-full">
+              Submit Order
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };
