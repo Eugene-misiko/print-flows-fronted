@@ -1,4 +1,3 @@
-import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { useState } from "react"
 import { useSelector } from "react-redux"

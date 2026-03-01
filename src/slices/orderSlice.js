@@ -1,0 +1,105 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import api from "@/api";
+
+// Get all orders (admin gets all automatically from backend)
+export const fetchOrders = createAsyncThunk(
+  "orders/fetchOrders",
+  async (_, thunkAPI) => {
+    try {
+      const response = await api.get("/api/orders/");
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Failed to fetch orders"
+      );
+    }
+  }
+);
+
+// Approve order
+export const approveOrder = createAsyncThunk(
+  "orders/approveOrder",
+  async (orderId, thunkAPI) => {
+    try {
+      await api.put(`/api/orders/${orderId}/approve/`);
+      return orderId;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Failed to approve"
+      );
+    }
+  }
+);
+
+// Reject order
+export const rejectOrder = createAsyncThunk(
+  "orders/rejectOrder",
+  async ({ orderId, reason }, thunkAPI) => {
+    try {
+      await api.put(`/api/orders/${orderId}/reject/`, { reason });
+      return { orderId, reason };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Failed to reject"
+      );
+    }
+  }
+);
+
+// Assign designer
+export const assignDesigner = createAsyncThunk(
+  "orders/assignDesigner",
+  async ({ orderId, designerId }, thunkAPI) => {
+    try {
+      await api.put(`/api/orders/${orderId}/assign/`, {
+        designer_id: designerId,
+      });
+      return orderId;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Failed to assign designer"
+      );
+    }
+  }
+);
+
+const orderSlice = createSlice({
+  name: "orders",
+  initialState: {
+    orders: [],
+    loading: false,
+    error: null,
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchOrders.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchOrders.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orders = action.payload;
+      })
+      .addCase(fetchOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(approveOrder.fulfilled, (state, action) => {
+        const order = state.orders.find(o => o.id === action.payload);
+        if (order) order.status = "approved";
+      })
+      .addCase(rejectOrder.fulfilled, (state, action) => {
+        const order = state.orders.find(o => o.id === action.payload.orderId);
+        if (order) {
+          order.status = "rejected";
+          order.rejection_reason = action.payload.reason;
+        }
+      })
+      .addCase(assignDesigner.fulfilled, (state, action) => {
+        const order = state.orders.find(o => o.id === action.payload);
+        if (order) order.status = "in_design";
+      });
+  },
+});
+
+export default orderSlice.reducer;

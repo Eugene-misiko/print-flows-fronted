@@ -4,7 +4,6 @@ import { registerUser } from "@/slices/authslice";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import backgroundImage from "../assets/printImg.png";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Link } from "react-router-dom";
 
 export default function Register() {
@@ -52,23 +51,6 @@ export default function Register() {
       <input className="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"  type="text"  name="phone"  placeholder="Phone" value={formData.phone} onChange={handleChange} />
      
       <input className={`border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 `  } type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange}/>
- <h2 className="font-semibold text-cyan-500 text-center">Select a role</h2>
- <div className="justify-center flex">
-<Select 
-  name="role" 
-  value={formData.role} 
-  onValueChange={(value) => handleChange({ target: { name: "role", value } })}
->
-  <SelectTrigger className="w-full">
-    <SelectValue placeholder="Select a role" />
-  </SelectTrigger>
-  <SelectContent>
-    <SelectItem value="client">Client</SelectItem>
-    <SelectItem value="designer">Designer</SelectItem>
-    <SelectItem value="admin">Admin</SelectItem>
-  </SelectContent>
-</Select>
-</div>
 <div className="">
       <button className="mt-10 shadow-[0_0_5px_cyan,0_0_25px_cyan] 
                     hover:shadow-[0_0_5px_cyan,0_0_25px_cyan,0_0_50px_cyan,0_0_100px_cyan,0_0_200px_cyan]

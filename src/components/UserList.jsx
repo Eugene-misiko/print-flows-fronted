@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUsers } from "@/slices/userListSlice";
+import { fetchUsers, assignRole } from "@/slices/userListSlice";
 
 const UserList = () => {
   const dispatch = useDispatch();
@@ -39,15 +39,14 @@ const UserList = () => {
                   <th className="px-4 py-2">Email</th>
                   <th className="px-4 py-2">Phone</th>
                   <th className="px-4 py-2">Role</th>
+                  <th className="px-4 py-2">Assign</th>
                 </tr>
               </thead>
 
               <tbody>
                 {users.map((user) => (
-                  <tr
-                    key={user.id}
-                    className="bg-gray-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition rounded-lg"
-                  >
+                  <tr key={user.id}
+                    className="bg-gray-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition rounded-lg ">
                     <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200 rounded-l-lg">
                       {user.username}
                     </td>
@@ -63,8 +62,24 @@ const UserList = () => {
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300 rounded-r-lg">
                       {user.role}
                     </td>
+                                        <td className="px-4 py-3 ">
+                    <select
+                        value={user.role}
+                        onChange={(e) =>
+                        dispatch(assignRole({ userId: user.id, role: e.target.value }))
+                        }
+                        className="bg-gray-200 dark:bg-zinc-950
+                                text-zinc-700 dark:text-zinc-200
+                                px-2 py-1 rounded-md text-sm ">
+                        <option value="client">Client</option>
+                        <option value="designer">Designer</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    </td>
                   </tr>
                 ))}
+
+
               </tbody>
 
             </table>
