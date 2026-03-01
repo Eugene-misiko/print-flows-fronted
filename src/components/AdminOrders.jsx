@@ -32,6 +32,7 @@ const AdminOrders = () => {
   if (loading) return <p>Loading orders...</p>;
 
   return (
+    <>
     <div>
       <h2>Admin Order Management</h2>
 
@@ -55,6 +56,8 @@ const AdminOrders = () => {
         </div>
       ))}
     </div>
+
+    </>
   );
 };
 

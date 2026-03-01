@@ -68,8 +68,8 @@ const UserList = () => {
                         onChange={(e) =>
                         dispatch(assignRole({ userId: user.id, role: e.target.value }))
                         }
-                        className="bg-gray-200 dark:bg-zinc-950
-                                text-zinc-700 dark:text-zinc-200
+                        className=" dark:bg-zinc-950
+                                 dark:text-zinc-200
                                 px-2 py-1 rounded-md text-sm ">
                         <option value="client">Client</option>
                         <option value="designer">Designer</option>

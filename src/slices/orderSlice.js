@@ -1,6 +1,26 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/api";
 
+
+//client creating an order
+export const createOrder = createAsyncThunk(
+  "orders/createOrder",
+  async (formData, thunkAPI) => {
+    try {
+      const response = await api.post("/orders/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Failed to create order"
+      );
+    }
+  }
+);
+
 // Get all orders (admin gets all automatically from backend)
 export const fetchOrders = createAsyncThunk(
   "orders/fetchOrders",
@@ -73,6 +93,9 @@ const orderSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+       .addCase(createOrder.fulfilled, (state, action)=>{
+        state.orders.push(action.payload)
+       })
       .addCase(fetchOrders.pending, (state) => {
         state.loading = true;
       })

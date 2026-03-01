@@ -7,19 +7,20 @@ import ItemOrderList from "./components/ItemOrderList"
 import Layout from "./components/Layout"
 import Profile from "./components/Profile"
 import UserList from "./components/UserList"
-
+import AdminOrders from "./components/AdminOrders"
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route element={<Layout />}>
+         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/users" element={<UserList />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/list" element={<ItemOrderList />} />
           <Route path="/create" element={<ItemOrderForm />} />
+          <Route path="/admin-orders" element={<AdminOrders />}/>
         </Route>
       </Routes>
     </Router>

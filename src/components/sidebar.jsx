@@ -32,7 +32,7 @@ export default function Sidebar() {
         </> )}
         {user?.role.toLowerCase() ==="admin" && (
           <>
-        <p className="cursor-pointer">Orders</p>
+        <Link to='/admin-orders' className="cursor-pointer">Orders</Link><br />
         <Link to="/profile" className="">My profile</Link>
         <p className="cursor-pointer">Payments</p>
         <p className="cursor-pointer">Notifications</p>

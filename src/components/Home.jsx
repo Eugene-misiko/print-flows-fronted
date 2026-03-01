@@ -1,3 +1,4 @@
+import AdminOrders from "./AdminOrders";
 
 
 export default function Home() {
@@ -8,7 +9,6 @@ export default function Home() {
           Choose your product
         </h1>
         
-
  
       </div>
     </>
