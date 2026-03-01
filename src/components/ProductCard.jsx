@@ -1,7 +1,10 @@
 import { Card, CardContent } from "./ui/card";
-
+import { useNavigate } from "react-router-dom";
 const ProductCard = ({ product }) => {
+    const navigate = useNavigate();
+  
   return (
+    <div onClick={()=>navigate(`/products/${product.id} `)} className="cursor-pointer">
     <Card className="hover:shadow-md transition rounded-xl">
       <CardContent className="p-4 space-y-3">
         {product.image && (
@@ -21,6 +24,7 @@ const ProductCard = ({ product }) => {
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 };
 

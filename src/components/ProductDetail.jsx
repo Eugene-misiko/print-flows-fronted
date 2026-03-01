@@ -11,7 +11,7 @@ const ProductDetail = () => {
 
   useEffect(() => {
     const fetchProduct = async () => {
-      const response = await api.get(`/products/${id}/`);
+      const response = await api.get(`/api/products/${id}/`);
       setProduct(response.data);
     };
     fetchProduct();
@@ -31,7 +31,7 @@ const ProductDetail = () => {
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold">{product.name}</h2>
             <p className="text-muted-foreground">{product.description}</p>
-            <p className="font-medium">Base Price: ${product.base_price}</p>
+            <p className="font-medium">Base Price: Ksh{product.base_price}</p>
           </div>
 
           <Button

@@ -7,6 +7,10 @@ import {
   assignDesigner,
 } from "@/slices/orderSlice";
 
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+
 const AdminOrders = () => {
   const dispatch = useDispatch();
   const { orders, loading } = useSelector((state) => state.orders);
@@ -28,36 +32,84 @@ const AdminOrders = () => {
       dispatch(assignDesigner({ orderId: id, designerId }));
     }
   };
-
-  if (loading) return <p>Loading orders...</p>;
+  if (loading)
+    return (
+      <div className="p-6 text-center text-muted-foreground">
+        Loading orders...
+      </div>
+    );
 
   return (
-    <>
-    <div>
-      <h2>Admin Order Management</h2>
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold tracking-tight">
+        Admin Order Management
+      </h2>
 
-      {orders.map((order) => (
-        <div key={order.id} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
-          <p><strong>Order ID:</strong> {order.id}</p>
-          <p><strong>Status:</strong> {order.status}</p>
-          <p><strong>User:</strong> {order.user}</p>
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {orders.map((order) => (
+          <Card
+            key={order.id}
+            className="shadow-sm hover:shadow-md transition rounded-2xl"
+          >
+            <CardHeader>
+              <CardTitle className="flex justify-between items-center">
+                <span>Order #{order.id}</span>
 
-          <button onClick={() => dispatch(approveOrder(order.id))}>
-            Approve
-          </button>
+                <Badge variant="outline" className="capitalize">
+                  {order.status}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
 
-          <button onClick={() => handleReject(order.id)}>
-            Reject
-          </button>
+            <CardContent className="space-y-4">
+              <div className="text-sm space-y-1">
+                <p>
+                  <span className="font-medium">User:</span> {order.user}
+                </p>
+              </div>
 
-          <button onClick={() => handleAssign(order.id)}>
-            Assign Designer
-          </button>
-        </div>
-      ))}
+              
+              {order.design_file && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Uploaded Design:</p>
+                  <img
+                    src={order.design_file}
+                    alt="Client Design"
+                    className="w-full h-48 object-cover rounded-lg border"
+                  />
+                </div>
+              )}
+              <div className="flex flex-wrap gap-2 pt-3">
+                <Button
+                  size="sm"
+                  onClick={() => dispatch(approveOrder(order.id))}
+                  disabled={order.status !== "pending"}
+                >
+                  Approve
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => handleReject(order.id)}
+                  disabled={order.status !== "pending"}
+                >
+                  Reject
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => handleAssign(order.id)}
+                >
+                  Assign Designer
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
-
-    </>
   );
 };
 

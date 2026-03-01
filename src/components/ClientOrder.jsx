@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { createOrder } from "@/slices/orderSlice";
 import api from "@/api";
-
+import { useParams } from "react-router-dom";
 import {Card,CardContent,CardHeader,CardTitle,} from "./ui/card";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -10,20 +10,26 @@ import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import {Select,SelectContent,SelectItem,SelectTrigger,SelectValue,} from "./ui/select";
 const ClientOrder = () => {
+const { productId } = useParams();
   const dispatch = useDispatch();
 
   const [products, setProducts] = useState([]);
   const [formData, setFormData] = useState({
-    product: "",
+    product: productId || "",
     quantity: 1,
     needs_design: false,
     design_file: null,
     notes: "",
   });
 
+    useEffect(() => {
+    if (productId) {
+        setFormData((prev) => ({ ...prev, product: productId }));
+    }
+    }, [productId]);  
   useEffect(() => {
     const fetchProducts = async () => {
-      const response = await api.get("/products/");
+      const response = await api.get("api/products/");
       setProducts(response.data);
     };
     fetchProducts();

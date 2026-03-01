@@ -25,7 +25,8 @@ function App() {
           <Route path="/list" element={<ItemOrderList />} />
           <Route path="/create" element={<ItemOrderForm />} />
           <Route path="/admin-orders" element={<AdminOrders />}/>
-          <Route path="/client-orders" element={<ClientOrder/>}/>
+          <Route path="/client-orders/:product?Id?" element={<ClientOrder/>}/>
+          <Route path="/create-order/:productId?" element={<ClientOrder />} />
           <Route path="/history" element={<ClientOrders/>}/>
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
