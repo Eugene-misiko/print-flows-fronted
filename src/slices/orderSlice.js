@@ -7,7 +7,7 @@ export const createOrder = createAsyncThunk(
   "orders/createOrder",
   async (formData, thunkAPI) => {
     try {
-      const response = await api.post("/orders/", formData, {
+      const response = await api.post("/api/orders/", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
