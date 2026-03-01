@@ -11,6 +11,7 @@ import AdminOrders from "./components/AdminOrders"
 import ClientOrder from "./components/ClientOrder"
 import ClientOrders from "./components/ClientHistory"
 import Products from "./components/Products"
+import ProductDetail from "./components/ProductDetail"
 function App() {
   return (
     <Router>
@@ -27,6 +28,7 @@ function App() {
           <Route path="/client-orders" element={<ClientOrder/>}/>
           <Route path="/history" element={<ClientOrders/>}/>
           <Route path="/products" element={<Products />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
         </Route>
       </Routes>
     </Router>
