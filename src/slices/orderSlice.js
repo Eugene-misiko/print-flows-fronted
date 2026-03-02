@@ -82,6 +82,17 @@ export const assignDesigner = createAsyncThunk(
     }
   }
 );
+export const fetchDesigners = createAsyncThunk(
+  "orders/fetchDesigners",
+  async (_, thunkAPI) => {
+    try {
+      const response = await api.get("/api/users/?role=designer/");
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
 
 const orderSlice = createSlice({
   name: "orders",

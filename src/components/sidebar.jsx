@@ -11,10 +11,11 @@ export default function Sidebar() {
     "block px-3 py-2 rounded-md text-sm font-medium transition";
 
   const activeStyle =
-    "bg-zinc-200 dark:bg-zinc-800 font-semibold";
+    "bg-zinc-200 dark:bg-zinc-800 font-semibold ";
 
   return (
     <>
+    
       <div className="lg:hidden p-4">
         <button
           onClick={() => setOpen(!open)}

@@ -8,7 +8,7 @@ export default function Layout() {
   const { token } = useSelector((state) => state.auth)
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-zinc-950 text-black dark:text-white transition-colors duration-300">
+    <div className="min-h-screen bg-zinc-100 dark:bg-zinc-950 text-black dark:text-white transition-colors duration-300">
       <Navbar />
 
       <div className="flex">

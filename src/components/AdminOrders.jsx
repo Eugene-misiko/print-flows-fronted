@@ -68,7 +68,7 @@ const AdminOrders = () => {
                 </p>
               </div>
 
-              
+        
               {order.design_file && (
                 <div className="space-y-2">
                   <p className="text-sm font-medium">Uploaded Design:</p>
@@ -79,6 +79,8 @@ const AdminOrders = () => {
                   />
                 </div>
               )}
+
+              
               <div className="flex flex-wrap gap-2 pt-3">
                 <Button
                   size="sm"

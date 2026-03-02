@@ -13,7 +13,7 @@ const UserList = () => {
   return (
     <div className="p-6">
       <div className="bg-white dark:bg-zinc-950 rounded-xl shadow-md p-6 transition-colors duration-300">
-        <h2 className="text-xl font-semibold mb-6 text-gray-800 dark:text-gray-100">
+        <h2 className=" text-xl font-semibold mb-6 text-gray-800 dark:text-gray-100">
           Users
         </h2>
         {loading && (
@@ -34,7 +34,7 @@ const UserList = () => {
           <div className="overflow-x-auto">
             <table className="w-full border-separate border-spacing-y-2 text-sm">
               <thead>
-                <tr className="text-left text-zinc-500 dark:text-zinc-400 uppercase text-xs tracking-wide">
+                <tr className="text-left text-zinc-500 dark:text-zinc-400 uppercase  text-xs tracking-wide">
                   <th className="px-4 py-2">Name</th>
                   <th className="px-4 py-2">Email</th>
                   <th className="px-4 py-2">Phone</th>
