@@ -82,6 +82,7 @@ export const assignDesigner = createAsyncThunk(
     }
   }
 );
+//fetching the designers
 export const fetchDesigners = createAsyncThunk(
   "orders/fetchDesigners",
   async (_, thunkAPI) => {
@@ -98,15 +99,19 @@ const orderSlice = createSlice({
   name: "orders",
   initialState: {
     orders: [],
+    designers:[],
     loading: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
-       .addCase(createOrder.fulfilled, (state, action)=>{
-        state.orders.push(action.payload)
-       })
+        .addCase(fetchDesigners.fulfilled, (state, action)=>{
+          state.designers = action.payload;
+        })
+        .addCase(createOrder.fulfilled, (state, action)=>{
+          state.orders.push(action.payload)
+        })
       .addCase(fetchOrders.pending, (state) => {
         state.loading = true;
       })

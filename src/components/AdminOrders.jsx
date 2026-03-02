@@ -1,116 +1,138 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchOrders,
   approveOrder,
   rejectOrder,
   assignDesigner,
+  fetchDesigners,
 } from "@/slices/orderSlice";
 
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
+import { Card, CardContent } from "./ui/card";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Textarea } from "./ui/textarea";
 
 const AdminOrders = () => {
   const dispatch = useDispatch();
-  const { orders, loading } = useSelector((state) => state.orders);
+  const { orders, designers, loading } = useSelector((state) => state.orders);
+
+  const [rejectionReasons, setRejectionReasons] = useState({});
+  const [selectedDesigners, setSelectedDesigners] = useState({});
 
   useEffect(() => {
     dispatch(fetchOrders());
+    dispatch(fetchDesigners());
   }, [dispatch]);
 
-  const handleReject = (id) => {
-    const reason = prompt("Enter rejection reason:");
-    if (reason) {
-      dispatch(rejectOrder({ orderId: id, reason }));
-    }
-  };
-
-  const handleAssign = (id) => {
-    const designerId = prompt("Enter Designer ID:");
-    if (designerId) {
-      dispatch(assignDesigner({ orderId: id, designerId }));
-    }
-  };
-  if (loading)
-    return (
-      <div className="p-6 text-center text-muted-foreground">
-        Loading orders...
-      </div>
-    );
+  if (loading) return <p className="p-6">Loading orders...</p>;
 
   return (
     <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-bold tracking-tight">
-        Admin Order Management
-      </h2>
+      <h2 className="text-2xl font-bold">Admin Order Management</h2>
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {orders.map((order) => (
-          <Card
-            key={order.id}
-            className="shadow-sm hover:shadow-md transition rounded-2xl"
-          >
-            <CardHeader>
-              <CardTitle className="flex justify-between items-center">
-                <span>Order #{order.id}</span>
+      {orders.map((order) => (
+        <Card key={order.id} className="shadow-md">
+          <CardContent className="p-6 space-y-4">
 
-                <Badge variant="outline" className="capitalize">
-                  {order.status}
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-
-            <CardContent className="space-y-4">
-              <div className="text-sm space-y-1">
-                <p>
-                  <span className="font-medium">User:</span> {order.user}
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="font-semibold">Order #{order.id}</p>
+                <p className="text-sm text-muted-foreground">
+                  Status: {order.status}
                 </p>
+                <p className="text-sm">User: {order.user}</p>
               </div>
 
-        
               {order.design_file && (
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Uploaded Design:</p>
-                  <img
-                    src={order.design_file}
-                    alt="Client Design"
-                    className="w-full h-48 object-cover rounded-lg border"
-                  />
-                </div>
+                <img
+                  src={order.design_file}
+                  alt="Design"
+                  className="w-24 h-24 object-cover rounded-md border"
+                />
               )}
+            </div>
+
+            
+            <div className="flex flex-wrap gap-3">
+
+              <Button
+                onClick={() => dispatch(approveOrder(order.id))}
+              >
+                Approve
+              </Button>
 
               
-              <div className="flex flex-wrap gap-2 pt-3">
-                <Button
-                  size="sm"
-                  onClick={() => dispatch(approveOrder(order.id))}
-                  disabled={order.status !== "pending"}
-                >
-                  Approve
-                </Button>
+              <div className="flex flex-col gap-2 w-full max-w-sm">
+                <Textarea
+                  placeholder="Enter rejection reason..."
+                  value={rejectionReasons[order.id] || ""}
+                  onChange={(e) =>
+                    setRejectionReasons({
+                      ...rejectionReasons,
+                      [order.id]: e.target.value,
+                    })
+                  }
+                />
 
                 <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => handleReject(order.id)}
-                  disabled={order.status !== "pending"}
+                  className={`bg-zinc-700`}
+                  onClick={() =>
+                    dispatch(
+                      rejectOrder({
+                        orderId: order.id,
+                        reason: rejectionReasons[order.id],
+                      })
+                    )
+                  }
                 >
                   Reject
                 </Button>
+              </div>
+
+              
+              <div className="flex items-center gap-2">
+                <Select
+                  onValueChange={(value) =>
+                    setSelectedDesigners({
+                      ...selectedDesigners,
+                      [order.id]: value,
+                    })
+                  }
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select Designer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {designers.map((designer) => (
+                      <SelectItem
+                        key={designer.id}
+                        value={designer.id.toString()}
+                      >
+                        {designer.username}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
                 <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => handleAssign(order.id)}
+                  onClick={() =>
+                    dispatch(
+                      assignDesigner({
+                        orderId: order.id,
+                        designerId: selectedDesigners[order.id],
+                      })
+                    )
+                  }
                 >
-                  Assign Designer
+                  Assign
                 </Button>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 };

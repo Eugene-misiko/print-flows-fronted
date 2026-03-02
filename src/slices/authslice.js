@@ -17,7 +17,6 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ username, password }, thunkAPI) => {
     try {
-      console.log("sending login data:", {username, password})
       const response = await axios.post(`${API_URL}auth/login/`, {
         username,
         password,
@@ -26,7 +25,7 @@ export const loginUser = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.detail || "Login failed"
+        error.response?.data?.detail || "Login failed, please check your password or username"
       );
     }
   }
