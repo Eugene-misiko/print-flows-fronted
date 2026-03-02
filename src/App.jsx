@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import Login from "./components/login"
 import Register from "./components/registration"
 import Home from "./components/Home"
@@ -12,6 +12,7 @@ import ClientOrder from "./components/ClientOrder"
 import ClientOrders from "./components/ClientHistory"
 import Products from "./components/Products"
 import ProductDetail from "./components/ProductDetail"
+import PrinterDashboard from "./components/PrinterDashboard"
 function App() {
   return (
     <Router>
@@ -30,6 +31,7 @@ function App() {
           <Route path="/history" element={<ClientOrders/>}/>
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/printer" element={user?.role ==="printer" ? (<PrinterDashboard />): (<Navigate to="/"/>)}/>
         </Route>
       </Routes>
     </Router>
