@@ -40,14 +40,17 @@ export const fetchOrders = createAsyncThunk(
 export const approveOrder = createAsyncThunk(
   "orders/approveOrder",
   async (orderId, thunkAPI) => {
-    try {
-      await api.put(`/api/orders/${orderId}/approve/`);
-      return orderId;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data || "Failed to approve"
-      );
-    }
+    const token = thunkAPI.getState().auth.token;
+
+    const response = await axios.put(
+      `/api/orders/${orderId}/approve/`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    return { orderId };
   }
 );
 
