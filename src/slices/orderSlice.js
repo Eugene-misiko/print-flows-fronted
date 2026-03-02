@@ -54,6 +54,24 @@ export const approveOrder = createAsyncThunk(
   }
 );
 
+//Print rejecting order
+export const printReject = createAsyncThunk(
+  "orders/printReject",
+  async ({ orderId, reason }, thunkAPI) => {
+    const token = thunkAPI.getState().auth.token;
+
+    await axios.put(
+      `/api/orders/${orderId}/print_reject/`,
+      { reason },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    return { orderId };
+  }
+);
+
 // Reject order
 export const rejectOrder = createAsyncThunk(
   "orders/rejectOrder",
