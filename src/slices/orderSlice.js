@@ -53,7 +53,18 @@ export const approveOrder = createAsyncThunk(
     return { orderId };
   }
 );
-
+//print approve order
+export const printApprove = createAsyncThunk(
+  "orders/printApprove",
+  async (orderId, thunkAPI) => {
+    try {
+      const response = await api.put(`/orders/${orderId}/print_approve/`);
+      return { orderId, ...response.data };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
 //Print rejecting order
 export const printReject = createAsyncThunk(
   "orders/printReject",

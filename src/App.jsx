@@ -13,7 +13,9 @@ import ClientOrders from "./components/ClientHistory"
 import Products from "./components/Products"
 import ProductDetail from "./components/ProductDetail"
 import PrinterDashboard from "./components/PrinterDashboard"
+import { useSelector } from "react-redux"
 function App() {
+  const { user } = useSelector((state) => state.auth);
   return (
     <Router>
       <Routes>

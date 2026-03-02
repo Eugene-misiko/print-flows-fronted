@@ -8,7 +8,8 @@ import backgroundImage from "../assets/printImg.png";
 export default function Register() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { registerLoading, registerError } = useSelector(
+
+  const { registerLoading, registerError, user } = useSelector(
     (state) => state.auth
   );
 
@@ -16,60 +17,75 @@ export default function Register() {
     username: "",
     email: "",
     phone: "",
+    first_name: "",
+    last_name: "",
     password: "",
   });
 
-  const [success, setSuccess] = useState(false);
-
-  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Submit form
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    const resultAction = await dispatch(registerUser(formData));
-
-    if (registerUser.fulfilled.match(resultAction)) {
-      // Clear form after success
+    dispatch(registerUser(formData));
+  };
+  useEffect(() => {
+    if (user) {
       setFormData({
         username: "",
         email: "",
         phone: "",
+        first_name: "",
+        last_name: "",
         password: "",
       });
 
-      setSuccess(true);
-
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      navigate("/login");
     }
-  };
+  }, [user, navigate]);
 
   return (
     <>
       <Navbar />
       <div
-        className="relative h-screen bg-cover bg-center flex items-center justify-center bg-fixed"
+        className="relative h-screen bg-cover bg-center flex items-center justify-center"
         style={{ backgroundImage: `url(${backgroundImage})` }}
       >
-        <div className="absolute inset-0 bg-black/40"></div>
+        <div className="absolute inset-0 bg-black/50"></div>
 
         <div className="relative z-10 w-full max-w-md p-8 rounded-2xl 
-                bg-white/20 backdrop-blur-xl 
-                border border-white/30 
-                shadow-2xl shadow-black/40">
+            bg-white/20 backdrop-blur-xl 
+            border border-white/30 
+            shadow-2xl shadow-black/40">
 
           <h1 className="text-2xl font-bold text-center mb-6 text-cyan-500">
             Register
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+
+            <input
+              type="text"
+              name="first_name"
+              placeholder="First Name"
+              value={formData.first_name}
+              onChange={handleChange}
+              required
+              className="input-style"
+            />
+
+            <input
+              type="text"
+              name="last_name"
+              placeholder="Last Name"
+              value={formData.last_name}
+              onChange={handleChange}
+              required
+              className="input-style"
+            />
+
             <input
               type="text"
               name="username"
@@ -77,8 +93,7 @@ export default function Register() {
               value={formData.username}
               onChange={handleChange}
               required
-              className="border border-gray-300 rounded px-3 py-2 w-full 
-              focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input-style"
             />
 
             <input
@@ -88,8 +103,7 @@ export default function Register() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="border border-gray-300 rounded px-3 py-2 w-full 
-              focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input-style"
             />
 
             <input
@@ -98,54 +112,61 @@ export default function Register() {
               placeholder="Phone"
               value={formData.phone}
               onChange={handleChange}
-              className="border border-gray-300 rounded px-3 py-2 w-full 
-              focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input-style"
             />
 
             <input
               type="password"
               name="password"
-              placeholder="Password (min 8 characters)"
+              placeholder="Password (min 6 characters)"
               value={formData.password}
               onChange={handleChange}
               required
-              minLength={8}
-              className="border border-gray-300 rounded px-3 py-2 w-full 
-              focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input-style"
             />
 
             <button
               type="submit"
               disabled={registerLoading}
               className="mt-6 shadow-[0_0_5px_cyan,0_0_25px_cyan] 
-              hover:shadow-[0_0_5px_cyan,0_0_25px_cyan,0_0_50px_cyan]
-              transition-all duration-300
-              px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg w-full"
+                hover:shadow-[0_0_5px_cyan,0_0_25px_cyan,0_0_50px_cyan,0_0_100px_cyan]
+                transition-all duration-300 ease-in-out
+                px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg w-full"
             >
               {registerLoading ? "Registering..." : "Register"}
             </button>
 
             {registerError && (
               <p className="text-red-500 text-sm text-center">
-                {JSON.stringify(registerError)}
+                {typeof registerError === "string"
+                  ? registerError
+                  : "Registration failed"}
               </p>
             )}
 
-            {success && (
-              <p className="text-green-500 text-sm text-center">
-                Registration successful! Redirecting to login...
-              </p>
-            )}
-
-            <p className="text-center font-semibold mt-4">
+            <p className="text-center text-white mt-4">
               Already have an account?{" "}
-              <Link to="/login" className="text-white font-thin">
+              <Link to="/login" className="underline">
                 Login here
               </Link>
             </p>
           </form>
         </div>
       </div>
+
+      
+      <style>
+        {`
+          .input-style {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: rgba(255,255,255,0.8);
+            outline: none;
+          }
+        `}
+      </style>
     </>
   );
 }
