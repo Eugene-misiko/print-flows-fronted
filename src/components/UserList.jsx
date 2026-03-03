@@ -74,6 +74,7 @@ const UserList = () => {
                         <option value="client">Client</option>
                         <option value="designer">Designer</option>
                         <option value="admin">Admin</option>
+                        <option value="printer">Printer</option>
                     </select>
                     </td>
                   </tr>
