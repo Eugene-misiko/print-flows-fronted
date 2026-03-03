@@ -60,12 +60,27 @@ export default function Sidebar() {
           )}
           {user?.role?.toLowerCase() === "admin" && (
             <>
-              <NavLink
-                to="/admin-orders"
-                className={({ isActive }) =>
-                  `${linkStyle} ${isActive ? activeStyle : ""}`}>
-                Orders
-              </NavLink>
+              {user?.role?.toLowerCase() === "printer" && (
+                <>
+                  <NavLink
+                    to="/printer"
+                    className={({ isActive }) =>
+                      `${linkStyle} ${isActive ? activeStyle : ""}`
+                    }
+                  >
+                    Printer Dashboard
+                  </NavLink>
+
+                  <NavLink
+                    to="/profile"
+                    className={({ isActive }) =>
+                      `${linkStyle} ${isActive ? activeStyle : ""}`
+                    }
+                  >
+                    My Profile
+                  </NavLink>
+                </>
+              )}
               <NavLink
                 to="/users"
                 className={({ isActive }) =>
@@ -83,7 +98,7 @@ export default function Sidebar() {
           {user?.role?.toLowerCase() === "designer" && (
             <>
               <NavLink
-                to="/designer-orders"
+                to="/designer"
                 className={({ isActive }) =>
                   `${linkStyle} ${isActive ? activeStyle : ""}`}>
                 Assigned Designs
