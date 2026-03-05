@@ -32,27 +32,48 @@ const Products = () => {
       : items.filter((p) => p.category === selectedCategory);
 
   return (
-    <div className="p-6 space-y-6  mt-5 ml-56">
-      <h1 className="text-2xl font-bold ">Here's General Print Requests</h1>
-      <div className="flex flex-wrap gap-3">
+    <div className="ml-56 p-8 mt-5 min-h-screen bg-rose-50">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-rose-700">
+          General Print Requests
+        </h1>
+        <p className="text-gray-600 text-sm mt-1">
+          Browse available printing products by category
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-3 mb-8">
         {categories.map((cat) => (
           <Button
             key={cat}
-            variant={selectedCategory === cat ? "default" : "outline"}
-           className={`cursor-pointer`} onClick={() => setSelectedCategory(cat)}
+            onClick={() => setSelectedCategory(cat)}
+            className={`capitalize transition
+              ${
+                selectedCategory === cat
+                  ? "bg-rose-600 hover:bg-rose-700 text-white"
+                  : "bg-white border border-rose-200 text-rose-600 hover:bg-rose-100"
+              }
+            `}
           >
-            {cat.toUpperCase()}
+            {cat}
           </Button>
         ))}
       </div>
 
-      {loading && <p>Loading products...</p>}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
-            
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      
+      {loading && (
+        <p className="text-gray-600 text-center py-10">
+          Loading products...
+        </p>
+      )}
+
+      
+      {!loading && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {filteredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
