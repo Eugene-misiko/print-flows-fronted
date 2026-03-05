@@ -32,46 +32,49 @@ const Products = () => {
       : items.filter((p) => p.category === selectedCategory);
 
   return (
-    <div className="ml-56 p-8 mt-5 min-h-screen bg-rose-50">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-rose-700">
-          General Print Requests
+    <div className="ml-56 mt-24 p-8 space-y-10">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold text-rose-600">
+          Printing Services
         </h1>
-        <p className="text-gray-600 text-sm mt-1">
-          Browse available printing products by category
+
+        <p className="text-zinc-600 dark:text-zinc-400 max-w-xl">
+          Browse our available printing services and submit your request easily.
+          Choose from banners, business cards, branded clothing, flyers and more.
         </p>
       </div>
-      <div className="flex flex-wrap gap-3 mb-8">
+
+      <div className="flex flex-wrap gap-3">
         {categories.map((cat) => (
           <Button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`capitalize transition
-              ${
-                selectedCategory === cat
-                  ? "bg-rose-600 hover:bg-rose-700 text-white"
-                  : "bg-white border border-rose-200 text-rose-600 hover:bg-rose-100"
-              }
-            `}
+            className={`cursor-pointer capitalize transition
+            ${
+              selectedCategory === cat
+                ? "bg-rose-600 hover:bg-rose-700 text-white"
+                : "border border-rose-200 text-rose-600 hover:bg-rose-50 dark:hover:bg-zinc-900"
+            }`}
           >
             {cat}
           </Button>
         ))}
       </div>
-
-      
       {loading && (
-        <p className="text-gray-600 text-center py-10">
+        <p className="text-zinc-500 animate-pulse">
           Loading products...
         </p>
       )}
-
-      
       {!loading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
+        </div>
+      )}
+      {!loading && filteredProducts.length === 0 && (
+        <div className="text-center py-20 text-zinc-500">
+          No products found in this category.
         </div>
       )}
     </div>
