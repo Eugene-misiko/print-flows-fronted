@@ -31,7 +31,7 @@ const ProductDetail = () => {
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold">{product.name}</h2>
             <p className="text-muted-foreground">{product.description}</p>
-            <p className="font-medium">Base Price: Ksh{product.base_price}</p>
+            <p className="font-medium">Base Price: Ksh {product.price}</p>
           </div>
 
           <Button

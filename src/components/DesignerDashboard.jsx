@@ -18,13 +18,14 @@ export default function DesignerDashboard() {
     dispatch(fetchOrders());
   }, [dispatch]);
 
-  // Only show orders that need design
+ // Only show orders that need design
   const designOrders = orders.filter(
     (order) =>
       order.needs_design === true &&
       (order.status === "pending_design" ||
         order.status === "design_rejected")
   );
+  // const designOrders = orders
 
   const handleReject = (orderId) => {
     const reason = reasons[orderId];
@@ -35,7 +36,6 @@ export default function DesignerDashboard() {
   };
 
   if (loading) return <p className="p-6">Loading design requests...</p>;
-
   return (
     <div className="p-8 space-y-8">
       <h1 className="text-3xl font-bold tracking-tight">
@@ -47,7 +47,6 @@ export default function DesignerDashboard() {
           No design requests available.
         </p>
       )}
-
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {designOrders.map((order) => (
           <Card
@@ -89,19 +88,18 @@ export default function DesignerDashboard() {
                   })
                 }
                 placeholder="Enter rejection reason"
-                className="border rounded-lg p-2 w-full text-sm focus:ring-2 focus:ring-red-400 outline-none"
-              />
+                className="border rounded-lg p-2 w-full text-sm focus:ring-2 focus:ring-red-400 outline-none"/>
               <div className="flex gap-3 pt-2">
                 <Button
                   onClick={() => dispatch(designComplete(order.id))}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  className=" bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   Complete Design
                 </Button>
 
                 <Button
                   onClick={() => handleReject(order.id)}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white"
+                  className="bg-red-600 hover:bg-red-700 text-white"
                 >
                   Reject
                 </Button>

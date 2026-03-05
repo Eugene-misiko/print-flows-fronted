@@ -14,6 +14,7 @@ const getStatusVariant = (status) => {
     case "approved":
       return "default";
     case "design_rejected":
+      
     case "print_rejected":
       return "destructive";
     case "in_print":
@@ -77,13 +78,11 @@ const ClientOrders = () => {
               <Separator />
 
               <CardContent className="pt-4 space-y-3">
-
-                {/* Product Image */}
                 {order.product_image && (
                   <img
                     src={order.product_image}
                     alt={order.product_name}
-                    className="w-full h-40 object-cover rounded-lg border"
+                    className="w-full h-40 object-cover rounded-lg border "
                   />
                 )}
 
@@ -91,16 +90,14 @@ const ClientOrders = () => {
                   <span className="font-medium">Quantity:</span>{" "}
                   {order.quantity}
                 </p>
-
                 <p>
                   <span className="font-medium">Price per unit:</span>{" "}
-                  ksh{order.product_price}
+                  ksh {order.product_price}
                 </p>
 
                 <p className="text-lg font-semibold">
-                  Total: Ksh{total}
+                  Total: Ksh {total}
                 </p>
-
                 {order.rejection_reason && (
                   <p className="text-red-500 text-sm">
                     <span className="font-medium">
@@ -109,7 +106,7 @@ const ClientOrders = () => {
                     {order.rejection_reason}
                   </p>
                 )}
-
+               <p>{order.description}</p>
                 <p className="text-sm text-muted-foreground">
                   Ordered on{" "}
                   {new Date(order.created_at).toLocaleString()}

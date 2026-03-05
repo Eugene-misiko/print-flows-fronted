@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMoon, faSun } from "@fortawesome/free-regular-svg-icons";
 export default function ThemeToggle() {
   const [dark, setDark] = useState(false);
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function ThemeToggle() {
       onClick={toggleTheme}
       className="px-3 py-1 cursor-pointer rounded bg-zinc-800 dark:bg-zinc-200 text-white dark:text-black font-semibold"
     >
-      {dark ? "Light Mode" : "Dark Mode"}
+      {dark ? <FontAwesomeIcon icon ={faSun}/> : <FontAwesomeIcon icon={faMoon}/>}
     </button>
   );
 }

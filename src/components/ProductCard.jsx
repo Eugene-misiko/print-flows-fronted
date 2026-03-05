@@ -1,5 +1,6 @@
 import { Card, CardContent } from "./ui/card";
 import { useNavigate } from "react-router-dom";
+
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
 
@@ -20,7 +21,8 @@ const ProductCard = ({ product }) => {
           <p className="text-sm text-muted-foreground">
             {product.description}
           </p>
-          <p className="font-medium">Base Price: Ksh{product.base_price}</p>
+          <p className="font-medium">Base Price: Ksh {product.price}</p>
+          
         </div>
       </CardContent>
     </Card>

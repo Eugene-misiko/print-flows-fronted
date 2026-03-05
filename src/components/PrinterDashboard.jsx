@@ -24,18 +24,20 @@ const PrinterDashboard = () => {
     (order) =>
       order.status === "design_completed" ||
       order.status === "approved" ||
-      order.status === "printing"
+      order.status === "printing" ||
+      order.status === "rejected" 
   );
 
   const handleReject = (orderId) => {
     const reason = reasons[orderId];
-    if (!reason) return alert("Please enter rejection reason");
+    if (!reason) return alert("Please enter rejection reason") 
 
     dispatch(printReject({ orderId, reason }));
     setReasons((prev) => ({ ...prev, [orderId]: "" }));
   };
 
-  if (loading) return <p className="p-6">Loading...</p>;
+
+  if (loading)   return  <p className="p-6">Loading...</p>;
 
   return (
     <div className="p-8 space-y-8">
@@ -75,6 +77,7 @@ const PrinterDashboard = () => {
                   className="w-full h-44 object-cover rounded-xl border"
                 />
               )}
+            
               <textarea
                 value={reasons[order.id] || ""}
                 onChange={(e) =>
@@ -91,7 +94,7 @@ const PrinterDashboard = () => {
                 {order.status === "design_completed" && (
                   <Button
                     onClick={() => dispatch(printApprove(order.id))}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    className="w- bg-green-600 hover:bg-green-700 text-white"
                   >
                     Approve
                   </Button>
@@ -100,7 +103,7 @@ const PrinterDashboard = () => {
                 {order.status === "approved" && (
                   <Button
                     onClick={() => dispatch(startPrinting(order.id))}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    className=" bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     Start Printing
                   </Button>
@@ -109,7 +112,7 @@ const PrinterDashboard = () => {
                 {order.status === "printing" && (
                   <Button
                     onClick={() => dispatch(completePrint(order.id))}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    className=" bg-purple-600 hover:bg-purple-700 text-white"
                   >
                     Complete
                   </Button>
@@ -117,7 +120,7 @@ const PrinterDashboard = () => {
 
                 <Button
                   onClick={() => handleReject(order.id)}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white"
+                  className=" bg-red-600 hover:bg-red-700 text-white"
                 >
                   Reject
                 </Button>

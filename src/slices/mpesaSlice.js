@@ -5,7 +5,8 @@ export const fetchPayments = createAsyncThunk(
     "payments/fetchPayments",
     async(_, thunKAPI) => {
         try {
-            const response = await api.get("/api/^stk-push/?$")
+            const response = await api.get("/api/^stk-push/?$");
+            response.data;
         } catch (error) {
             return thunKAPI.rejectWithValue(
                 error.response?.data || "Failed to fetch payments"
@@ -30,10 +31,14 @@ const paymentsSlice = createSlice({
       .addCase(fetchPayments.fulfilled, (state, action) => {
         state.loading = false;
         state.fields = action.payload;
-      })        
+       })  
+       .addCase(fetchPayments.rejected, (state, action)=>{
+        state.loading = false;
+        state.error = action.payload
+       })      
 
     }
-
-
 })
+
+export default paymentsSlice.reducer;
 

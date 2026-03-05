@@ -17,7 +17,7 @@ const ClientOrder = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [formData, setFormData] = useState({
     product: productId || "",
-    quantity: 1,
+    quantity: null,
     needs_design: false,
     design_file: null,
     notes: "",
@@ -166,7 +166,6 @@ const ClientOrder = () => {
             <Button type="submit" className="w-full">
               Submit Order
             </Button>
-
           </form>
         </CardContent>
       </Card>
