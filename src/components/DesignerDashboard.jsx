@@ -7,7 +7,7 @@ import {
 } from "@/slices/orderSlice";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
-
+import { Badge } from "./ui/badge";
 export default function DesignerDashboard() {
   const dispatch = useDispatch();
   const { orders, loading } = useSelector((state) => state.orders);
@@ -18,62 +18,91 @@ export default function DesignerDashboard() {
     dispatch(fetchOrders());
   }, [dispatch]);
 
- // Only show orders that need design
+  // Filter only orders that need design
   const designOrders = orders.filter(
     (order) =>
       order.needs_design === true &&
       (order.status === "pending_design" ||
         order.status === "design_rejected")
   );
-  // const designOrders = orders
 
   const handleReject = (orderId) => {
     const reason = reasons[orderId];
-    if (!reason) return alert("Please enter rejection reason");
+
+    if (!reason) {
+      return alert("Please enter rejection reason");
+    }
 
     dispatch(designReject({ orderId, reason }));
-    setReasons((prev) => ({ ...prev, [orderId]: "" }));
+
+    setReasons((prev) => ({
+      ...prev,
+      [orderId]: "",
+    }));
   };
 
-  if (loading) return <p className="p-6">Loading design requests...</p>;
+  if (loading) {
+    return (
+      <p className="ml-56 mt-24 p-6 text-muted-foreground">
+        Loading design requests...
+      </p>
+    );
+  }
+
   return (
-    <div className="p-8 space-y-8">
-      <h1 className="text-3xl font-bold tracking-tight ml-58">
+    <div className="ml-56 mt-24 p-8 space-y-8">
+      <h1 className="text-3xl font-bold text-rose-600">
         Designer Dashboard
       </h1>
-
       {designOrders.length === 0 && (
-        <p className="text-muted-foreground ml-58">
-          No design requests available.
-        </p>
+        <Card className="border border-zinc-200 dark:border-zinc-800">
+          <CardContent className="py-10 text-center text-muted-foreground">
+            No design requests available.
+          </CardContent>
+        </Card>
       )}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 ml-58">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
         {designOrders.map((order) => (
           <Card
             key={order.id}
-            className="rounded-2xl shadow-md hover:shadow-xl transition"
+            className="rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition"
           >
             <CardContent className="p-6 space-y-4">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold">
                   Order #{order.id}
                 </h3>
-                <span className="text-xs px-3 py-1 rounded-full bg-yellow-100 text-yellow-700">
+
+                <Badge variant="secondary">
                   {order.status.replaceAll("_", " ")}
-                </span>
+                </Badge>
+
               </div>
               <div className="space-y-1 text-sm">
-                <p><strong>Product:</strong> {order.product_name}</p>
-                <p><strong>Quantity:</strong> {order.quantity}</p>
+
+                <p>
+                  <span className="font-medium">
+                    Product:
+                  </span>{" "}
+                  {order.product_name}
+                </p>
+
+                <p>
+                  <span className="font-medium">
+                    Quantity:
+                  </span>{" "}
+                  {order.quantity}
+                </p>
+
               </div>
               {order.design_file && (
                 <img
                   src={order.design_file}
                   alt="Client Design"
-                  className="w-full h-44 object-cover rounded-xl border"
+                  className="w-full h-44 object-cover rounded-lg border"
                 />
               )}
-
               {order.description && (
                 <p className="text-sm text-muted-foreground">
                   {order.description}
@@ -88,18 +117,26 @@ export default function DesignerDashboard() {
                   })
                 }
                 placeholder="Enter rejection reason"
-                className="border rounded-lg p-2 w-full text-sm focus:ring-2 focus:ring-red-400 outline-none"/>
+                className="border border-zinc-300 dark:border-zinc-700 
+                rounded-lg p-2 w-full text-sm
+                bg-white dark:bg-zinc-900
+                focus:ring-2 focus:ring-rose-500 outline-none"
+              />
+
               <div className="flex gap-3 pt-2">
                 <Button
-                  onClick={() => dispatch(designComplete(order.id))}
-                  className=" bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={() =>
+                    dispatch(designComplete(order.id))
+                  }
+                  className="bg-rose-600 hover:bg-rose-700 text-white flex-1"
                 >
                   Complete Design
                 </Button>
 
                 <Button
                   onClick={() => handleReject(order.id)}
-                  className="bg-red-600 hover:bg-red-700 text-white"
+                  variant="destructive"
+                  className="flex-1"
                 >
                   Reject
                 </Button>
