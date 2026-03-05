@@ -8,78 +8,130 @@ export default function Sidebar() {
   const { user } = useSelector((state) => state.auth);
 
   const linkStyle =
-    "block px-3 py-2 rounded-md text-sm font-medium transition";
-
+    "block px-4 py-2 rounded-lg text-sm font-medium transition";
   const activeStyle =
-    "bg-zinc-200 dark:bg-zinc-800 font-semibold ";
+    "bg-rose-100 text-rose-700 font-semibold";
 
   return (
     <>
-    
-      <div className="lg:hidden p-4 ">
+      <div className="lg:hidden p-4">
         <button
           onClick={() => setOpen(!open)}
-          className="bg-zinc-800 text-white px-4 py-2 rounded-md">
+          className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-md transition"
+        >
           Menu
         </button>
       </div>
-      <aside className={`bg-white dark:bg-zinc-950 border-r border-gray-200 dark:border-zinc-800 
-        text-black dark:text-white p-6 space-y-6 fixed bottom-0 top-17 w-64 
-        ${open ? "block" : "hidden"} lg:block w-64`}>
-        <h2 className="text-lg font-semibold">Dashboard</h2>
+      <aside
+        className={`fixed top-16 bottom-0 left-0 w-64
+        bg-white border-r border-gray-200
+        p-6 space-y-6
+        ${open ? "block" : "hidden"} lg:block`}
+      >
+        <h2 className="text-xl font-bold text-rose-600">
+          Dashboard
+        </h2>
+
         <Separator />
-        <nav className="space-y-1">
-             {user?.role?.toLowerCase() === "printer" && (
-                <>
-                  <NavLink
-                    to="/printer"
-                    className={({ isActive }) =>
-                      `${linkStyle} ${isActive ? activeStyle : ""}`}>
-                    Printer Dashboard
-                  </NavLink>
-                  <NavLink
-                    to="/profile"
-                    className={({ isActive }) =>
-                      `${linkStyle} ${isActive ? activeStyle : ""}`
-                    }
-                  >
-                    My Profile
-                  </NavLink>
-                </>
-              )}
-          {user?.role?.toLowerCase() === "client" && (
+
+        <nav className="space-y-2">
+          {user?.role?.toLowerCase() === "printer" && (
             <>
-            <NavLink to="/authen" className={({isActive})=> `${linkStyle} ${isActive ? activeStyle: ""} `}>Back to home
-            
-            </NavLink>
+              <NavLink
+                to="/printer"
+                className={({ isActive }) =>
+                  `${linkStyle} ${
+                    isActive
+                      ? activeStyle
+                      : "hover:bg-rose-50 text-gray-700"
+                  }`
+                }
+              >
+                Printer Dashboard
+              </NavLink>
+
               <NavLink
                 to="/profile"
                 className={({ isActive }) =>
-                  `${linkStyle} ${isActive ? activeStyle : ""}`}>
+                  `${linkStyle} ${
+                    isActive
+                      ? activeStyle
+                      : "hover:bg-rose-50 text-gray-700"
+                  }`
+                }
+              >
                 My Profile
               </NavLink>
+            </>
+          )}
+          {user?.role?.toLowerCase() === "client" && (
+            <>
+              <NavLink
+                to="/authen"
+                className={({ isActive }) =>
+                  `${linkStyle} ${
+                    isActive
+                      ? activeStyle
+                      : "hover:bg-rose-50 text-gray-700"
+                  }`
+                }
+              >
+                Back to Home
+              </NavLink>
+
+              <NavLink
+                to="/profile"
+                className={({ isActive }) =>
+                  `${linkStyle} ${
+                    isActive
+                      ? activeStyle
+                      : "hover:bg-rose-50 text-gray-700"
+                  }`
+                }
+              >
+                My Profile
+              </NavLink>
+
               <NavLink
                 to="/create-order"
                 className={({ isActive }) =>
-                  `${linkStyle} ${isActive ? activeStyle : ""}`}>
+                  `${linkStyle} ${
+                    isActive
+                      ? activeStyle
+                      : "hover:bg-rose-50 text-gray-700"
+                  }`
+                }
+              >
                 Create Order
               </NavLink>
 
               <NavLink
                 to="/history"
                 className={({ isActive }) =>
-                  `${linkStyle} ${isActive ? activeStyle : ""}`}>
-                    My Orders
+                  `${linkStyle} ${
+                    isActive
+                      ? activeStyle
+                      : "hover:bg-rose-50 text-gray-700"
+                  }`
+                }
+              >
+                My Orders
               </NavLink>
-              </>
+            </>
           )}
           {user?.role?.toLowerCase() === "admin" && (
             <>
-                         <NavLink
+              <NavLink
                 to="/users"
                 className={({ isActive }) =>
-                  `${linkStyle} ${isActive ? activeStyle : ""}`}>
-                  Users
+                  `${linkStyle} ${
+                    isActive
+                      ? activeStyle
+                      : "hover:bg-rose-50 text-gray-700"
+                  }`
+                }
+              >
+                Users
               </NavLink>
             </>
           )}
@@ -88,13 +140,24 @@ export default function Sidebar() {
               <NavLink
                 to="/designer"
                 className={({ isActive }) =>
-                  `${linkStyle} ${isActive ? activeStyle : ""}`}>
+                  `${linkStyle} ${
+                    isActive
+                      ? activeStyle
+                      : "hover:bg-rose-50 text-gray-700"
+                  }`
+                }
+              >
                 Assigned Designs
               </NavLink>
+
               <NavLink
                 to="/profile"
                 className={({ isActive }) =>
-                  `${linkStyle} ${isActive ? activeStyle : ""}`
+                  `${linkStyle} ${
+                    isActive
+                      ? activeStyle
+                      : "hover:bg-rose-50 text-gray-700"
+                  }`
                 }
               >
                 My Profile
