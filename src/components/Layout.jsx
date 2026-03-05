@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom"
 import Navbar from "./Navbar"
 import Sidebar from "./Sidebar"
 import { useSelector } from "react-redux"
-import AdminOrders from "./AdminOrders"
+
 
 export default function Layout() {
   const { token } = useSelector((state) => state.auth)

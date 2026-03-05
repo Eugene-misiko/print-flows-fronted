@@ -12,7 +12,7 @@ import ClientOrders from "./components/ClientHistory";
 import Products from "./components/Products";
 import ProductDetail from "./components/ProductDetail";
 import PrinterDashboard from "./components/PrinterDashboard";
-import DesignerDashboard from "./components/DesignerDashboard";
+import DesignerDashboard from "./components/DesignerDashboard.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {

@@ -1,4 +1,4 @@
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "./ui/separator";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
@@ -29,19 +29,34 @@ export default function Sidebar() {
         <h2 className="text-lg font-semibold">Dashboard</h2>
         <Separator />
         <nav className="space-y-1">
+             {user?.role?.toLowerCase() === "printer" && (
+                <>
+                  <NavLink
+                    to="/printer"
+                    className={({ isActive }) =>
+                      `${linkStyle} ${isActive ? activeStyle : ""}`}>
+                    Printer Dashboard
+                  </NavLink>
+                  <NavLink
+                    to="/profile"
+                    className={({ isActive }) =>
+                      `${linkStyle} ${isActive ? activeStyle : ""}`
+                    }
+                  >
+                    My Profile
+                  </NavLink>
+                </>
+              )}
           {user?.role?.toLowerCase() === "client" && (
             <>
+            <NavLink to="/" className={({isActive})=> `${linkStyle} ${isActive ? activeStyle: ""} `}>Back to home
+            
+            </NavLink>
               <NavLink
                 to="/profile"
                 className={({ isActive }) =>
                   `${linkStyle} ${isActive ? activeStyle : ""}`}>
                 My Profile
-              </NavLink>
-              <NavLink
-                to="/client-orders"
-                className={({ isActive }) =>
-                  `${linkStyle} ${isActive ? activeStyle : ""}`}>
-                My Orders
               </NavLink>
               <NavLink
                 to="/create-order"
@@ -54,44 +69,17 @@ export default function Sidebar() {
                 to="/history"
                 className={({ isActive }) =>
                   `${linkStyle} ${isActive ? activeStyle : ""}`}>
-                    Order History
+                    My Orders
               </NavLink>
               </>
           )}
           {user?.role?.toLowerCase() === "admin" && (
             <>
-              {user?.role?.toLowerCase() === "printer" && (
-                <>
-                  <NavLink
-                    to="/printer"
-                    className={({ isActive }) =>
-                      `${linkStyle} ${isActive ? activeStyle : ""}`
-                    }
-                  >
-                    Printer Dashboard
-                  </NavLink>
-
-                  <NavLink
-                    to="/profile"
-                    className={({ isActive }) =>
-                      `${linkStyle} ${isActive ? activeStyle : ""}`
-                    }
-                  >
-                    My Profile
-                  </NavLink>
-                </>
-              )}
-              <NavLink
+                         <NavLink
                 to="/users"
                 className={({ isActive }) =>
                   `${linkStyle} ${isActive ? activeStyle : ""}`}>
                   Users
-              </NavLink>
-              <NavLink
-                to="/profile"
-                className={({ isActive }) =>
-                  `${linkStyle} ${isActive ? activeStyle : ""}`}>
-                My Profile
               </NavLink>
             </>
           )}
