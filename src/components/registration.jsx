@@ -31,6 +31,7 @@ export default function Register() {
     e.preventDefault();
     dispatch(registerUser(formData));
   };
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -49,42 +50,54 @@ export default function Register() {
   return (
     <>
       <Navbar />
+
       <div
-        className="relative h-screen bg-cover bg-center flex items-center justify-center"
+        className="relative min-h-screen flex items-center justify-center bg-cover bg-center"
         style={{ backgroundImage: `url(${backgroundImage})` }}
       >
-        <div className="absolute inset-0 bg-black/50"></div>
+        
+        <div className="absolute inset-0 bg-black/60"></div>
 
-        <div className="relative z-10 w-full max-w-md p-8 rounded-2xl 
-            bg-white/20 backdrop-blur-xl 
-            border border-white/30 
-            shadow-2xl shadow-black/40">
-
-          <h1 className="text-2xl font-bold text-center mb-6 text-cyan-500">
-            Register
+        
+        <div
+          className="relative z-10 w-full max-w-lg px-10 py-10 rounded-2xl
+          bg-white/20 backdrop-blur-xl
+          border border-white/30
+          shadow-2xl"
+        >
+          
+          <h1 className="text-3xl font-bold text-center text-rose-600 mb-2">
+            Create Account
           </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <p className="text-center text-gray-200 text-sm mb-8">
+            Register to start managing your printing orders
+          </p>
 
-            <input
-              type="text"
-              name="first_name"
-              placeholder="First Name"
-              value={formData.first_name}
-              onChange={handleChange}
-              required
-              className="input-style"
-            />
+          <form onSubmit={handleSubmit} className="space-y-5">
 
-            <input
-              type="text"
-              name="last_name"
-              placeholder="Last Name"
-              value={formData.last_name}
-              onChange={handleChange}
-              required
-              className="input-style"
-            />
+            
+            <div className="grid grid-cols-2 gap-4">
+              <input
+                type="text"
+                name="first_name"
+                placeholder="First Name"
+                value={formData.first_name}
+                onChange={handleChange}
+                required
+                className="input-style"
+              />
+
+              <input
+                type="text"
+                name="last_name"
+                placeholder="Last Name"
+                value={formData.last_name}
+                onChange={handleChange}
+                required
+                className="input-style"
+              />
+            </div>
 
             <input
               type="text"
@@ -125,46 +138,51 @@ export default function Register() {
               className="input-style"
             />
 
+            
             <button
               type="submit"
               disabled={registerLoading}
-              className="mt-6 shadow-[0_0_5px_cyan,0_0_25px_cyan] 
-                hover:shadow-[0_0_5px_cyan,0_0_25px_cyan,0_0_50px_cyan,0_0_100px_cyan]
-                transition-all duration-300 ease-in-out
-                px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg w-full"
+              className="w-full bg-rose-600 hover:bg-rose-700
+              text-white font-semibold py-3 rounded-lg
+              transition"
             >
               {registerLoading ? "Registering..." : "Register"}
             </button>
 
             {registerError && (
-              <p className="text-red-500 text-sm text-center">
+              <p className="text-red-400 text-sm text-center">
                 {typeof registerError === "string"
                   ? registerError
                   : "Registration failed"}
               </p>
             )}
 
-            <p className="text-center text-white mt-4">
+            <p className="text-center text-gray-200 mt-4">
               Already have an account?{" "}
-              <Link to="/login" className="underline">
+              <Link
+                to="/login"
+                className="text-rose-400 hover:text-rose-500 font-medium"
+              >
                 Login here
               </Link>
             </p>
           </form>
         </div>
       </div>
-
-      
       <style>
         {`
-          .input-style {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            background: rgba(255,255,255,0.8);
-            outline: none;
-          }
+        .input-style{
+          width:100%;
+          padding:10px 12px;
+          border-radius:8px;
+          border:none;
+          background:rgba(255,255,255,0.75);
+          outline:none;
+          transition:all .2s ease;
+        }
+        .input-style:focus{
+          box-shadow:0 0 0 2px #f43f5e;
+        }
         `}
       </style>
     </>
