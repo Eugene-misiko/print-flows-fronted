@@ -14,34 +14,63 @@ const ProductDetail = () => {
       const response = await api.get(`/api/products/${id}/`);
       setProduct(response.data);
     };
+
     fetchProduct();
   }, [id]);
 
-  if (!product) return <p className="p-6">Loading...</p>;
+  if (!product)
+    return (
+      <div className="ml-56 mt-24 p-8">
+        <p className="text-zinc-500 animate-pulse">Loading product...</p>
+      </div>
+    );
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <Card>
-        <CardContent className="p-6 space-y-6">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-80 object-cover rounded-lg"/>
+    <div className="ml-56 mt-24 p-8">
+      <div className="max-w-5xl mx-auto">
+        <Card className="border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl">
+          <CardContent className="p-8 grid md:grid-cols-2 gap-8">
+            <div>
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-80 object-cover rounded-lg"
+              />
+            </div>
+            <div className="flex flex-col justify-between space-y-6">
 
-          <div className="space-y-2">
-            <h2 className="text-2xl font-semibold">{product.name}</h2>
-            <p className="text-muted-foreground">{product.description}</p>
-            <p className="font-medium">Base Price: Ksh {product.price}</p>
-          </div>
+              <div className="space-y-3">
+                <h2 className="text-3xl font-bold text-rose-600">
+                  {product.name}
+                </h2>
 
-          <Button
-            onClick={() => navigate(`/create-order/${product.id}`)}
-            className="w-full"
-          >
-            Order Now
-          </Button>
-        </CardContent>
-      </Card>
+                <p className="text-zinc-600 dark:text-zinc-400">
+                  {product.description}
+                </p>
+                <p className="text-lg font-semibold text-rose-600">
+                  Base Price: Ksh {product.price}
+                </p>
+              </div>
+
+              {/* Order Button */}
+              <Button
+                onClick={() => navigate(`/create-order/${product.id}`)}
+                className="bg-rose-600 hover:bg-rose-700 text-white w-full cursor-pointer"
+              >
+                Order This Product
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/products")}
+                className="cursor-pointer"
+              >
+                Back to Products
+              </Button>
+
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
