@@ -10,7 +10,7 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-zinc-100
      dark:bg-zinc-950 text-black dark:text-white
-     transition-colors duration-300">
+     transition-colors duration-300 ">
       <Navbar />
 
       <div className="flex">

@@ -14,6 +14,7 @@ import ProductDetail from "./components/ProductDetail";
 import PrinterDashboard from "./components/PrinterDashboard";
 import DesignerDashboard from "./components/DesignerDashboard.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Landing from "./components/Landing";
 
 function App() {
   const { user } = useSelector((state) => state.auth);
@@ -23,10 +24,11 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
+        <Route path="/" element={<Landing />} />
+        
         <Route element={<Layout />}>
           <Route
-            path="/"
+            path="/authen"
             element={
               <ProtectedRoute allowedRoles={["client"]}>
                 <Home />
@@ -85,7 +87,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-
+        
           {/* PRINTER ROUTES */}
           <Route
             path="/printer"

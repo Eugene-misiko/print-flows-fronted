@@ -32,14 +32,14 @@ const Products = () => {
       : items.filter((p) => p.category === selectedCategory);
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Our Products</h1>
+    <div className="p-6 space-y-6  mt-5 ml-56">
+      <h1 className="text-2xl font-bold ">Here's General Print Requests</h1>
       <div className="flex flex-wrap gap-3">
         {categories.map((cat) => (
           <Button
             key={cat}
             variant={selectedCategory === cat ? "default" : "outline"}
-            onClick={() => setSelectedCategory(cat)}
+           className={`cursor-pointer`} onClick={() => setSelectedCategory(cat)}
           >
             {cat.toUpperCase()}
           </Button>

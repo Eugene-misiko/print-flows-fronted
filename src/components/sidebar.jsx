@@ -16,7 +16,7 @@ export default function Sidebar() {
   return (
     <>
     
-      <div className="lg:hidden p-4">
+      <div className="lg:hidden p-4 ">
         <button
           onClick={() => setOpen(!open)}
           className="bg-zinc-800 text-white px-4 py-2 rounded-md">
@@ -24,7 +24,7 @@ export default function Sidebar() {
         </button>
       </div>
       <aside className={`bg-white dark:bg-zinc-950 border-r border-gray-200 dark:border-zinc-800 
-        text-black dark:text-white p-6 space-y-6
+        text-black dark:text-white p-6 space-y-6 fixed bottom-0 top-17 w-64 
         ${open ? "block" : "hidden"} lg:block w-64`}>
         <h2 className="text-lg font-semibold">Dashboard</h2>
         <Separator />
@@ -49,7 +49,7 @@ export default function Sidebar() {
               )}
           {user?.role?.toLowerCase() === "client" && (
             <>
-            <NavLink to="/" className={({isActive})=> `${linkStyle} ${isActive ? activeStyle: ""} `}>Back to home
+            <NavLink to="/authen" className={({isActive})=> `${linkStyle} ${isActive ? activeStyle: ""} `}>Back to home
             
             </NavLink>
               <NavLink

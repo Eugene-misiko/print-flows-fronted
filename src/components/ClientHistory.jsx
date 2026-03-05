@@ -54,7 +54,7 @@ const ClientOrders = () => {
         </Card>
       )}
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 ml-58">
         {orders.map((order) => {
           const total =
             Number(order.product_price || 0) *

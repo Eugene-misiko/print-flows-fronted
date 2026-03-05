@@ -16,7 +16,7 @@ const Navbar = () => {
   }
 
   return (
-    <header className="w-full border-b border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 transition-colors duration-300">
+    <header className="fixed top-0 left-0 right-0  border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 transition-colors duration-300 ">
       <div className="flex items-center justify-between px-8 py-4">
         <div className="text-xl font-bold tracking-wider">
           PrintFlow

@@ -38,16 +38,16 @@ export default function DesignerDashboard() {
   if (loading) return <p className="p-6">Loading design requests...</p>;
   return (
     <div className="p-8 space-y-8">
-      <h1 className="text-3xl font-bold tracking-tight">
+      <h1 className="text-3xl font-bold tracking-tight ml-58">
         Designer Dashboard
       </h1>
 
       {designOrders.length === 0 && (
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground ml-58">
           No design requests available.
         </p>
       )}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 ml-58">
         {designOrders.map((order) => (
           <Card
             key={order.id}
