@@ -1,18 +1,25 @@
-import { fetchProfile, updateProfile } from '@/slices/profileSlice';
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { fetchProfile, updateProfile } from "@/slices/profileSlice";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Card, CardContent } from "./ui/card";
+import { Button } from "./ui/button";
 
 const Profile = () => {
   const dispatch = useDispatch();
-  const { profile, loading, error, updateLoading, updateError } = useSelector((state) => state.profile);
+
+  const { profile, loading, error, updateLoading, updateError } = useSelector(
+    (state) => state.profile
+  );
   const [formData, setFormData] = useState({
     username: "",
     email: "",
-    phone: ""
+    phone: "",
   });
+
   useEffect(() => {
     dispatch(fetchProfile());
   }, [dispatch]);
+
   useEffect(() => {
     if (profile) {
       setFormData({
@@ -29,118 +36,124 @@ const Profile = () => {
       [e.target.name]: e.target.value,
     });
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(updateProfile(formData));
   };
 
+  if (loading) {
+    return (
+      <div className="ml-56 mt-24 p-8">
+        <p className="text-zinc-500 animate-pulse">Loading profile...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex justify-center items-start py-10 px-4 bg-gray-100 dark:bg-zinc-950 transition-colors duration-300">
-      
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-        
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-100">
-          User Profile
-        </h2>
+    <div className="ml-56 mt-24 p-8">
+      <div className="max-w-xl mx-auto">
 
-        {loading && <p className="text-gray-600 dark:text-gray-300">Loading profile...</p>}
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <Card className="border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl">
+          <CardContent className="p-8 space-y-6">
 
-        {profile && (
-          <form onSubmit={handleSubmit} className="space-y-5">
+            <h2 className="text-2xl font-bold text-rose-600">
+              My Profile
+            </h2>
 
-           
-            <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                Username
-              </label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md 
-                           bg-white dark:bg-gray-700 
-                           border-gray-300 dark:border-gray-600 
-                           text-gray-800 dark:text-gray-100
-                           focus:outline-none focus:ring-2 focus:ring-gray-500"
-              />
-            </div>
-            <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md 
-                           bg-white dark:bg-gray-700 
-                           border-gray-300 dark:border-gray-600 
-                           text-gray-800 dark:text-gray-100
-                           focus:outline-none focus:ring-2 focus:ring-gray-500"
-              />
-            </div>
-
-           
-            <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                Phone
-              </label>
-              <input
-                type="text"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md 
-                           bg-white dark:bg-gray-700 
-                           border-gray-300 dark:border-gray-600 
-                           text-gray-800 dark:text-gray-100
-                           focus:outline-none focus:ring-2 focus:ring-gray-500"
-              />
-            </div>
-
-           
-            <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                Role
-              </label>
-              <input
-                type="text"
-                value={profile.role}
-                disabled
-                className="w-full px-3 py-2 border rounded-md 
-                           bg-gray-200 dark:bg-gray-600
-                           border-gray-300 dark:border-gray-600 
-                           text-gray-600 dark:text-gray-300
-                           cursor-not-allowed"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={updateLoading}
-              className="w-full py-2 rounded-md font-medium 
-                         bg-gray-800 hover:bg-zinc-700 
-                         dark:bg-zinc-950 dark:hover:bg-zinc-900
-                         text-white transition duration-200"
-            >
-              {updateLoading ? "Updating..." : "Update Profile"}
-            </button>
-
-            {updateError && (
-            <div className="text-red-500 text-sm">
-                {typeof updateError === "string"
-                ? updateError
-                : Object.entries(updateError).map(([key, value]) => (
-                    <p key={key}>
-                        {key}: {value}
-                    </p>
-                    ))}
-            </div>
+            {error && (
+              <p className="text-red-500 text-sm">{error}</p>
             )}
-          </form>
-        )}
+
+            {profile && (
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Username
+                  </label>
+
+                  <input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-md
+                    border-zinc-300 dark:border-zinc-700
+                    bg-white dark:bg-zinc-900
+                    focus:ring-2 focus:ring-rose-500 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Email
+                  </label>
+
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-md
+                    border-zinc-300 dark:border-zinc-700
+                    bg-white dark:bg-zinc-900
+                    focus:ring-2 focus:ring-rose-500 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Phone
+                  </label>
+
+                  <input
+                    type="text"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-md
+                    border-zinc-300 dark:border-zinc-700
+                    bg-white dark:bg-zinc-900
+                    focus:ring-2 focus:ring-rose-500 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Role
+                  </label>
+
+                  <input
+                    type="text"
+                    value={profile.role}
+                    disabled
+                    className="w-full px-3 py-2 border rounded-md
+                    bg-zinc-200 dark:bg-zinc-800
+                    border-zinc-300 dark:border-zinc-700
+                    cursor-not-allowed"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={updateLoading}
+                  className="w-full bg-rose-600 hover:bg-rose-700 text-white cursor-pointer"
+                >
+                  {updateLoading ? "Updating..." : "Update Profile"}
+                </Button>
+                {updateError && (
+                  <div className="text-red-500 text-sm">
+                    {typeof updateError === "string"
+                      ? updateError
+                      : Object.entries(updateError).map(([key, value]) => (
+                          <p key={key}>
+                            {key}: {value}
+                          </p>
+                        ))}
+                  </div>
+                )}
+
+              </form>
+            )}
+          </CardContent>
+        </Card>
+
       </div>
     </div>
   );
