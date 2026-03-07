@@ -121,6 +121,7 @@ const orderSlice = createSlice({
     loading: false,
     error: null,
     actionLoading: false,
+    createdInvoiceId: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -147,6 +148,8 @@ const orderSlice = createSlice({
       .addCase(createOrder.fulfilled, (state, action) => {
         state.actionLoading = false;
         state.orders.unshift(action.payload);
+        
+        state.createdInvoiceId = action.payload.invoice_id;
       })
       .addCase(createOrder.rejected, (state, action) => {
         state.actionLoading = false;
