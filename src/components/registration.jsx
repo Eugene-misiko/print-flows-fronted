@@ -52,7 +52,7 @@ export default function Register() {
       <Navbar />
 
       <div
-        className="relative min-h-screen flex items-center justify-center bg-cover bg-center"
+        className="relative min-h-screen flex items-center  justify-center bg-cover bg-center"
         style={{ backgroundImage: `url(${backgroundImage})` }}
       >
         
@@ -74,7 +74,7 @@ export default function Register() {
             Register to start managing your printing orders
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5 ">
 
             
             <div className="grid grid-cols-2 gap-4">

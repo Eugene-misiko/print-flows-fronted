@@ -11,10 +11,12 @@ const UserList = () => {
   }, [dispatch]);
 
   return (
-    <div className="p-6">
-      <div className="bg-white dark:bg-zinc-950 rounded-xl shadow-md p-6 transition-colors duration-300">
-        <h2 className=" text-xl font-semibold mb-6 text-gray-800 dark:text-gray-100">
-          Users
+    <div className="ml-64 p-8 min-h-screen  dark:bg-zinc-900 transition-colors">
+
+      <div className="bg-white dark:bg-zinc-950 rounded-2xl shadow-lg p-8 transition-colors duration-300">
+
+        <h2 className="text-2xl font-bold mb-6 text-zinc-800 dark:text-zinc-100">
+          User Management
         </h2>
         {loading && (
           <p className="text-zinc-500 dark:text-zinc-400">
@@ -24,69 +26,84 @@ const UserList = () => {
 
         {error && (
           <p className="text-red-500 mb-4">
-            {typeof error === "string"
-              ? error
-              : JSON.stringify(error)}
+            {typeof error === "string" ? error : JSON.stringify(error)}
           </p>
         )}
 
         {!loading && users.length > 0 && (
           <div className="overflow-x-auto">
-            <table className="w-full border-separate border-spacing-y-2 text-sm">
+
+            <table className="w-full border-separate border-spacing-y-3 text-sm">
+
               <thead>
-                <tr className="text-left text-zinc-500 dark:text-zinc-400 uppercase  text-xs tracking-wide">
+                <tr className="text-left text-zinc-500 dark:text-zinc-400 uppercase text-xs tracking-wider">
                   <th className="px-4 py-2">Name</th>
                   <th className="px-4 py-2">Email</th>
                   <th className="px-4 py-2">Phone</th>
                   <th className="px-4 py-2">Role</th>
-                  <th className="px-4 py-2">Assign</th>
+                  <th className="px-4 py-2">Assign Role</th>
                 </tr>
               </thead>
 
               <tbody>
                 {users.map((user) => (
-                  <tr key={user.id}
-                    className="bg-gray-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition rounded-lg ">
-                    <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200 rounded-l-lg">
+                  <tr
+                    key={user.id}
+                    className="bg-gray-50 dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-zinc-700 transition rounded-xl shadow-sm"
+                  >
+                    <td className="px-4 py-3 font-medium text-zinc-800 dark:text-zinc-200 rounded-l-xl">
                       {user.username}
                     </td>
 
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
                       {user.email}
                     </td>
 
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
                       {user.phone}
                     </td>
 
-                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300 rounded-r-lg">
-                      {user.role}
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
+                      <span className="px-3 py-1 text-xs rounded-full bg-rose-100 text-rose-600 capitalize">
+                        {user.role}
+                      </span>
                     </td>
-                                        <td className="px-4 py-3 ">
-                    <select
+
+                    <td className="px-4 py-3 rounded-r-xl">
+                      <select
                         value={user.role}
                         onChange={(e) =>
-                        dispatch(assignRole({ userId: user.id, role: e.target.value }))
+                          dispatch(
+                            assignRole({
+                              userId: user.id,
+                              role: e.target.value,
+                            })
+                          )
                         }
-                        className=" dark:bg-zinc-950
-                                 dark:text-zinc-200
-                                px-2 py-1 rounded-md text-sm ">
+                        className="bg-rose-50 text-rose-700
+                                   dark:bg-zinc-900 dark:text-zinc-200
+                                   px-3 py-2 rounded-md text-sm
+                                   border border-rose-200
+                                   focus:outline-none focus:ring-2 focus:ring-rose-400"
+                      >
                         <option value="client">Client</option>
                         <option value="designer">Designer</option>
                         <option value="admin">Admin</option>
                         <option value="printer">Printer</option>
-                    </select>
+                      </select>
                     </td>
                   </tr>
                 ))}
-
-
               </tbody>
 
             </table>
           </div>
         )}
-
+        {!loading && users.length === 0 && (
+          <p className="text-zinc-500 dark:text-zinc-400">
+            No users available.
+          </p>
+        )}
       </div>
     </div>
   );

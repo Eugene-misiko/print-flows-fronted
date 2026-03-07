@@ -20,57 +20,49 @@ const ProductDetail = () => {
 
   if (!product)
     return (
-      <div className="ml-56 mt-24 p-8">
-        <p className="text-zinc-500 animate-pulse">Loading product...</p>
-      </div>
+      <p className="p-6 text-center text-zinc-500">
+        Loading product...
+      </p>
     );
 
   return (
-    <div className="ml-56 mt-24 p-8">
-      <div className="max-w-5xl mx-auto">
-        <Card className="border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl">
-          <CardContent className="p-8 grid md:grid-cols-2 gap-8">
-            <div>
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-80 object-cover rounded-lg"
-              />
-            </div>
-            <div className="flex flex-col justify-between space-y-6">
+    <div className="p-6 max-w-4xl mx-auto">
 
-              <div className="space-y-3">
-                <h2 className="text-3xl font-bold text-rose-600">
-                  {product.name}
-                </h2>
+      <Card className="rounded-2xl shadow-lg mt-10 ">
+        <CardContent className="p-6 space-y-6">
 
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  {product.description}
-                </p>
-                <p className="text-lg font-semibold text-rose-600">
-                  Base Price: Ksh {product.price}
-                </p>
-              </div>
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-96 object-cover rounded-[6%]"
+          />
 
-              {/* Order Button */}
-              <Button
-                onClick={() => navigate(`/create-order/${product.id}`)}
-                className="bg-rose-600 hover:bg-rose-700 text-white w-full cursor-pointer"
-              >
-                Order This Product
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => navigate("/products")}
-                className="cursor-pointer"
-              >
-                Back to Products
-              </Button>
+          <div className="space-y-3">
 
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            <h2 className="text-3xl font-bold text-zinc-800">
+              {product.name}
+            </h2>
+
+            <p className="text-zinc-600 leading-relaxed">
+              {product.description}
+            </p>
+
+            <p className="text-xl font-semibold text-rose-600">
+              Base Price: Ksh {product.price}
+            </p>
+
+          </div>
+
+          <Button
+            onClick={() => navigate(`/create-order/${product.id}`)}
+            className="w-full bg-rose-600 hover:bg-rose-700 text-white py-6 text-lg rounded-xl"
+          >
+            Order This Product
+          </Button>
+
+        </CardContent>
+      </Card>
+
     </div>
   );
 };

@@ -8,9 +8,9 @@ export default function Sidebar() {
   const { user } = useSelector((state) => state.auth);
 
   const linkStyle =
-    "block px-4 py-2 rounded-lg text-sm font-medium transition";
+    "block px-4 py-2 rounded-lg text-sm font-medium transition dark:text-white";
   const activeStyle =
-    "bg-rose-100 text-rose-700 font-semibold";
+    "bg-rose-100 text-rose-700 font-semibold ";
 
   return (
     <>
@@ -25,7 +25,8 @@ export default function Sidebar() {
       <aside
         className={`fixed top-16 bottom-0 left-0 w-64
         bg-white border-r border-gray-200
-        p-6 space-y-6
+        p-6 space-y-6 dark:bg-zinc-950/90 
+      transition
         ${open ? "block" : "hidden"} lg:block`}
       >
         <h2 className="text-xl font-bold text-rose-600">
@@ -72,13 +73,9 @@ export default function Sidebar() {
                   `${linkStyle} ${
                     isActive
                       ? activeStyle
-                      : "hover:bg-rose-50 text-gray-700"
-                  }`
-                }
-              >
-                Back to Home
+                      : "hover:bg-rose-50 text-gray-700"}`}>
+                Home
               </NavLink>
-
               <NavLink
                 to="/profile"
                 className={({ isActive }) =>

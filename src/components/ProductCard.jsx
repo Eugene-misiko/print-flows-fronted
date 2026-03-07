@@ -9,20 +9,21 @@ const ProductCard = ({ product }) => {
       onClick={() => navigate(`/products/${product.id}`)}
       className="cursor-pointer group"
     >
-      <Card className="rounded-xl border border-zinc-200 dark:border-zinc-800 
-      hover:border-rose-400 hover:shadow-lg transition duration-300">
-        <CardContent className="p-4 space-y-3">
+      <Card className="rounded-xl border hover:border-rose-500 hover:shadow-lg transition duration-300">
+        <CardContent className="p-4 space-y-4">
+
           {product.image && (
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-40 object-cover rounded-md group-hover:scale-105 transition"
-            />
+            <div className="overflow-hidden rounded-lg">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-44 object-cover group-hover:scale-105 transition duration-300"
+              />
+            </div>
           )}
 
           <div className="space-y-1">
-
-            <h3 className="text-lg font-semibold group-hover:text-rose-600 transition">
+            <h3 className="text-lg font-semibold text-zinc-800">
               {product.name}
             </h3>
 
@@ -30,10 +31,11 @@ const ProductCard = ({ product }) => {
               {product.description}
             </p>
 
-            <p className="font-medium text-rose-600">
-              Base Price: Ksh {product.price}
+            <p className="font-semibold text-rose-600">
+              From Ksh {product.price}
             </p>
           </div>
+
         </CardContent>
       </Card>
     </div>
