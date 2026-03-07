@@ -5,7 +5,7 @@ export const fetchInvoice = createAsyncThunk(
   "invoice/fetchInvoice",
   async (invoiceId, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/orders/invoice/${invoiceId}/`);
+      const response = await api.get(`/api/invoice/${invoiceId}/`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -18,7 +18,7 @@ export const downloadInvoice = createAsyncThunk(
   async (invoiceId, { rejectWithValue }) => {
     try {
       const response = await api.get(
-        `/orders/invoice/${invoiceId}/download/`,
+        `/api/invoice/${invoiceId}/download/`,
         { responseType: "blob" }
       );
 
