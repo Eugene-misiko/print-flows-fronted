@@ -15,6 +15,8 @@ import PrinterDashboard from "./components/PrinterDashboard";
 import DesignerDashboard from "./components/DesignerDashboard.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Landing from "./components/Landing";
+import InvoicePage from "./components/InvoicePage";
+import PaymentPage from "./components/PaymentPage";
 
 function App() {
   const { user } = useSelector((state) => state.auth);
@@ -25,6 +27,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Landing />} />
+        <Route path="/InvoicePage/:id" element={<InvoicePage />} />
+        <Route path="/PaymentPage/:id" element={<PaymentPage />} />
         
         <Route element={<Layout />}>
           <Route
