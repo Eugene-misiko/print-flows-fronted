@@ -1,8 +1,18 @@
 import { Facebook, Instagram, Twitter, Mail } from "lucide-react"
+import { motion } from "framer-motion"
 
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 60 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7 }
+  }
+};
 export default function Footer() {
   return (
-    <footer className="bg-zinc-900 text-gray-300 py-10 px-6">
+    <motion.footer variants={fadeUp} className="bg-zinc-900 text-gray-300 py-10 px-6">
       <div className="max-w-7xl mx-auto px-6 py-14">
 
         {/* Top Section */}
@@ -21,17 +31,17 @@ export default function Footer() {
             </p>
 
             {/* Social Icons */}
-            <div className="flex gap-4 mt-6">
+            <motion.div className="flex gap-4 mt-6">
               <Facebook className="cursor-pointer hover:text-rose-500 transition-colors"/>
               <Instagram className="cursor-pointer hover:text-rose-500 transition-colors"/>
               <Twitter className="cursor-pointer hover:text-rose-500 transition-colors"/>
               <Mail className="cursor-pointer hover:text-rose-500 transition-colors"/>
-            </div>
+            </motion.div>
           </div>
 
 
           {/* Services */}
-          <div>
+          <motion.div>
             <h3 className="text-white font-semibold mb-4">
               Services
             </h3>
@@ -50,11 +60,11 @@ export default function Footer() {
                 Custom Branding
               </li>
             </ul>
-          </div>
+          </motion.div>
 
 
           {/* Quick Links */}
-          <div>
+          <motion.div>
             <h3 className="text-white font-semibold mb-4">
               Quick Links
             </h3>
@@ -73,7 +83,7 @@ export default function Footer() {
                 Contact
               </li>
             </ul>
-          </div>
+          </motion.div>
 
 
           {/* Contact */}
@@ -112,6 +122,6 @@ export default function Footer() {
         </div>
 
       </div>
-    </footer>
+    </motion.footer>
   )
 }

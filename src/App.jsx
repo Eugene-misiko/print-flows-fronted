@@ -28,7 +28,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Landing />} />
         <Route path="/InvoicePage/:id" element={<InvoicePage />} />
+        <Route path="/invoice/:id" element={<InvoicePage />} />
         <Route path="/PaymentPage/:id" element={<PaymentPage />} />
+        <Route path="/payment/:id" element={<PaymentPage />} />
         
         <Route element={<Layout />}>
           <Route

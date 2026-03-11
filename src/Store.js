@@ -13,7 +13,7 @@ export const Store = configureStore({
     users: userListReducer,
     orders: orderReducer,
     products: productsReducer,
-    invoice : paymentReducer,
+    payment : paymentReducer,
     invoice : invoiceReducer,
 
   },
