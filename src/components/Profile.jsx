@@ -11,11 +11,10 @@ const Profile = () => {
     (state) => state.profile
   );
   const [formData, setFormData] = useState({
-    username: "",
+    first_name: "",
     email: "",
     phone: "",
   });
-
   useEffect(() => {
     dispatch(fetchProfile());
   }, [dispatch]);
@@ -23,13 +22,12 @@ const Profile = () => {
   useEffect(() => {
     if (profile) {
       setFormData({
-        username: profile.username || "",
+        first_name: profile.first_name || "",
         email: profile.email || "",
         phone: profile.phone || "",
       });
     }
   }, [profile]);
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -49,22 +47,16 @@ const Profile = () => {
       </div>
     );
   }
-
   return (
     <div className="ml-56 mt-24 p-8">
       <div className="max-w-xl mx-auto">
-
         <Card className="border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl">
           <CardContent className="p-8 space-y-6">
-
             <h2 className="text-2xl font-bold text-rose-600">
               My Profile
             </h2>
-
             {error && (
-              <p className="text-red-500 text-sm">{error}</p>
-            )}
-
+              <p className="text-red-500 text-sm">{error}</p>)}
             {profile && (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
@@ -75,13 +67,12 @@ const Profile = () => {
                   <input
                     type="text"
                     name="username"
-                    value={formData.username}
+                    value={formData.first_name}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border rounded-md
                     border-zinc-300 dark:border-zinc-700
                     bg-white dark:bg-zinc-900
-                    focus:ring-2 focus:ring-rose-500 outline-none"
-                  />
+                    focus:ring-2 focus:ring-rose-500 outline-none"/>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">

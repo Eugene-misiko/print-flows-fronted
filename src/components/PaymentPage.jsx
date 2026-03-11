@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { initiatePayment } from "@/slices/paymentSlice";
+import Navbar from "./Navbar";
+import Sidebar from "./sidebar";
 
 const PaymentPage = () => {
   const { id } = useParams();
@@ -19,6 +21,9 @@ const PaymentPage = () => {
   };
 
   return (
+    <>
+    <Navbar/>
+    <Sidebar/>
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="bg-white shadow-lg rounded-xl w-full max-w-md p-8">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
@@ -59,6 +64,7 @@ const PaymentPage = () => {
           </div>)}
       </div>
     </div>
+    </>
   );
 };
 

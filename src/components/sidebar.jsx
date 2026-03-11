@@ -17,8 +17,7 @@ export default function Sidebar() {
       <div className="lg:hidden p-4">
         <button
           onClick={() => setOpen(!open)}
-          className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-md transition"
-        >
+          className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-md transition">
           Menu
         </button>
       </div>
@@ -26,15 +25,12 @@ export default function Sidebar() {
         className={`fixed top-16 bottom-0 left-0 w-64
         bg-white border-r border-gray-200
         p-6 space-y-6 dark:bg-zinc-950/90 
-      transition
-        ${open ? "block" : "hidden"} lg:block`}
-      >
+      transition 
+        ${open ? "block" : "hidden"} lg:block`}>
         <h2 className="text-xl font-bold text-rose-600">
           Dashboard
         </h2>
-
         <Separator />
-
         <nav className="space-y-2">
           {user?.role?.toLowerCase() === "printer" && (
             <>
@@ -45,12 +41,9 @@ export default function Sidebar() {
                     isActive
                       ? activeStyle
                       : "hover:bg-rose-50 text-gray-700"
-                  }`
-                }
-              >
+                  }`}>
                 Printer Dashboard
               </NavLink>
-
               <NavLink
                 to="/profile"
                 className={({ isActive }) =>
@@ -96,9 +89,7 @@ export default function Sidebar() {
                     isActive
                       ? activeStyle
                       : "hover:bg-rose-50 text-gray-700"
-                  }`
-                }
-              >
+                  }`}>
                 Create Order
               </NavLink>
 
@@ -109,9 +100,7 @@ export default function Sidebar() {
                     isActive
                       ? activeStyle
                       : "hover:bg-rose-50 text-gray-700"
-                  }`
-                }
-              >
+                  }`}>
                 My Orders
               </NavLink>
             </>
@@ -125,9 +114,7 @@ export default function Sidebar() {
                     isActive
                       ? activeStyle
                       : "hover:bg-rose-50 text-gray-700"
-                  }`
-                }
-              >
+                  }`}>
                 Users
               </NavLink>
             </>
@@ -141,9 +128,7 @@ export default function Sidebar() {
                     isActive
                       ? activeStyle
                       : "hover:bg-rose-50 text-gray-700"
-                  }`
-                }
-              >
+                  }`}>
                 Assigned Designs
               </NavLink>
 
@@ -154,9 +139,7 @@ export default function Sidebar() {
                     isActive
                       ? activeStyle
                       : "hover:bg-rose-50 text-gray-700"
-                  }`
-                }
-              >
+                  }`}>
                 My Profile
               </NavLink>
             </>

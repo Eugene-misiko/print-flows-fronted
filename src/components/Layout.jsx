@@ -7,9 +7,7 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-zinc-100 dark:bg-zinc-950 text-black dark:text-white transition-colors">
-
-      <Navbar />
-
+       <Navbar />
       <div className="flex flex-1">
         {token && <Sidebar />}
         <main className="flex-1 p-8">

@@ -14,7 +14,6 @@ export default function Register() {
   );
 
   const [formData, setFormData] = useState({
-    username: "",
     email: "",
     phone: "",
     first_name: "",
@@ -35,7 +34,6 @@ export default function Register() {
   useEffect(() => {
     if (user) {
       setFormData({
-        username: "",
         email: "",
         phone: "",
         first_name: "",
@@ -75,8 +73,6 @@ export default function Register() {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5 ">
-
-            
             <div className="grid grid-cols-2 gap-4">
               <input
                 type="text"
@@ -98,17 +94,6 @@ export default function Register() {
                 className="input-style"
               />
             </div>
-
-            <input
-              type="text"
-              name="username"
-              placeholder="Username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-              className="input-style"
-            />
-
             <input
               type="email"
               name="email"
@@ -116,8 +101,7 @@ export default function Register() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="input-style"
-            />
+              className="input-style"/>
 
             <input
               type="text"
@@ -125,8 +109,7 @@ export default function Register() {
               placeholder="Phone"
               value={formData.phone}
               onChange={handleChange}
-              className="input-style"
-            />
+              className="input-style"/>
 
             <input
               type="password"
@@ -137,18 +120,14 @@ export default function Register() {
               required
               className="input-style"
             />
-
-            
             <button
               type="submit"
               disabled={registerLoading}
               className="w-full bg-rose-600 hover:bg-rose-700
               text-white font-semibold py-3 rounded-lg
-              transition"
-            >
+              transition">
               {registerLoading ? "Registering..." : "Register"}
             </button>
-
             {registerError && (
               <p className="text-red-400 text-sm text-center">
                 {typeof registerError === "string"
@@ -161,8 +140,7 @@ export default function Register() {
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="text-rose-400 hover:text-rose-500 font-medium"
-              >
+                className="text-rose-400 hover:text-rose-500 font-medium">
                 Login here
               </Link>
             </p>

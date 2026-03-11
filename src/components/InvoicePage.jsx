@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchInvoice, downloadInvoice } from "@/slices/invoiceSlice";
+import Sidebar from "./sidebar";
+import Navbar from "./Navbar";
 
 const InvoicePage = () => {
   const { id } = useParams();
@@ -22,6 +24,9 @@ const InvoicePage = () => {
   const deposit = (total * 0.7).toFixed(2);
 
   return (
+    <>
+    <Navbar/>
+    <Sidebar/>
     <div className="bg-gray-200 min-h-screen p-8 flex justify-center">
       <div className="bg-white w-[900px] shadow-lg p-10">
         <div className="flex justify-between items-center">
@@ -125,6 +130,7 @@ const InvoicePage = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 export default InvoicePage;
