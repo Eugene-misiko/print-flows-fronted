@@ -1,6 +1,6 @@
 import { Facebook, Instagram, Twitter, Mail } from "lucide-react"
 import { motion } from "framer-motion"
-
+import { Link } from "react-router-dom"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 60 },
@@ -9,18 +9,25 @@ const fadeUp = {
     y: 0,
     transition: { duration: 0.7 }
   }
-};
+}
+
 export default function Footer() {
   return (
-    <motion.footer variants={fadeUp} className="bg-zinc-900 text-gray-300 py-10 px-6">
-      <div className="max-w-7xl mx-auto px-6 py-14">
+    <motion.footer
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true }}
+      className="bg-zinc-900 text-gray-300 py-10 px-6"
+    >
+      <div className="max-w-7xl mx-auto py-14">
 
         {/* Top Section */}
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
 
           {/* Brand */}
           <div>
-            <h2 className="text-2xl font-bold text-rose-500">
+            <h2 className="text-2xl font-bold text-emerald-500">
               PrintFlow
             </h2>
 
@@ -31,59 +38,92 @@ export default function Footer() {
             </p>
 
             {/* Social Icons */}
-            <motion.div className="flex gap-4 mt-6">
-              <Facebook className="cursor-pointer hover:text-rose-500 transition-colors"/>
-              <Instagram className="cursor-pointer hover:text-rose-500 transition-colors"/>
-              <Twitter className="cursor-pointer hover:text-rose-500 transition-colors"/>
-              <Mail className="cursor-pointer hover:text-rose-500 transition-colors"/>
-            </motion.div>
+            <div className="flex gap-4 mt-6">
+
+              <Facebook className="cursor-pointer hover:text-emerald-500 transition-colors"/>
+
+              <Instagram className="cursor-pointer hover:text-emerald-500 transition-colors"/>
+
+              <Twitter className="cursor-pointer hover:text-emerald-500 transition-colors"/>
+
+              <Mail className="cursor-pointer hover:text-emerald-500 transition-colors"/>
+
+            </div>
           </div>
 
 
           {/* Services */}
-          <motion.div>
+          <div>
             <h3 className="text-white font-semibold mb-4">
               Services
             </h3>
 
             <ul className="space-y-2 text-sm">
-              <li className="hover:text-rose-400 transition-colors cursor-pointer">
+              <li className="hover:text-emerald-400 transition-colors cursor-pointer">
                 Business Cards
               </li>
-              <li className="hover:text-rose-400 transition-colors cursor-pointer">
+
+              <li className="hover:text-emerald-400 transition-colors cursor-pointer">
                 Flyers & Posters
               </li>
-              <li className="hover:text-rose-400 transition-colors cursor-pointer">
+
+              <li className="hover:text-emerald-400 transition-colors cursor-pointer">
                 Banners
               </li>
-              <li className="hover:text-rose-400 transition-colors cursor-pointer">
+
+              <li className="hover:text-emerald-400 transition-colors cursor-pointer">
                 Custom Branding
               </li>
             </ul>
-          </motion.div>
+          </div>
 
 
           {/* Quick Links */}
-          <motion.div>
+          <div>
             <h3 className="text-white font-semibold mb-4">
               Quick Links
             </h3>
 
             <ul className="space-y-2 text-sm">
-              <li className="hover:text-rose-400 transition-colors cursor-pointer">
-                Home
+
+              <li>
+                <Link
+                  to="/"
+                  className="hover:text-emerald-400 transition-colors"
+                >
+                  Home
+                </Link>
               </li>
-              <li className="hover:text-rose-400 transition-colors cursor-pointer">
-                About
+
+              <li>
+                <Link
+                  to="/about"
+                  className="hover:text-emerald-400 transition-colors"
+                >
+                  About
+                </Link>
               </li>
-              <li className="hover:text-rose-400 transition-colors cursor-pointer">
-                Pricing
+
+              <li>
+                <Link
+                  to="/pricing"
+                  className="hover:text-emerald-400 transition-colors"
+                >
+                  Pricing
+                </Link>
               </li>
-              <li className="hover:text-rose-400 transition-colors cursor-pointer">
-                Contact
+
+              <li>
+                <Link
+                  to="/contact"
+                  className="hover:text-emerald-400 transition-colors"
+                >
+                  Contact
+                </Link>
               </li>
+
             </ul>
-          </motion.div>
+          </div>
 
 
           {/* Contact */}
@@ -111,12 +151,21 @@ export default function Footer() {
           </p>
 
           <div className="flex gap-6 mt-4 md:mt-0">
-            <span className="hover:text-rose-400 cursor-pointer">
+
+            <Link
+              to="/privacy"
+              className="hover:text-emerald-400"
+            >
               Privacy Policy
-            </span>
-            <span className="hover:text-rose-400 cursor-pointer">
+            </Link>
+
+            <Link
+              to="/terms"
+              className="hover:text-emerald-400"
+            >
               Terms
-            </span>
+            </Link>
+
           </div>
 
         </div>

@@ -24,7 +24,7 @@ const PaymentPage = () => {
     <>
     <Navbar/>
     <Sidebar/>
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 dark:text-white dark:bg-zinc-950/90 transition">
       <div className="bg-white shadow-lg rounded-xl w-full max-w-md p-8">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
           Pay Invoice #{id}

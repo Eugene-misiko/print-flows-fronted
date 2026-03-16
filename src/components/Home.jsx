@@ -9,7 +9,7 @@ export default function Home() {
   }
 
   if (user?.role === "admin") {
-    return <h2 className="text-2xl font-bold">Admin Dashboard</h2>;
+    return <Products/>
   }
 
   if (user?.role === "designer") {

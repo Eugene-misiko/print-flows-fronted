@@ -1,9 +1,23 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_URL = BASE_URL;
-
 // Load from localStorage if exists
 const storedUser = localStorage.getItem("user");
 const storedToken = localStorage.getItem("token");
@@ -15,6 +29,7 @@ const initialState = {
   error: null,
   registerLoading: false,
   registerError: null,
+  registerSuccess: false,
 };
 
 // LOGIN
@@ -26,7 +41,6 @@ export const loginUser = createAsyncThunk(
         first_name,
         password,
       });
-
       const { access, user } = response.data;
 
       // store token and user
@@ -47,7 +61,7 @@ export const loginUser = createAsyncThunk(
 // REGISTER
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
-  async ({ first_name, last_name, email, phone, password }, thunkAPI) => {
+  async ({ first_name, last_name, email, phone, password, role }, thunkAPI) => {
     try {
       const response = await axios.post(`${API_URL}auth/register/`, {
         first_name,
@@ -55,6 +69,7 @@ export const registerUser = createAsyncThunk(
         email,
         phone,
         password,
+        role,
       });
 
       return response.data;
@@ -88,6 +103,7 @@ const authSlice = createSlice({
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
+        
       })
 
       .addCase(loginUser.fulfilled, (state, action) => {
@@ -107,16 +123,19 @@ const authSlice = createSlice({
       .addCase(registerUser.pending, (state) => {
         state.registerLoading = true;
         state.registerError = null;
+        state.registerSuccess = false;
       })
 
       .addCase(registerUser.fulfilled, (state) => {
         state.registerLoading = false;
         state.registerError = null;
+        state.registerSuccess = true;
       })
 
       .addCase(registerUser.rejected, (state, action) => {
         state.registerLoading = false;
         state.registerError = action.payload;
+        state.registerSuccess = false;
       });
   },
 });

@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
-
 import Login from "./components/login";
 import Register from "./components/registration";
 import Layout from "./components/Layout";
@@ -29,7 +28,7 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/InvoicePage/:id" element={<InvoicePage />} />
         <Route path="/invoice/:id" element={<InvoicePage />} />
-        <Route path="/PaymentPage/:id" element={<PaymentPage />} />
+        <Route path="/payment" element={<PaymentPage />} />
         <Route path="/payment/:id" element={<PaymentPage />} />
         
         <Route element={<Layout />}>
@@ -38,71 +37,52 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["client"]}>
                 <Home />
-              </ProtectedRoute>
-            }
-          />
+              </ProtectedRoute>}/>
 
           <Route
             path="/products"
             element={
               <ProtectedRoute allowedRoles={["client"]}>
                 <Products />
-              </ProtectedRoute>
-            }
-          />
-
+              </ProtectedRoute>}/>
           <Route
             path="/products/:id"
             element={
               <ProtectedRoute allowedRoles={["client"]}>
                 <ProductDetail />
-              </ProtectedRoute>
-            }
-          />
+              </ProtectedRoute>}/>
 
           <Route
             path="/create-order/:productId?"
             element={
               <ProtectedRoute allowedRoles={["client"]}>
                 <ClientOrder />
-              </ProtectedRoute>
-            }
-          />
-
+              </ProtectedRoute>}/>
           <Route
             path="/history"
             element={
               <ProtectedRoute allowedRoles={["client"]}>
                 <ClientOrders />
-              </ProtectedRoute>
-            }
-          />
+              </ProtectedRoute>}/>
           <Route
             path="/users"
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <UserList />
-              </ProtectedRoute>
-            }
-          />
+              </ProtectedRoute>}/>
           <Route
             path="/designer"
             element={
               <ProtectedRoute allowedRoles={["designer"]}>
                 <DesignerDashboard />
-              </ProtectedRoute>
-            }
-          />
-        
+              </ProtectedRoute>}/>
           {/* PRINTER ROUTES */}
           <Route
             path="/printer"
             element={
               <ProtectedRoute allowedRoles={["printer"]}>
                 <PrinterDashboard />
-              </ProtectedRoute>
-            }
-          />
+              </ProtectedRoute> }/>
 
           {/* COMMON */}
           <Route
@@ -110,9 +90,7 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["client", "admin", "designer", "printer"]}>
                 <Profile />
-              </ProtectedRoute>
-            }
-          />
+              </ProtectedRoute> }/>
         </Route>
       </Routes>
     </Router>

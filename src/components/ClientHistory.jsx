@@ -1,27 +1,30 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOrders } from "@/slices/orderSlice";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Separator } from "./ui/separator";
 
-const getStatusVariant = (status) => {
+const getStatusColor = (status) => {
   switch (status) {
     case "pending":
-      return "secondary";
+      return "bg-yellow-100 text-yellow-700";
+
     case "design_completed":
-      return "outline";
+      return "bg-blue-100 text-blue-700";
+
     case "approved":
-      return "default";
+      return "bg-emerald-100 text-emerald-700";
+
     case "design_rejected":
     case "print_rejected":
-      return "destructive";
+      return "bg-red-100 text-red-700";
+
     case "in_print":
-      return "outline";
+      return "bg-purple-100 text-purple-700";
+
     case "completed":
-      return "default";
+      return "bg-emerald-600 text-white";
+
     default:
-      return "secondary";
+      return "bg-gray-100 text-gray-600";
   }
 };
 
@@ -34,87 +37,135 @@ const ClientOrders = () => {
   }, [dispatch]);
 
   return (
-    <div className="ml-56 mt-24 p-8 space-y-6">
-      <h2 className="text-3xl font-bold text-rose-600">
-        My Orders
-      </h2>
+    <div className="space-y-8">
+
+      {/* Page Title */}
+
+      <div>
+        <h2 className="text-3xl font-bold text-emerald-600">
+          My Orders
+        </h2>
+
+        <p className="text-gray-500">
+          Track your printing orders and their progress.
+        </p>
+      </div>
+
+      {/* Loading */}
+
       {loading && (
-        <p className="text-muted-foreground">
+        <p className="text-gray-500">
           Loading your orders...
         </p>
       )}
+
+      {/* Empty Orders */}
+
       {!loading && orders.length === 0 && (
-        <Card className="border border-zinc-200 dark:border-zinc-800">
-          <CardContent className="py-10 text-center text-muted-foreground">
-            You haven't placed any orders yet.
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-gray-200 rounded-xl p-10 text-center text-gray-500 shadow-sm">
+          You haven't placed any orders yet.
+        </div>
       )}
+
+      {/* Orders Grid */}
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
         {orders.map((order) => {
           const total =
             Number(order.product_price || 0) *
             Number(order.quantity || 0);
+
           return (
-            <Card
+            <div
               key={order.id}
-              className="rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition"
+              className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition space-y-4"
             >
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-lg">
+
+              {/* Header */}
+
+              <div className="flex items-center justify-between">
+
+                <h3 className="text-lg font-semibold">
                   {order.product_name}
-                </CardTitle>
-                <Badge variant={getStatusVariant(order.status)}>
+                </h3>
+
+                <span
+                  className={`px-3 py-1 text-xs font-medium rounded-full capitalize ${getStatusColor(
+                    order.status
+                  )}`}
+                >
                   {order.status.replaceAll("_", " ")}
-                </Badge>
-              </CardHeader>
-              <Separator />
-              <CardContent className="pt-4 space-y-3">
-                {order.product_image && (
-                  <img
-                    src={order.product_image}
-                    alt={order.product_name}
-                    className="w-full h-40 object-cover rounded-lg border"
-                  />
-                )}
+                </span>
+
+              </div>
+
+              {/* Product Image */}
+
+              {order.product_image && (
+                <img
+                  src={order.product_image}
+                  alt={order.product_name}
+                  className="w-full h-40 object-cover rounded-lg border"
+                />
+              )}
+
+              {/* Order Details */}
+
+              <div className="space-y-1 text-sm">
+
                 <p>
                   <span className="font-medium">
                     Quantity:
                   </span>{" "}
                   {order.quantity}
                 </p>
+
                 <p>
                   <span className="font-medium">
                     Price per unit:
                   </span>{" "}
                   Ksh {order.product_price}
                 </p>
-                <p className="text-lg font-semibold text-rose-600">
+
+                <p className="text-lg font-semibold text-emerald-600">
                   Total: Ksh {total}
                 </p>
-                {order.rejection_reason && (
-                  <p className="text-red-500 text-sm">
-                    <span className="font-medium">
-                      Rejection Reason:
-                    </span>{" "}
-                    {order.rejection_reason}
-                  </p>
-                )}
-                {order.description && (
-                  <p className="text-sm text-muted-foreground">
-                    {order.description}
-                  </p>
-                )}
-                <p className="text-sm text-muted-foreground">
-                  Ordered on{" "}
-                  {new Date(order.created_at).toLocaleString()}
-                </p>
 
-              </CardContent>
-            </Card>
+              </div>
+
+              {/* Rejection Reason */}
+
+              {order.rejection_reason && (
+                <p className="text-sm text-red-600">
+                  <span className="font-medium">
+                    Rejection Reason:
+                  </span>{" "}
+                  {order.rejection_reason}
+                </p>
+              )}
+
+              {/* Description */}
+
+              {order.description && (
+                <p className="text-sm text-gray-500">
+                  {order.description}
+                </p>
+              )}
+
+              {/* Date */}
+
+              <p className="text-xs text-gray-400">
+                Ordered on{" "}
+                {new Date(order.created_at).toLocaleString()}
+              </p>
+
+            </div>
           );
         })}
+
       </div>
+
     </div>
   );
 };

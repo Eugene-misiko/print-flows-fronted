@@ -1,39 +1,56 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoon, faSun } from "@fortawesome/free-regular-svg-icons";
+
 export default function ThemeToggle() {
   const [dark, setDark] = useState(false);
+
   useEffect(() => {
-    if (
+    const isDark =
       localStorage.theme === "dark" ||
-      (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
+      (!("theme" in localStorage) &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+    if (isDark) {
       document.documentElement.classList.add("dark");
-      setDark(true);
     } else {
       document.documentElement.classList.remove("dark");
-      setDark(false);
     }
+
+    setDark(isDark);
   }, []);
 
   const toggleTheme = () => {
-    if (dark) {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-      setDark(false);
-    } else {
+    const newTheme = !dark;
+
+    if (newTheme) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("theme", "dark");
-      setDark(true);
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
     }
+
+    setDark(newTheme);
   };
 
   return (
     <button
       onClick={toggleTheme}
-      className="px-3 py-1 cursor-pointer rounded bg-zinc-800 dark:bg-zinc-200 text-white dark:text-black font-semibold"
+      className="
+      flex items-center justify-center
+      w-9 h-9
+      rounded-lg
+      bg-zinc-800
+      dark:bg-zinc-200
+      text-white
+      dark:text-black
+      hover:scale-105
+      transition
+      cursor-pointer
+      "
     >
-      {dark ? <FontAwesomeIcon icon ={faSun}/> : <FontAwesomeIcon icon={faMoon}/>}
+      <FontAwesomeIcon icon={dark ? faSun : faMoon} />
     </button>
   );
 }

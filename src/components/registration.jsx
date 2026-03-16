@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "@/slices/authslice";
 import { useNavigate, Link } from "react-router-dom";
-import Navbar from "./Navbar";
 import backgroundImage from "../assets/printImg.png";
 
 export default function Register() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { registerLoading, registerError, user } = useSelector(
+  const { registerLoading, registerError, registerSuccess } = useSelector(
     (state) => state.auth
   );
 
@@ -19,6 +18,7 @@ export default function Register() {
     first_name: "",
     last_name: "",
     password: "",
+    role: "",
   });
 
   const handleChange = (e) => {
@@ -32,39 +32,30 @@ export default function Register() {
   };
 
   useEffect(() => {
-    if (user) {
-      setFormData({
-        email: "",
-        phone: "",
-        first_name: "",
-        last_name: "",
-        password: "",
-      });
-
+    if (registerSuccess) {
       navigate("/login");
     }
-  }, [user, navigate]);
+  }, [registerSuccess, navigate]);
 
   return (
     <>
-      <Navbar />
-
       <div
-        className="relative min-h-screen flex items-center  justify-center bg-cover bg-center"
+        className="relative min-h-screen flex items-center justify-center bg-cover bg-center"
         style={{ backgroundImage: `url(${backgroundImage})` }}
       >
-        
         <div className="absolute inset-0 bg-black/60"></div>
 
-        
         <div
-          className="relative z-10 w-full max-w-lg px-10 py-10 rounded-2xl
+          className="
+          relative z-10
+          w-full max-w-lg
+          px-10 py-10
+          rounded-2xl
           bg-white/20 backdrop-blur-xl
           border border-white/30
-          shadow-2xl"
-        >
-          
-          <h1 className="text-3xl font-bold text-center text-rose-600 mb-2">
+          shadow-2xl
+        ">
+          <h1 className="text-3xl font-bold text-center text-emerald-600 mb-2">
             Create Account
           </h1>
 
@@ -72,7 +63,8 @@ export default function Register() {
             Register to start managing your printing orders
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-5 ">
+          <form onSubmit={handleSubmit} className="space-y-5">
+
             <div className="grid grid-cols-2 gap-4">
               <input
                 type="text"
@@ -94,6 +86,7 @@ export default function Register() {
                 className="input-style"
               />
             </div>
+
             <input
               type="email"
               name="email"
@@ -101,7 +94,8 @@ export default function Register() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="input-style"/>
+              className="input-style"
+            />
 
             <input
               type="text"
@@ -110,7 +104,18 @@ export default function Register() {
               value={formData.phone}
               onChange={handleChange}
               className="input-style"/>
-
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              required
+              className="input-style">
+              <option value="">Select Role</option>
+              <option value="client">Client</option>
+              <option value="designer">Designer</option>
+              <option value="printer">Printer</option>
+              <option value="admin">Admin</option>
+            </select>
             <input
               type="password"
               name="password"
@@ -118,14 +123,20 @@ export default function Register() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="input-style"
-            />
+              className="input-style"/>
             <button
               type="submit"
               disabled={registerLoading}
-              className="w-full bg-rose-600 hover:bg-rose-700
-              text-white font-semibold py-3 rounded-lg
-              transition">
+              className="
+              w-full
+              bg-emerald-600
+              hover:bg-emerald-700
+              text-white
+              font-semibold
+              py-3
+              rounded-lg
+              transition
+            ">
               {registerLoading ? "Registering..." : "Register"}
             </button>
             {registerError && (
@@ -140,13 +151,16 @@ export default function Register() {
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="text-rose-400 hover:text-rose-500 font-medium">
+                className="text-emerald-400 hover:text-emerald-500 font-medium"
+              >
                 Login here
               </Link>
             </p>
+
           </form>
         </div>
       </div>
+
       <style>
         {`
         .input-style{
@@ -159,7 +173,7 @@ export default function Register() {
           transition:all .2s ease;
         }
         .input-style:focus{
-          box-shadow:0 0 0 2px #f43f5e;
+          box-shadow:0 0 0 2px #10b981;
         }
         `}
       </style>

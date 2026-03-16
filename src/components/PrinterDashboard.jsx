@@ -8,9 +8,6 @@ import {
   completePrint,
 } from "@/slices/orderSlice";
 
-import { Card, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
-
 const PrinterDashboard = () => {
   const dispatch = useDispatch();
   const { orders, loading } = useSelector((state) => state.orders);
@@ -37,17 +34,18 @@ const PrinterDashboard = () => {
     setReasons((prev) => ({ ...prev, [orderId]: "" }));
   };
 
-  if (loading)
+  if (loading) {
     return (
       <p className="ml-64 p-8 text-zinc-500 dark:text-zinc-400">
         Loading printer orders...
       </p>
     );
+  }
 
   return (
-    <div className="ml-64 p-8 space-y-8 min-h-screen  dark:bg-zinc-900 transition-colors">
+    <div className="ml-64 p-8 space-y-8 min-h-screen dark:bg-zinc-900 transition-colors">
 
-      <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100">
+      <h2 className="text-3xl font-bold text-emerald-600">
         Printer Dashboard
       </h2>
 
@@ -60,97 +58,163 @@ const PrinterDashboard = () => {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 
         {printerOrders.map((order) => (
-          <Card
+          <div
             key={order.id}
-            className="rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-[2px] transition"
+            className="
+            rounded-xl
+            border border-zinc-200 dark:border-zinc-800
+            bg-white dark:bg-zinc-900
+            shadow-sm
+            hover:shadow-lg
+            transition
+            p-6
+            space-y-4
+          "
           >
-            <CardContent className="p-6 space-y-4">
 
-              {/* Header */}
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200">
-                  Order #{order.id}
-                </h3>
+            {/* Header */}
 
-                <span className="text-xs px-3 py-1 rounded-full bg-rose-100 text-rose-700 capitalize">
-                  {order.status.replaceAll("_", " ")}
-                </span>
-              </div>
+            <div className="flex justify-between items-center">
 
-             
-              <div className="space-y-1 text-sm text-zinc-600 dark:text-zinc-300">
-                <p>
-                  <strong>Product:</strong> {order.product_name}
-                </p>
-                <p>
-                  <strong>Quantity:</strong> {order.quantity}
-                </p>
-              </div>
+              <h3 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200">
+                Order #{order.id}
+              </h3>
 
-             
-              {order.design_file && (
-                <img
-                  src={order.design_file}
-                  alt="Design"
-                  className="w-full h-44 object-cover rounded-xl border"
-                />
+              <span
+                className="
+                text-xs
+                px-3 py-1
+                rounded-md
+                bg-zinc-200 dark:bg-zinc-800
+                capitalize
+                "
+              >
+                {order.status.replaceAll("_", " ")}
+              </span>
+
+            </div>
+
+            {/* Order Info */}
+
+            <div className="space-y-1 text-sm text-zinc-600 dark:text-zinc-300">
+              <p>
+                <strong>Product:</strong> {order.product_name}
+              </p>
+              <p>
+                <strong>Quantity:</strong> {order.quantity}
+              </p>
+            </div>
+
+            {/* Design Preview */}
+
+            {order.design_file && (
+              <img
+                src={order.design_file}
+                alt="Design"
+                className="w-full h-44 object-cover rounded-lg border"
+              />
+            )}
+
+            {/* Reject Reason */}
+
+            <textarea
+              value={reasons[order.id] || ""}
+              onChange={(e) =>
+                setReasons({
+                  ...reasons,
+                  [order.id]: e.target.value,
+                })
+              }
+              placeholder="Enter rejection reason"
+              className="
+              border border-zinc-300 dark:border-zinc-700
+              rounded-lg
+              p-2
+              w-full
+              text-sm
+              bg-white dark:bg-zinc-900
+              focus:ring-2 focus:ring-emerald-500
+              outline-none
+              "
+            />
+
+            {/* Buttons */}
+
+            <div className="flex flex-wrap gap-3 pt-2">
+
+              {order.status === "design_completed" && (
+                <button
+                  onClick={() => dispatch(printApprove(order.id))}
+                  className="
+                  bg-emerald-600
+                  hover:bg-emerald-700
+                  text-white
+                  px-4 py-2
+                  rounded-lg
+                  font-medium
+                  transition
+                  "
+                >
+                  Approve
+                </button>
               )}
 
-              
-              <textarea
-                value={reasons[order.id] || ""}
-                onChange={(e) =>
-                  setReasons({
-                    ...reasons,
-                    [order.id]: e.target.value,
-                  })
-                }
-                placeholder="Enter rejection reason"
-                className="border rounded-lg p-2 w-full text-sm 
-                           focus:ring-2 focus:ring-rose-400 outline-none
-                           dark:bg-zinc-900 dark:border-zinc-700"
-              />
-              <div className="flex flex-wrap gap-3 pt-2">
-
-                {order.status === "design_completed" && (
-                  <Button
-                    onClick={() => dispatch(printApprove(order.id))}
-                    className="bg-rose-600 hover:bg-rose-700 text-white"
-                  >
-                    Approve
-                  </Button>
-                )}
-
-                {order.status === "approved" && (
-                  <Button
-                    onClick={() => dispatch(startPrinting(order.id))}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    Start Printing
-                  </Button>
-                )}
-
-                {order.status === "printing" && (
-                  <Button
-                    onClick={() => dispatch(completePrint(order.id))}
-                    className="bg-purple-600 hover:bg-purple-700 text-white"
-                  >
-                    Complete
-                  </Button>
-                )}
-                <Button
-                  onClick={() => handleReject(order.id)}
-                  className="bg-red-600 hover:bg-red-700 text-white"
+              {order.status === "approved" && (
+                <button
+                  onClick={() => dispatch(startPrinting(order.id))}
+                  className="
+                  bg-blue-600
+                  hover:bg-blue-700
+                  text-white
+                  px-4 py-2
+                  rounded-lg
+                  font-medium
+                  transition
+                  "
                 >
-                  Reject
-                </Button>
+                  Start Printing
+                </button>
+              )}
 
-              </div>
+              {order.status === "printing" && (
+                <button
+                  onClick={() => dispatch(completePrint(order.id))}
+                  className="
+                  bg-purple-600
+                  hover:bg-purple-700
+                  text-white
+                  px-4 py-2
+                  rounded-lg
+                  font-medium
+                  transition
+                  "
+                >
+                  Complete
+                </button>
+              )}
 
-            </CardContent>
-          </Card>
+              <button
+                onClick={() => handleReject(order.id)}
+                className="
+                bg-red-600
+                hover:bg-red-700
+                text-white
+                px-4 py-2
+                rounded-lg
+                font-medium
+                transition
+                "
+              >
+                Reject
+              </button>
+
+            </div>
+
+          </div>
         ))}
+
       </div>
+
     </div>
   );
 };

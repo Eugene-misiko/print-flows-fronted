@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "@/slices/productSlice";
 import ProductCard from "./ProductCard";
-import { Button } from "./ui/button";
 
 const categories = [
   "all",
@@ -32,51 +31,80 @@ const Products = () => {
       : items.filter((p) => p.category === selectedCategory);
 
   return (
-    <div className="ml-56 mt-24 p-8 space-y-10">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-rose-600">
-          Printing Services
-        </h1>
+    <div className="space-y-8">
 
-        <p className="text-zinc-600 dark:text-zinc-400 max-w-xl">
-          Browse our available printing services and submit your request easily.
-          Choose from banners, business cards, branded clothing, flyers and more.
+      {/* Header */}
+
+      <div>
+        <h1 className="text-3xl font-bold text-gray-800">
+          Products
+        </h1>
+        <p className="text-gray-500">
+          Browse our printing services and create an order.
         </p>
       </div>
 
+      {/* Category Filters */}
+
       <div className="flex flex-wrap gap-3">
+
         {categories.map((cat) => (
-          <Button
+          <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`cursor-pointer capitalize transition
+            className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition
             ${
               selectedCategory === cat
-                ? "bg-rose-600 hover:bg-rose-700 text-white"
-                : "border border-rose-200 text-rose-600 hover:bg-rose-50 dark:hover:bg-zinc-900"
+                ? "bg-emerald-600 text-white shadow-sm"
+                : "bg-white border border-gray-200 hover:bg-gray-50"
             }`}
           >
             {cat}
-          </Button>
+          </button>
         ))}
+
       </div>
+
+      {/* Loading State */}
+
       {loading && (
-        <p className="text-zinc-500 animate-pulse">
-          Loading products...
-        </p>
+        <div className="flex justify-center items-center py-20">
+          <p className="text-gray-500 animate-pulse">
+            Loading products...
+          </p>
+        </div>
       )}
+
+      {/* Products Grid */}
+
       {!loading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div
+          className="
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          md:grid-cols-3
+          lg:grid-cols-4
+          gap-6
+        "
+        >
           {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+            />
           ))}
         </div>
       )}
+
+      {/* Empty State */}
+
       {!loading && filteredProducts.length === 0 && (
-        <div className="text-center py-20 text-zinc-500">
+        <div className="text-center py-20 text-gray-500">
           No products found in this category.
         </div>
       )}
+
     </div>
   );
 };
