@@ -71,6 +71,12 @@ export default function Sidebar() {
                 `${linkClass} ${isActive ? activeClass : "hover:bg-slate-800"}`}>
               Products
             </NavLink>
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                `${linkClass} ${isActive ? activeClass : "hover:bg-slate-800"}`}>
+              My Profile
+            </NavLink>              
           </nav>
         )}
         {role === "designer" && (
@@ -97,6 +103,12 @@ export default function Sidebar() {
                 `${linkClass} ${isActive ? activeClass : "hover:bg-slate-800"}`}>
               Print Queue
             </NavLink>
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                `${linkClass} ${isActive ? activeClass : "hover:bg-slate-800"}`}>
+              My Profile
+            </NavLink>            
           </nav>
         )}
       </div>

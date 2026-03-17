@@ -10,9 +10,7 @@ export default function Layout() {
     <div className="min-h-screen bg-gray-100 dark:bg-zinc-950">
 
       {token && <Sidebar />}
-
       <Navbar />
-
       <main className="ml-64 pt-16 p-8">
         <Outlet />
       </main>

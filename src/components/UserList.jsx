@@ -67,12 +67,15 @@ const UserList = () => {
                     className="
                     border-b border-zinc-100 dark:border-zinc-800
                     hover:bg-zinc-50 dark:hover:bg-zinc-800
-                    transition
-                    "
-                  >
-
-                    <td className="px-4 py-4 font-medium text-zinc-800 dark:text-zinc-200">
-                      {user.first_name}
+                    transition">
+                    
+                    <td className="px-4 py-4 font-medium text-zinc-800 dark:text-zinc-200 flex gap-3">
+                      <div>
+                      <img src={user.avatar} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow cursor-pointer" alt="" />
+                      </div>
+                      <div className="mt-3">
+                      {user.first_name} {user.last_name}
+                      </div>
                     </td>
 
                     <td className="px-4 py-4 text-zinc-600 dark:text-zinc-300">

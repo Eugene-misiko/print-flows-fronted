@@ -8,7 +8,6 @@ const ClientOrder = () => {
   const { productId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const { createdInvoiceId, actionLoading } = useSelector(
     (state) => state.orders
   );
@@ -50,12 +49,10 @@ const ClientOrder = () => {
       navigate(`/invoice/${createdInvoiceId}`);
     }
   }, [createdInvoiceId, navigate]);
-
   const total =
     selectedProduct?.price && formData.quantity
       ? selectedProduct.price * formData.quantity
       : 0;
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -74,32 +71,20 @@ const ClientOrder = () => {
 
   return (
     <div className="max-w-2xl mx-auto">
-
-      {/* Page Header */}
-
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-emerald-600">
           Create New Order
         </h2>
-
         <p className="text-gray-500">
           Fill the form below to place your printing order.
         </p>
       </div>
-
-      {/* Form Card */}
-
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
-
         <form onSubmit={handleSubmit} className="space-y-6">
-
-          {/* Product Select */}
-
           <div>
             <label className="block text-sm font-medium mb-2">
               Product
             </label>
-
             <select
               value={formData.product}
               onChange={(e) =>
@@ -108,10 +93,8 @@ const ClientOrder = () => {
                   product: e.target.value,
                 })
               }
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
               <option value="">Select product</option>
-
               {products.map((product) => (
                 <option key={product.id} value={product.id}>
                   {product.name}
@@ -119,14 +102,10 @@ const ClientOrder = () => {
               ))}
             </select>
           </div>
-
-          {/* Quantity */}
-
           <div>
             <label className="block text-sm font-medium mb-2">
               Quantity
             </label>
-
             <input
               type="number"
               min="1"
@@ -140,24 +119,17 @@ const ClientOrder = () => {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
-
-          {/* Price Display */}
-
           {selectedProduct && (
             <div className="bg-gray-50 border rounded-lg p-4 text-sm space-y-1">
               <p>
                 <span className="font-medium">Price per unit:</span>{" "}
                 Ksh {selectedProduct.price}
               </p>
-
               <p className="text-lg font-semibold text-emerald-600">
                 Total: Ksh {total}
               </p>
             </div>
           )}
-
-          {/* Design Service */}
-
           <div className="flex items-center gap-3">
             <input
               type="checkbox"
@@ -175,9 +147,6 @@ const ClientOrder = () => {
               Request Design Service
             </label>
           </div>
-
-          {/* Upload Design */}
-
           {!formData.needs_design && (
             <div>
               <label className="block text-sm font-medium mb-2">
@@ -196,14 +165,10 @@ const ClientOrder = () => {
               />
             </div>
           )}
-
-          {/* Notes */}
-
           <div>
             <label className="block text-sm font-medium mb-2">
               Additional Notes
             </label>
-
             <textarea
               rows={4}
               value={formData.notes}

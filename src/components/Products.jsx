@@ -1,110 +1,72 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchProducts } from "@/slices/productSlice";
-import ProductCard from "./ProductCard";
-
-const categories = [
-  "all",
-  "banner",
-  "clothes",
-  "books",
-  "cards",
-  "cups",
-  "pens",
-  "flyers",
-  "others",
-];
+import { useNavigate } from "react-router-dom";
+import api from "@/api";
+import ProductCard from "@/components/ProductCard";
 
 const Products = () => {
-  const dispatch = useDispatch();
-  const { items, loading } = useSelector((state) => state.products);
-
-  const [selectedCategory, setSelectedCategory] = useState("all");
-
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
+    const fetchProducts = async () => {
+      try {
+        const res = await api.get("api/products/");
+        setProducts(res.data);
+      } catch (error) {
+        console.error("Failed to load products", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
-  const filteredProducts =
-    selectedCategory === "all"
-      ? items
-      : items.filter((p) => p.category === selectedCategory);
-
+  const groupedProducts = products.reduce((acc, product) => {
+    const category = product.category_name || "Other";
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(product);
+    return acc;
+  }, {});
+  console.log(groupedProducts);
   return (
-    <div className="space-y-8">
-
+    <div className="space-y-10">
       {/* Header */}
-
-      <div>
-        <h1 className="text-3xl font-bold text-gray-800">
-          Products
-        </h1>
-        <p className="text-gray-500">
-          Browse our printing services and create an order.
-        </p>
-      </div>
-
-      {/* Category Filters */}
-
-      <div className="flex flex-wrap gap-3">
-
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition
-            ${
-              selectedCategory === cat
-                ? "bg-emerald-600 text-white shadow-sm"
-                : "bg-white border border-gray-200 hover:bg-gray-50"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-
-      </div>
-
-      {/* Loading State */}
-
-      {loading && (
-        <div className="flex justify-center items-center py-20">
-          <p className="text-gray-500 animate-pulse">
-            Loading products...
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">
+            Products
+          </h1>
+          <p className="text-gray-500">
+            Manage your product catalog
           </p>
         </div>
+        {/* Add Product Button */}
+        <button
+          onClick={() => navigate("/products/new")}
+          className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-lg font-medium transition">
+          + Add Product
+        </button>
+      </div>
+      {/* Loading */}
+      {loading && (
+        <p className="text-gray-500">Loading products...</p>
       )}
-
-      {/* Products Grid */}
-
-      {!loading && (
-        <div
-          className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          md:grid-cols-3
-          lg:grid-cols-4
-          gap-6
-        "
-        >
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Empty State */}
-
-      {!loading && filteredProducts.length === 0 && (
-        <div className="text-center py-20 text-gray-500">
-          No products found in this category.
-        </div>
-      )}
-
+      {/* Product Categories */}
+      {!loading &&
+        Object.entries(groupedProducts).map(([category, items]) => (
+          <div key={category}>
+            <h2 className="text-xl font-semibold mb-4">
+              {category}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {items.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product} 
+                />
+              ))}
+            </div>
+          </div>))}
     </div>
   );
 };

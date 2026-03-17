@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
-
 import Login from "./components/Login";
 import Register from "./components/Registration";
 import Layout from "./components/Layout";
@@ -17,6 +16,7 @@ import InvoicePage from "./components/InvoicePage";
 import PaymentPage from "./components/PaymentPage";
 import Landing from "./components/Landing";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AddProduct from "./components/AddProduct";
 
 function App() {
   const { user } = useSelector((state) => state.auth);
@@ -30,26 +30,33 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/invoice/:id" element={<InvoicePage />} />
         <Route path="/payment/:id" element={<PaymentPage />} />
+
         {/* PROTECTED ROUTES */}
         <Route element={<Layout />}>
           {/* CLIENT DASHBOARD */}
           <Route
             path="/authen"
             element={
-              <ProtectedRoute allowedRoles={["client"]}>
+              <ProtectedRoute allowedRoles={["client","admin",]}>
                 <Home />
               </ProtectedRoute>}/>
           {/* PRODUCTS */}
           <Route
+            path="/products/new"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AddProduct />
+              </ProtectedRoute>}/>
+          <Route
             path="/products"
             element={
-              <ProtectedRoute allowedRoles={["client"]}>
+              <ProtectedRoute allowedRoles={["client","admin"]}>
                 <Products />
               </ProtectedRoute>}/>
           <Route
             path="/products/:id"
             element={
-              <ProtectedRoute allowedRoles={["client"]}>
+              <ProtectedRoute allowedRoles={["client", "admin"]}>
                 <ProductDetail />
               </ProtectedRoute>}/>
           {/* CREATE ORDER */}
@@ -87,7 +94,6 @@ function App() {
               <ProtectedRoute allowedRoles={["printer"]}>
                 <PrinterDashboard />
               </ProtectedRoute>}/>
-          {/* COMMON PROFILE */}
           <Route
             path="/profile"
             element={
