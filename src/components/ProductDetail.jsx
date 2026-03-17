@@ -6,9 +6,7 @@ import api from "@/api";
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
   const { user } = useSelector((state) => state.auth); 
-
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -57,12 +55,11 @@ const ProductDetail = () => {
       </div>
     );
   }
-
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       {/* HEADER */}
       <div className="flex justify-between items-center">
-
+        {user?.role ==="client" && (
         <div>
           <h2 className="text-3xl font-bold text-gray-800">
             Product Details
@@ -70,47 +67,47 @@ const ProductDetail = () => {
           <p className="text-gray-500">
             View product information before placing your order.
           </p>
+        </div>          
+        )}
+        <div>
+          <h2 className="text-3xl font-bold text-gray-800">
+            Edit products
+          </h2>
+          <p className="text-gray-500">
+            Update the products
+          </p>
         </div>
-
         {/* ADMIN ACTIONS */}
-
         {user?.role === "admin" && (
           <div className="flex gap-3">
-
             <button
               onClick={() => navigate(`/products/edit/${product.id}`)}
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
-            >
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">
               Edit
             </button>
-
             <button
               onClick={handleDelete}
-              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg"
-            >
-              Delete
+              className="px-4 py-2 bg-red-500 hover:bg-red-700 text-white rounded-lg">
+              Delete 
             </button>
-
           </div>
         )}
-
       </div>
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="bg-gray-100 overflow-hidden">
-          {product.image ? (
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-96 object-cover"
-            />
-          ) : (
-            <div className="w-full h-96 flex items-center justify-center text-gray-400">
-              No Image Available
-            </div>
-          )}
-        </div>
+    <div className="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden transition-shadow duration-300 hover:shadow-xl">
+      <div className="bg-gray-100 overflow-hidden">
+        {product.image ? (
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-[100%] h-64 transition-transform duration-300 hover:scale-105 mx-auto"
+          />
+        ) : (
+          <div className="w-full h-64 flex items-center justify-center text-gray-400">
+            No Image Available
+          </div>
+        )}
+      </div>
         <div className="p-8 space-y-4">
-
           <h3 className="text-2xl font-bold text-gray-800">
             {product.name}
           </h3>
@@ -119,7 +116,6 @@ const ProductDetail = () => {
               {product.category_name}
             </span>
           )}
-
           <p className="text-gray-600 leading-relaxed">
             {product.description}
           </p>
@@ -127,7 +123,6 @@ const ProductDetail = () => {
           <p className="text-xl font-semibold text-emerald-600">
             Base Price: Ksh {product.price}
           </p>
-
           {user?.role !== "admin" && (
             <button
               onClick={() => navigate(`/create-order/${product.id}`)}
@@ -140,17 +135,12 @@ const ProductDetail = () => {
                 rounded-lg
                 text-lg
                 font-medium
-                transition
-              "
-            >
+                transition">
               Order This Product
             </button>
           )}
-
         </div>
-
       </div>
-
     </div>
   );
 };

@@ -17,6 +17,7 @@ import PaymentPage from "./components/PaymentPage";
 import Landing from "./components/Landing";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AddProduct from "./components/AddProduct";
+import EditProduct from "./components/EditProduct";
 
 function App() {
   const { user } = useSelector((state) => state.auth);
@@ -46,6 +47,12 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <AddProduct />
+              </ProtectedRoute>}/>
+          <Route
+            path="/products/edit/:id"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <EditProduct />
               </ProtectedRoute>}/>
           <Route
             path="/products"
