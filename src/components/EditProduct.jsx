@@ -83,6 +83,104 @@ const EditProduct = () => {
 
   return (
 <>
+    <div className="max-w-3xl mx-auto space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-gray-800">
+          Edit Product
+        </h1>
+        <p className="text-gray-500">
+          Update product information
+        </p>
+      </div>
+      {/* Form */}
+      <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Name */}
+          <div>
+            <label className="block text-sm mb-2">
+              Product Name
+            </label>
+            <input
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+              className="w-full border px-3 py-2 rounded-lg"
+            />
+          </div>
+          {/* Category */}
+          <div>
+            <label className="block text-sm mb-2">
+              Category
+            </label>
+            <select
+              value={formData.category}
+              onChange={(e) =>
+                setFormData({ ...formData, category: e.target.value })
+              }
+              className="w-full border px-3 py-2 rounded-lg">
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          {/* Price */}
+          <div>
+            <label className="block text-sm mb-2">
+              Price
+            </label>
+            <input
+              type="number"
+              value={formData.price}
+              onChange={(e) =>
+                setFormData({ ...formData, price: e.target.value })
+              }
+              className="w-full border px-3 py-2 rounded-lg"
+            />
+          </div>
+          {/* Description */}
+          <div>
+            <label className="block text-sm mb-2">
+              Description
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  description: e.target.value,
+                })
+              }
+              className="w-full border px-3 py-2 rounded-lg"
+            />
+          </div>
+          {/* Image */}
+          <div>
+            <label className="block text-sm mb-2">
+              New Image (optional)
+            </label>
+            <input
+              type="file"
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  image: e.target.files[0],
+                })
+              }
+            />
+          </div>
+          {/* Submit */}
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg">
+            Update Product
+          </button>
+        </form>
+      </div>
+    </div>
 </>
   );
 };
