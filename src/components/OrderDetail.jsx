@@ -29,7 +29,7 @@ const OrderDetail = () => {
     <>
     <Navbar/>
     <Sidebar/>
-    <div className=" ml-67 p-8 space-y-8">
+    <div className=" ml-67 p-8 space-y-8 mt-12">
 
       {/* HEADER */}
       <div>
@@ -47,7 +47,7 @@ const OrderDetail = () => {
         {/* CLIENT */}
         <div className="bg-white p-5 rounded-xl border">
           <h3 className="font-semibold mb-3">Client Info</h3>
-          <p className="font-bold">{order.client_name}</p>
+          <p className="font-bold">{order.last_name}</p>
           <p className="text-sm text-gray-500">{order.client_email}</p>
         </div>
 
@@ -61,7 +61,7 @@ const OrderDetail = () => {
         {/* PAYMENT */}
         <div className="bg-white p-5 rounded-xl border">
           <h3 className="font-semibold mb-3">Payment</h3>
-          <p>Total: <strong>Ksh {total}</strong></p>
+          <p>Total: <strong>Ksh {order.total_price}</strong></p>
         </div>
 
       </div>
@@ -84,7 +84,7 @@ const OrderDetail = () => {
             {order.items?.map((item, i) => (
               <tr key={i} className="border-t">
                 <td className="p-3">{item.product_name}</td>
-                <td className="p-3">Ksh {item.price}</td>
+                <td className="p-3">Ksh {item.product_price}</td>
                 <td className="p-3">{item.quantity}</td>
                 <td className="p-3">Ksh {item.subtotal}</td>
               </tr>
