@@ -98,7 +98,7 @@ const ClientOrder = () => {
       : 0;
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto ">
       {/* HEADER */}
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-emerald-600">

@@ -157,11 +157,9 @@ const ProfileCard = () => {
           <button
             type="submit"
             disabled={updateLoading}
-            className="w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition disabled:opacity-60"
-          >
+            className="w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition disabled:opacity-60">
             {updateLoading ? "Updating..." : "Save Profile"}
           </button>
-
           {updateError && (
             <p className="text-red-500 text-sm">
               {typeof updateError === "string"

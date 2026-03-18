@@ -4,6 +4,8 @@ import { fetchProfile } from "@/slices/profileSlice";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";
+import ThemeToggle from "./ThemeToggle";
+import NotificationBell from "./NotificationBell";
 import portrait from "@/assets/portrait.png";
 
 const Navbar = () => {
@@ -41,7 +43,7 @@ const Navbar = () => {
     return profile.first_name.charAt(0).toUpperCase();
   };
   return (
-    <header className="fixed top-0 left-64 right-0 h-16 bg-white/80 backdrop-blur border-b border-gray-200 flex items-center justify-between px-8 z-40">
+    <header className="fixed top-0 left-64 right-0 h-16 bg-white/80 backdrop-blur border-b border-gray-200 flex items-center justify-between px-8 z-40 dark:bg-zinc-400/10">
       {/* LOGO */}
       <h1 className="text-xl font-bold text-emerald-600 tracking-wide">
         PrintFlow
@@ -49,7 +51,8 @@ const Navbar = () => {
       {/* RIGHT SIDE */}
       {token && (
         <div className="relative flex items-center gap-4" ref={dropdownRef}>
-          {/* USER NAME (optional nice touch) */}
+         <NotificationBell/>
+         <ThemeToggle/>
           <div className="hidden md:block text-right">
             <p className="text-sm font-semibold text-gray-700">
               {profile?.first_name || "User"}

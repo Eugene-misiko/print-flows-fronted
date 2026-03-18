@@ -66,7 +66,7 @@ const ClientOrders = () => {
       )}
 
       {/* GRID */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 ">
         {orders.map((order) => {
           const total =
             order.items?.reduce(
@@ -83,10 +83,10 @@ const ClientOrders = () => {
           return (
             <div
               key={order.id}
-              className="bg-white border rounded-xl p-5 shadow-sm hover:shadow-md space-y-4"
+              className="bg-white border rounded-xl p-5 shadow-sm hover:shadow-md space-y-4 bg-zinc-400/10"
             >
               {/* HEADER */}
-              <div className="flex justify-between">
+              <div className="flex justify-between ">
                 <div>
                   <h3
                     onClick={() => navigate(`/orders/${order.id}`)}
@@ -100,7 +100,7 @@ const ClientOrders = () => {
                   </p>
                 </div>
 
-                <span className={`px-3 py-1 text-xs rounded-full ${getStatusColor(order.status)}`}>
+                <span className={`px-3 dark:text-white dark:bg-zinc-400/10 py-1 text-xs rounded-full ${getStatusColor(order.status)}`}>
                   {order.status.replaceAll("_", " ")}
                 </span>
               </div>

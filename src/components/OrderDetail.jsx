@@ -29,7 +29,7 @@ const OrderDetail = () => {
     <>
     <Navbar/>
     <Sidebar/>
-    <div className=" ml-67 p-8 space-y-8 mt-12">
+    <div className=" ml-67 p-8 space-y-8 mt-12 dark:text-white">
 
       {/* HEADER */}
       <div>
@@ -45,21 +45,21 @@ const OrderDetail = () => {
       <div className="grid md:grid-cols-3 gap-6">
 
         {/* CLIENT */}
-        <div className="bg-white p-5 rounded-xl border">
+        <div className="bg-white p-5 rounded-xl border dark:bg-zinc-400/10">
           <h3 className="font-semibold mb-3">Client Info</h3>
           <p className="font-bold">{order.last_name}</p>
           <p className="text-sm text-gray-500">{order.client_email}</p>
         </div>
 
         {/* STATUS */}
-        <div className="bg-white p-5 rounded-xl border">
+        <div className="bg-white p-5 rounded-xl border dark:bg-zinc-400/10 backdrop-blur-md">
           <h3 className="font-semibold mb-3">Order Status</h3>
           <p>Status: {order.status}</p>
           <p>Created: {new Date(order.created_at).toLocaleDateString()}</p>
         </div>
 
         {/* PAYMENT */}
-        <div className="bg-white p-5 rounded-xl border">
+        <div className="bg-white p-5 rounded-xl border dark:bg-zinc-400/10">
           <h3 className="font-semibold mb-3">Payment</h3>
           <p>Total: <strong>Ksh {order.total_price}</strong></p>
         </div>
@@ -67,11 +67,11 @@ const OrderDetail = () => {
       </div>
 
       {/* ITEMS TABLE */}
-      <div className="bg-white border rounded-xl">
+      <div className="bg-white border rounded-xl dark:bg-zinc-400/10">
         <h3 className="p-5 font-semibold border-b">Order Items</h3>
 
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 dark:bg-zinc-400/10">
             <tr>
               <th className="p-3 text-left">Product</th>
               <th className="p-3 text-left">Price</th>
@@ -80,9 +80,9 @@ const OrderDetail = () => {
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className="">
             {order.items?.map((item, i) => (
-              <tr key={i} className="border-t">
+              <tr key={i} className="border-t ">
                 <td className="p-3">{item.product_name}</td>
                 <td className="p-3">Ksh {item.product_price}</td>
                 <td className="p-3">{item.quantity}</td>

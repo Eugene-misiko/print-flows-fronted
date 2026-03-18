@@ -6,7 +6,7 @@ const ProductCard = ({ product }) => {
   return (
     <div
       onClick={() => navigate(`/products/${product.id}`)}
-      className="bg-white border border-gray-200 rounded-xl p-6 cursor-pointer hover:shadow-md transition">
+      className="bg-white border border-gray-200 rounded-xl p-6 cursor-pointer hover:shadow-md transition dark:bg-zinc-400/10">
       <div className="flex items-start justify-between mb-3">
         <h3 className="text-lg font-semibold text-gray-800">
           {product.name}

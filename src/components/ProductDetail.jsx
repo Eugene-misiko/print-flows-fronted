@@ -56,9 +56,9 @@ const ProductDetail = () => {
     );
   }
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-8 ">
       {/* HEADER */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center ">
         {user?.role ==="client" && (
         <div>
           <h2 className="text-3xl font-bold text-gray-800">
@@ -93,22 +93,23 @@ const ProductDetail = () => {
           </div>
         )}
       </div>
-    <div className="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden transition-shadow duration-300 hover:shadow-xl">
+    <div className="bg-white max-w-130 mx-auto border border-gray-200 rounded-xl shadow-lg overflow-hidden transition-shadow duration-300 hover:shadow-xl dark:bg-slate-900">
       <div className="bg-gray-100 overflow-hidden">
         {product.image ? (
           <img
             src={product.image}
             alt={product.name}
-            className="w-[100%] h-64 transition-transform duration-300 hover:scale-105 mx-auto"
+            className="w-full h-70 transition-transform duration-300 hover:scale-105 mx-auto"
           />
         ) : (
           <div className="w-full h-64 flex items-center justify-center text-gray-400">
             No Image Available
           </div>
         )}
-      </div>
-        <div className="p-8 space-y-4">
-          <h3 className="text-2xl font-bold text-gray-800">
+         </div>
+         {/* card co */}
+        <div className="p-8 space-y-4 "> 
+          <h3 className="text-2xl font-bold dark:text-white/90 text-gray-800 ">
             {product.name}
           </h3>
           {product.category && (

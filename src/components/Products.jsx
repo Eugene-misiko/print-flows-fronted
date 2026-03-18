@@ -29,7 +29,7 @@ const Products = () => {
   }, {});
   console.log(groupedProducts);
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 ">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -58,7 +58,7 @@ const Products = () => {
             <h2 className="text-xl font-semibold mb-4">
               {category}
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
               {items.map((product) => (
                 <ProductCard
                   key={product.id}
