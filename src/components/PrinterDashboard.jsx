@@ -7,6 +7,24 @@ import {
   startPrinting,
   completePrint,
 } from "@/slices/orderSlice";
+import { toast } from "react-toastify";
+
+const getStatusColor = (status) => {
+  switch (status) {
+    case "design_completed":
+      return "bg-blue-100 text-blue-700";
+    case "approved":
+      return "bg-emerald-100 text-emerald-700";
+    case "printing":
+      return "bg-purple-100 text-purple-700";
+    case "completed":
+      return "bg-emerald-600 text-white";
+    case "print_rejected":
+      return "bg-red-100 text-red-700";
+    default:
+      return "bg-gray-100 text-gray-600";
+  }
+};
 
 const PrinterDashboard = () => {
   const dispatch = useDispatch();
@@ -18,142 +36,103 @@ const PrinterDashboard = () => {
     dispatch(fetchOrders());
   }, [dispatch]);
 
-  const printerOrders = orders.filter(
-    (order) =>
-      order.status === "design_completed" ||
-      order.status === "approved" ||
-      order.status === "printing" ||
-      order.status === "print_rejected"
+  const printerOrders = orders.filter((order) =>
+    ["design_completed", "approved", "printing"].includes(order.status)
   );
 
   const handleReject = (orderId) => {
     const reason = reasons[orderId];
-    if (!reason) return alert("Please enter rejection reason");
+
+    if (!reason) return toast.error("Enter rejection reason");
 
     dispatch(printReject({ orderId, reason }));
+    toast.success("Order rejected");
+
     setReasons((prev) => ({ ...prev, [orderId]: "" }));
   };
 
   if (loading) {
-    return (
-      <p className="ml-64 p-8 text-zinc-500 dark:text-zinc-400">
-        Loading printer orders...
-      </p>
-    );
+    return <p className="p-8 text-gray-500">Loading printer orders...</p>;
   }
 
   return (
-    <div className="ml-64 p-8 space-y-8 min-h-screen dark:bg-zinc-900 transition-colors">
+    <div className="space-y-8">
 
-      <h2 className="text-3xl font-bold text-emerald-600">
-        Printer Dashboard
-      </h2>
-
-      {printerOrders.length === 0 && (
-        <p className="text-zinc-500 dark:text-zinc-400">
-          No orders available for printing.
+      {/* HEADER */}
+      <div>
+        <h2 className="text-3xl font-bold text-emerald-600">
+          Printer Dashboard
+        </h2>
+        <p className="text-gray-500">
+          Manage print-ready orders
         </p>
+      </div>
+
+      {/* EMPTY */}
+      {printerOrders.length === 0 && (
+        <div className="bg-white border rounded-xl p-10 text-center text-gray-500">
+          No orders ready for printing.
+        </div>
       )}
 
+      {/* GRID */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 
         {printerOrders.map((order) => (
           <div
             key={order.id}
-            className="
-            rounded-xl
-            border border-zinc-200 dark:border-zinc-800
-            bg-white dark:bg-zinc-900
-            shadow-sm
-            hover:shadow-lg
-            transition
-            p-6
-            space-y-4
-          "
+            className="bg-white border rounded-xl p-5 shadow-sm space-y-4"
           >
 
-            {/* Header */}
-
+            {/* HEADER */}
             <div className="flex justify-between items-center">
-
-              <h3 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200">
-                Order #{order.id}
+              <h3 className="font-semibold text-emerald-600">
+                ORD_{order.id.toString().padStart(3, "0")}
               </h3>
 
               <span
-                className="
-                text-xs
-                px-3 py-1
-                rounded-md
-                bg-zinc-200 dark:bg-zinc-800
-                capitalize
-                "
+                className={`px-3 py-1 text-xs rounded-full capitalize ${getStatusColor(
+                  order.status
+                )}`}
               >
                 {order.status.replaceAll("_", " ")}
               </span>
-
             </div>
 
-            {/* Order Info */}
-
-            <div className="space-y-1 text-sm text-zinc-600 dark:text-zinc-300">
-              <p>
-                <strong>Product:</strong> {order.product_name}
-              </p>
-              <p>
-                <strong>Quantity:</strong> {order.quantity}
-              </p>
+            {/* INFO */}
+            <div className="text-sm space-y-1">
+              <p><strong>Product:</strong> {order.product_name}</p>
+              <p><strong>Quantity:</strong> {order.quantity}</p>
             </div>
 
-            {/* Design Preview */}
-
+            {/* DESIGN */}
             {order.design_file && (
               <img
                 src={order.design_file}
-                alt="Design"
-                className="w-full h-44 object-cover rounded-lg border"
+                className="w-full h-40 object-cover rounded-lg border"
               />
             )}
 
-            {/* Reject Reason */}
-
-            <textarea
+            {/* REASON INPUT */}
+            <input
               value={reasons[order.id] || ""}
               onChange={(e) =>
-                setReasons({
-                  ...reasons,
-                  [order.id]: e.target.value,
-                })
+                setReasons({ ...reasons, [order.id]: e.target.value })
               }
-              placeholder="Enter rejection reason"
-              className="
-              border border-zinc-300 dark:border-zinc-700
-              rounded-lg
-              p-2
-              w-full
-              text-sm
-              bg-white dark:bg-zinc-900
-              focus:ring-2 focus:ring-emerald-500
-              outline-none
-              "
+              placeholder="Rejection reason..."
+              className="w-full border rounded-lg px-3 py-2 text-sm"
             />
 
-            {/* Buttons */}
-
-            <div className="flex flex-wrap gap-3 pt-2">
+            {/* ACTIONS */}
+            <div className="flex flex-wrap gap-2">
 
               {order.status === "design_completed" && (
                 <button
-                  onClick={() => dispatch(printApprove(order.id))}
-                  className="
-                  bg-emerald-600
-                  hover:bg-emerald-700
-                  text-white
-                  px-4 py-2
-                  rounded-lg
-                  font-medium
-                  transition
-                  "
+                  onClick={() => {
+                    dispatch(printApprove(order.id));
+                    toast.success("Approved for printing");
+                  }}
+                  className="bg-emerald-600 text-white px-3 py-2 rounded-lg"
                 >
                   Approve
                 </button>
@@ -161,60 +140,38 @@ const PrinterDashboard = () => {
 
               {order.status === "approved" && (
                 <button
-                  onClick={() => dispatch(startPrinting(order.id))}
-                  className="
-                  bg-blue-600
-                  hover:bg-blue-700
-                  text-white
-                  px-4 py-2
-                  rounded-lg
-                  font-medium
-                  transition
-                  "
+                  onClick={() => {
+                    dispatch(startPrinting(order.id));
+                    toast.success("Printing started");
+                  }}
+                  className="bg-blue-600 text-white px-3 py-2 rounded-lg"
                 >
-                  Start Printing
+                  Start
                 </button>
               )}
 
               {order.status === "printing" && (
                 <button
-                  onClick={() => dispatch(completePrint(order.id))}
-                  className="
-                  bg-purple-600
-                  hover:bg-purple-700
-                  text-white
-                  px-4 py-2
-                  rounded-lg
-                  font-medium
-                  transition
-                  "
+                  onClick={() => {
+                    dispatch(completePrint(order.id));
+                    toast.success("Order completed");
+                  }}
+                  className="bg-purple-600 text-white px-3 py-2 rounded-lg"
                 >
                   Complete
                 </button>
               )}
-
               <button
                 onClick={() => handleReject(order.id)}
-                className="
-                bg-red-600
-                hover:bg-red-700
-                text-white
-                px-4 py-2
-                rounded-lg
-                font-medium
-                transition
-                "
-              >
+                className="bg-red-500 text-white px-3 py-2 rounded-lg">
                 Reject
               </button>
-
             </div>
 
           </div>
         ))}
 
       </div>
-
     </div>
   );
 };

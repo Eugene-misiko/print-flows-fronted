@@ -76,7 +76,13 @@ export default function Sidebar() {
               className={({ isActive }) =>
                 `${linkClass} ${isActive ? activeClass : "hover:bg-slate-800"}`}>
               My Profile
-            </NavLink>              
+            </NavLink>    
+                        <NavLink
+              to="/printer"
+              className={({ isActive }) =>
+                `${linkClass} ${isActive ? activeClass : "hover:bg-slate-800"}`}>
+              Print Queue
+            </NavLink>          
           </nav>
         )}
         {role === "designer" && (

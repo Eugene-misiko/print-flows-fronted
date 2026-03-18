@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/api";
 
-// CREATE ORDER POST /api/orders/
-
+// CREATE ORDER
 export const createOrder = createAsyncThunk(
   "orders/createOrder",
   async (formData, thunkAPI) => {
@@ -10,17 +9,20 @@ export const createOrder = createAsyncThunk(
       const response = await api.post("/api/orders/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+
+      // IMPORTANT: refresh list after create
+      thunkAPI.dispatch(fetchOrders());
+
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.detail || "Failed to create order"
+        error.response?.data || "Failed to create order"
       );
     }
   }
 );
 
-//FETCH ALL ORDERS GET /api/orders/
-
+// FETCH ALL
 export const fetchOrders = createAsyncThunk(
   "orders/fetchOrders",
   async (_, thunkAPI) => {
@@ -29,13 +31,13 @@ export const fetchOrders = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.detail || "Failed to fetch orders"
+        error.response?.data || "Failed to fetch orders"
       );
     }
   }
 );
 
-//FETCH SINGLE ORDER GET /api/orders/{id}
+// FETCH ONE
 export const fetchOrderById = createAsyncThunk(
   "orders/fetchOrderById",
   async (id, thunkAPI) => {
@@ -44,117 +46,85 @@ export const fetchOrderById = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.detail || "Failed to fetch order"
+        error.response?.data || "Failed to fetch order"
       );
     }
   }
 );
 
-//DESIGN COMPLETE
+// DESIGN COMPLETE
 export const designComplete = createAsyncThunk(
   "orders/designComplete",
   async (orderId, thunkAPI) => {
-    try {
-      await api.put(`/api/orders/${orderId}/design_complete/`);
-      return orderId;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.detail || "Failed to complete design"
-      );
-    }
+    await api.put(`/api/orders/${orderId}/design_complete/`);
+    return orderId;
   }
 );
 
-//DESIGN REJECT
+// DESIGN REJECT
 export const designReject = createAsyncThunk(
   "orders/designReject",
   async ({ orderId, reason }, thunkAPI) => {
-    try {
-      await api.put(`/api/orders/${orderId}/design_reject/`, { reason });
-      return { orderId, reason };
-    } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.detail || "Failed to reject design"
-      );
-    }
+    await api.put(`/api/orders/${orderId}/design_reject/`, { reason });
+    return { orderId, reason };
   }
 );
 
-//APPROVE PRINT
+// PRINT APPROVE
 export const printApprove = createAsyncThunk(
   "orders/printApprove",
   async (orderId, thunkAPI) => {
-    try {
-      await api.put(`/api/orders/${orderId}/approve/`);
-      return orderId;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.detail || "Failed to approve printing"
-      );
-    }
+    await api.put(`/api/orders/${orderId}/approve/`);
+    return orderId;
   }
 );
 
-//PRINT REJECT
-
+// PRINT REJECT
 export const printReject = createAsyncThunk(
   "orders/printReject",
   async ({ orderId, reason }, thunkAPI) => {
-    try {
-      await api.put(`/api/orders/${orderId}/print_reject/`, { reason });
-      return { orderId, reason };
-    } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.detail || "Failed to reject printing"
-      );
-    }
+    await api.put(`/api/orders/${orderId}/print_reject/`, { reason });
+    return { orderId, reason };
   }
 );
 
-//START PRINTING
-
+// START PRINTING
 export const startPrinting = createAsyncThunk(
   "orders/startPrinting",
-  async (orderId, thunkAPI) => {
-    try {
-      await api.put(`/api/orders/${orderId}/start_printing/`);
-      return orderId;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data);
-    }
+  async (orderId) => {
+    await api.put(`/api/orders/${orderId}/start_printing/`);
+    return orderId;
   }
 );
 
-//COMPLETE PRINT
-
+// COMPLETE PRINT
 export const completePrint = createAsyncThunk(
   "orders/completePrint",
-  async (orderId, thunkAPI) => {
-    try {
-      await api.put(`/api/orders/${orderId}/complete_print/`);
-      return orderId;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data);
-    }
+  async (orderId) => {
+    await api.put(`/api/orders/${orderId}/complete_print/`);
+    return orderId;
   }
 );
+
 const orderSlice = createSlice({
   name: "orders",
   initialState: {
     orders: [],
     order: null,
+    invoice: null,
     loading: false,
     actionLoading: false,
     error: null,
     createdInvoiceId: null,
   },
   reducers: {},
+
   extraReducers: (builder) => {
     builder
-      //FETCH ORDERS
+
+      // FETCH ALL
       .addCase(fetchOrders.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(fetchOrders.fulfilled, (state, action) => {
         state.loading = false;
@@ -165,28 +135,17 @@ const orderSlice = createSlice({
         state.error = action.payload;
       })
 
-      // FETCH ORDER BY ID
-      .addCase(fetchOrderById.pending, (state) => {
-        state.loading = true;
-      })
-
+      // FETCH ONE
       .addCase(fetchOrderById.fulfilled, (state, action) => {
-        state.loading = false;
         state.order = action.payload;
       })
 
-      .addCase(fetchOrderById.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-
-      //CREATE ORDER
+      // CREATE
       .addCase(createOrder.pending, (state) => {
         state.actionLoading = true;
       })
       .addCase(createOrder.fulfilled, (state, action) => {
         state.actionLoading = false;
-        state.orders.unshift(action.payload);
         state.createdInvoiceId = action.payload.invoice_id;
       })
       .addCase(createOrder.rejected, (state, action) => {
@@ -194,50 +153,31 @@ const orderSlice = createSlice({
         state.error = action.payload;
       })
 
-      //DESIGN COMPLETE
-      .addCase(designComplete.fulfilled, (state, action) => {
-        const order = state.orders.find((o) => o.id === action.payload);
-        if (order) {
-          order.status = "design_completed";
-          order.rejection_reason = "";
-        }
-      })
+      // STATUS UPDATES (safe update)
+      .addMatcher(
+        (action) =>
+          action.type.endsWith("/fulfilled") &&
+          action.payload &&
+          typeof action.payload === "number",
+        (state, action) => {
+          const order = state.orders.find(
+            (o) => o.id === action.payload
+          );
+          if (!order) return;
 
-      //DESIGN REJECT
-      .addCase(designReject.fulfilled, (state, action) => {
-        const order = state.orders.find((o) => o.id === action.payload.orderId);
-        if (order) {
-          order.status = "design_rejected";
-          order.rejection_reason = action.payload.reason;
-        }
-      })
+          if (action.type.includes("designComplete"))
+            order.status = "design_completed";
 
-      //PRINT APPROVE
-      .addCase(printApprove.fulfilled, (state, action) => {
-        const order = state.orders.find((o) => o.id === action.payload);
-        if (order) {
-          order.status = "approved";
-          order.rejection_reason = "";
+          if (action.type.includes("printApprove"))
+            order.status = "approved";
+
+          if (action.type.includes("startPrinting"))
+            order.status = "printing";
+
+          if (action.type.includes("completePrint"))
+            order.status = "completed";
         }
-      })
-      //PRINT REJECT
-      .addCase(printReject.fulfilled, (state, action) => {
-        const order = state.orders.find((o) => o.id === action.payload.orderId);
-        if (order) {
-          order.status = "print_rejected";
-          order.rejection_reason = action.payload.reason;
-        }
-      })
-      //START PRINTING
-      .addCase(startPrinting.fulfilled, (state, action) => {
-        const order = state.orders.find((o) => o.id === action.payload);
-        if (order) order.status = "printing";
-      })
-      //COMPLETE PRINT
-      .addCase(completePrint.fulfilled, (state, action) => {
-        const order = state.orders.find((o) => o.id === action.payload);
-        if (order) order.status = "completed";
-      });
+      );
   },
 });
 

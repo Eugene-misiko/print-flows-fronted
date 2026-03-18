@@ -18,20 +18,26 @@ import Landing from "./components/Landing";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AddProduct from "./components/AddProduct";
 import EditProduct from "./components/EditProduct";
-
+import OrderDetail from "./components/OrderDetail";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
 function App() {
   const { user } = useSelector((state) => state.auth);
 
   return (
+    <>
+
+    <ToastContainer/>
     <Router>
       <Routes>
         {/* PUBLIC ROUTES */}
+        
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/invoice/:id" element={<InvoicePage />} />
         <Route path="/payment/:id" element={<PaymentPage />} />
-
+        <Route path="/orders/:id" element={<OrderDetail />} />
         {/* PROTECTED ROUTES */}
         <Route element={<Layout />}>
           {/* CLIENT DASHBOARD */}
@@ -110,6 +116,7 @@ function App() {
         </Route>
       </Routes>
     </Router>
+    </>
   );
 }
 

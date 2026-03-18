@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "@/api";
-
+import { Link } from "react-router-dom";
 const AddProduct = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
@@ -59,6 +59,7 @@ const AddProduct = () => {
         <h1 className="text-3xl font-bold text-gray-800">
           Add Product
         </h1>
+         <Link to="/products" className="bg-orange-500 text-white font-medium px-1 py-3 rounded-xl text-primary hover:bg-orange-600 float-right">← Back to Products</Link>
         <p className="text-gray-500">
           Create a new product for your catalog
         </p>

@@ -10,9 +10,9 @@ const InvoicePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { invoice, loading, error } = useSelector(
-    (state) => state.invoice
-  );
+const { invoice, loading, error } = useSelector(
+  (state) => state.invoices
+);
 
   useEffect(() => {
     dispatch(fetchInvoice(id));

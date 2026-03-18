@@ -8,7 +8,7 @@ import Sidebar from "./sidebar";
 const PaymentPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const { loading, success, error } = useSelector((state) => state.payment);
+  const { loading, success, error } = useSelector((state) => state.payments);
   const [phone, setPhone] = useState("");
   const handleSubmit = (e) => {
     e.preventDefault();
