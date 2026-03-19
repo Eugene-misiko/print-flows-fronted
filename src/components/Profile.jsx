@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProfile, updateProfile } from "@/slices/profileSlice";
-import { Pencil } from "lucide-react"; // small pencil icon
+import { Pencil } from "lucide-react"; 
 import portrait from "@/assets/portrait.png";
 
 const ProfileCard = () => {
@@ -9,7 +9,6 @@ const ProfileCard = () => {
   const { profile, loading, updateLoading, updateError } = useSelector(
     (state) => state.profile
   );
-
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({ first_name: "",last_name: "", email: "", phone: "" });
   const [imageFile, setImageFile] = useState(null);
@@ -45,18 +44,22 @@ const ProfileCard = () => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const data = new FormData();
-    data.append("first_name", formData.first_name);
-    data.append("email", formData.email);
-    data.append("phone", formData.phone);
-    if (imageFile) data.append("avatar", imageFile);
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    dispatch(updateProfile(data));
-    setEditing(false);
-    setImageFile(null);
-  };
+  const data = new FormData();
+  data.append("first_name", formData.first_name);
+  data.append("last_name", formData.last_name); 
+  data.append("email", formData.email);
+  data.append("phone", formData.phone);
+
+  if (imageFile) {
+    data.append("avatar", imageFile);
+  }
+
+  dispatch(updateProfile(data));
+  setEditing(false);
+};
 
   const handleCancel = () => {
     setEditing(false);
@@ -73,131 +76,141 @@ const ProfileCard = () => {
   };
 
   if (loading || !profile) return <p className="text-gray-500 animate-pulse">Loading profile...</p>;
+return (
+  <div className=" min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-black to-slate-800 p-6">
+    <div className="w-full max-w-md rounded-2xl overflow-hidden shadow-2xl bg-slate-900 text-white">
 
-  return (
-    <div className="max-w-md bg-slate-900/30 shadow rounded p-6 space-y-6 mt-10 mx-auto">
-      <div className="flex items-center gap-4 relative">
-        <div className="relative w-16 h-16 mx-auto">
+      {/* HEADER */}
+      <div className="h-28 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20"></div>
+
+      {/* PROFILE IMAGE */}
+      <div className="relative flex flex-col items-center -mt-14">
+        <div className="relative w-28 h-28">
           <img
             src={imagePreview}
-            alt={profile.first_name || "Profile"}
-            className="w-full h-full rounded-full object-cover border-2 border-white shadow  cursor-pointer"
-            onClick={() => editing && document.getElementById("avatarInput").click()}
+            className="w-full h-full object-cover rounded-full border-4 border-slate-900 shadow-lg cursor-pointer"
+            onClick={() =>
+              editing && document.getElementById("avatarInput").click()
+            }
           />
+
           {editing && (
             <div
-              className="absolute bottom-0 right-0 bg-emerald-600 text-white w-6 h-6 rounded-full flex items-center justify-center cursor-pointer hover:bg-emerald-700 transition"
+              className="absolute bottom-1 right-1 bg-emerald-600 p-2 rounded-full cursor-pointer hover:bg-emerald-700"
               onClick={(e) => {
                 e.stopPropagation();
                 document.getElementById("avatarInput").click();
-              }}>
-              <Pencil className="w-3 h-3" />
+              }}
+            >
+              <Pencil size={14} />
             </div>
           )}
+
           <input
             type="file"
             id="avatarInput"
-            accept="image/*"
             className="hidden"
             onChange={handleImageChange}
           />
         </div>
-
-        <div>
-          <p className="font-semibold">{profile.first_name}</p>
-          <p className="text-gray-800 text-sm">{profile.email}</p>
-        </div>
-
-        {!editing && (
-          <button
-            className="ml-auto px-3 py-1 bg-white/70 backdrop-blur rounded-lg text-emerald-600 hover:bg-white transition"
-            onClick={() => setEditing(true)}
-          >
-            Edit
-          </button>
-        )}
-        {editing && (
-          <button
-            className="ml-auto px-3 py-1 bg-white/70 backdrop-blur rounded-lg text-red-700 hover:bg-white transition"
-            onClick={handleCancel}>
-            Cancel
-          </button>
-        )}
+        {/* NAME + ROLE */}
+        <h2 className="mt-4 text-xl font-semibold">
+          {profile.first_name} {profile.last_name}
+        </h2>
+        <p className="text-emerald-400 text-sm tracking-wide">
+          {profile.role}
+        </p>
       </div>
 
-      {/* Edit Form */}
-      {editing && (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <InputField
-            label="Name"
-            name="first_name"
-            value={formData.first_name}
-            onChange={handleChange}
-          />
-          <InputField
-            label="Last name"
-            name="last_name"
-            value={formData.last_name}
-            onChange={handleChange}
-          />          
-          <InputField
-            label="Email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          <InputField
-            label="Phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-          />
+      {/* BODY */}
+      <div className="p-6 space-y-4">
 
-          <button
-            type="submit"
-            disabled={updateLoading}
-            className="w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition disabled:opacity-60">
-            {updateLoading ? "Updating..." : "Save Profile"}
-          </button>
-          {updateError && (
-            <p className="text-red-500 text-sm">
-              {typeof updateError === "string"
-                ? updateError
-                : JSON.stringify(updateError)}
-            </p>
-          )}
-        </form>
-      )}
+        {!editing && (
+          <>
+            <div className="text-sm text-gray-400 space-y-2">
+              <p>{profile.email}</p>
+              <p>{profile.phone}</p>
+            </div>
 
-      {/* Display Info */}
-      {!editing && (
-        <div className="space-y-2 text-gray-700">
-          <p>Name: {profile.first_name}</p>
-          <p>Email: {profile.email}</p>
-          <p>Phone: {profile.phone}</p>
-          <p>Role: {profile.role}</p>
-        </div>
-      )}
+            <button
+              onClick={() => setEditing(true)}
+              className="w-full mt-4 bg-emerald-600 hover:bg-emerald-700 py-2 rounded-lg transition"
+            >
+              Edit Profile
+            </button>
+          </>
+        )}
+
+        {editing && (
+          <form onSubmit={handleSubmit} className="space-y-3">
+
+            <InputField
+              label="First Name"
+              name="first_name"
+              value={formData.first_name}
+              onChange={handleChange}
+            />
+
+            <InputField
+              label="Last Name"
+              name="last_name"
+              value={formData.last_name}
+              onChange={handleChange}
+            />
+
+            <InputField
+              label="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+
+            <InputField
+              label="Phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+            />
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="submit"
+                disabled={updateLoading}
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 py-2 rounded-lg"
+              >
+                {updateLoading ? "Saving..." : "Save"}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="flex-1 bg-red-600 hover:bg-red-700 py-2 rounded-lg"
+              >
+                Cancel
+              </button>
+            </div>
+
+            {updateError && (
+              <p className="text-red-400 text-sm">{JSON.stringify(updateError)}</p>
+            )}
+          </form>
+        )}
+      </div>
     </div>
-  );
+  </div>
+);
 };
 
 // Input Field Component
-const InputField = ({ label, name, value, onChange, type = "text", disabled }) => (
+const InputField = ({ label, name, value, onChange, type = "text" }) => (
   <div>
-    <label className="block text-sm font-medium mb-1">{label}</label>
+    <label className="block text-xs text-gray-400 mb-1">{label}</label>
     <input
       type={type}
       name={name}
       value={value}
       onChange={onChange}
-      disabled={disabled}
-      className={`w-full px-3 py-2 border rounded-lg ${
-        disabled
-          ? "bg-gray-100 border-gray-300 cursor-not-allowed"
-          : "w-full bg-secondary text-foreground text-sm font-mono px-3 py-2 rounded border border-subtle focus:outline-none focus:border-primary transition-colors"
-      }`}
+      className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
     />
   </div>
 );

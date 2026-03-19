@@ -9,28 +9,14 @@ import {
 } from "@/slices/orderSlice";
 import { toast } from "react-toastify";
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case "design_completed":
-      return "bg-blue-100 text-blue-700";
-    case "approved":
-      return "bg-emerald-100 text-emerald-700";
-    case "printing":
-      return "bg-purple-100 text-purple-700";
-    case "completed":
-      return "bg-emerald-600 text-white";
-    case "print_rejected":
-      return "bg-red-100 text-red-700";
-    default:
-      return "bg-gray-100 text-gray-600";
-  }
-};
+const steps = ["design_completed", "approved", "printing", "completed"];
 
 const PrinterDashboard = () => {
   const dispatch = useDispatch();
   const { orders, loading } = useSelector((state) => state.orders);
-
-  const [reasons, setReasons] = useState({});
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [reason, setReason] = useState("");
+  const [showReject, setShowReject] = useState(false);
 
   useEffect(() => {
     dispatch(fetchOrders());
@@ -40,15 +26,15 @@ const PrinterDashboard = () => {
     ["design_completed", "approved", "printing"].includes(order.status)
   );
 
-  const handleReject = (orderId) => {
-    const reason = reasons[orderId];
-
+  const handleReject = () => {
     if (!reason) return toast.error("Enter rejection reason");
 
-    dispatch(printReject({ orderId, reason }));
+    dispatch(printReject({ orderId: selectedOrder.id, reason }));
     toast.success("Order rejected");
 
-    setReasons((prev) => ({ ...prev, [orderId]: "" }));
+    setReason("");
+    setShowReject(false);
+    setSelectedOrder(null);
   };
 
   if (loading) {
@@ -56,122 +42,165 @@ const PrinterDashboard = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="flex h-[calc(100vh-4rem)]">
+      {/* LEFT PANEL */}
+      <div className="w-1/2 border-r dark:border-zinc-800 overflow-y-auto">
 
-      {/* HEADER */}
-      <div>
-        <h2 className="text-3xl font-bold text-emerald-600">
-          Printer Dashboard
-        </h2>
-        <p className="text-gray-500">
-          Manage print-ready orders
-        </p>
-      </div>
-
-      {/* EMPTY */}
-      {printerOrders.length === 0 && (
-        <div className="bg-white border rounded-xl p-10 text-center text-gray-500">
-          No orders ready for printing.
+        <div className="p-4">
+          <h2 className="text-xl font-bold text-emerald-600">
+            Print Queue
+          </h2>
         </div>
-      )}
-
-      {/* GRID */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-
         {printerOrders.map((order) => (
           <div
             key={order.id}
-            className="bg-white border rounded-xl p-5 shadow-sm space-y-4"
+            onClick={() => setSelectedOrder(order)}
+            className={`p-4 cursor-pointer border-b dark:border-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-800 transition ${
+              selectedOrder?.id === order.id
+                ? "bg-gray-100 dark:bg-zinc-800"
+                : ""
+            }`}
           >
+            <p className="font-semibold">
+              {order.product_name}
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Qty: {order.quantity}
+            </p>
+          </div>
+        ))}
+      </div>
 
-            {/* HEADER */}
-            <div className="flex justify-between items-center">
-              <h3 className="font-semibold text-emerald-600">
-                ORD_{order.id.toString().padStart(3, "0")}
-              </h3>
+      {/* RIGHT PANEL */}
+      <div className="w-1/2 p-6 space-y-6">
 
-              <span
-                className={`px-3 py-1 text-xs rounded-full capitalize ${getStatusColor(
-                  order.status
-                )}`}
-              >
-                {order.status.replaceAll("_", " ")}
-              </span>
+        {!selectedOrder ? (
+          <p className="text-gray-500">Select an order</p>
+        ) : (
+          <>
+            {/* TITLE */}
+            <div>
+              <h2 className="text-2xl font-bold">
+                {selectedOrder.product_name}
+              </h2>
+              <p className="text-gray-500">
+                Order #{selectedOrder.id}
+              </p>
             </div>
+            {/* STEPS */}
+            <div className="flex justify-between">
+              {steps.map((step, i) => {
+                const currentStep = steps.indexOf(selectedOrder.status);
+                const active = currentStep >= i;
 
-            {/* INFO */}
-            <div className="text-sm space-y-1">
-              <p><strong>Product:</strong> {order.product_name}</p>
-              <p><strong>Quantity:</strong> {order.quantity}</p>
+                return (
+                  <div key={step} className="flex-1 text-center">
+                    <div
+                      className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center text-sm ${
+                        active
+                          ? "bg-yellow-500 text-black"
+                          : "bg-gray-300 dark:bg-zinc-700"
+                      }`}>
+                      {i + 1}
+                    </div>
+                    <p className="text-xs mt-1 capitalize">{step}</p>
+                  </div>
+                );
+              })}
             </div>
-
-            {/* DESIGN */}
-            {order.design_file && (
+            {printerOrders.length === 0 && (
+            <p className="p-4 text-gray-500">No print jobs yet</p>
+              )}
+            {/* IMAGE */}
+            {selectedOrder.design_file && (
               <img
-                src={order.design_file}
-                className="w-full h-40 object-cover rounded-lg border"
+                src={selectedOrder.design_file}
+                className="w-full h-48 object-cover rounded-lg border dark:border-zinc-700"
               />
             )}
 
-            {/* REASON INPUT */}
-            <input
-              value={reasons[order.id] || ""}
-              onChange={(e) =>
-                setReasons({ ...reasons, [order.id]: e.target.value })
-              }
-              placeholder="Rejection reason..."
-              className="w-full border rounded-lg px-3 py-2 text-sm"
-            />
+            {/* DETAILS */}
+            <div className="space-y-2 text-sm">
+              <p><strong>Quantity:</strong> {selectedOrder.quantity}</p>
+              <p><strong>Status:</strong> {selectedOrder.status}</p>
+            </div>
 
             {/* ACTIONS */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex gap-3">
 
-              {order.status === "design_completed" && (
+              {selectedOrder.status === "design_completed" && (
                 <button
                   onClick={() => {
-                    dispatch(printApprove(order.id));
-                    toast.success("Approved for printing");
+                    dispatch(printApprove(selectedOrder.id)).then(() => {
+                      dispatch(fetchOrders());
+                    });
+                    toast.success("Approved");
                   }}
-                  className="bg-emerald-600 text-white px-3 py-2 rounded-lg"
-                >
+                  className="bg-yellow-500 px-4 py-2 rounded-lg text-black">
                   Approve
                 </button>
               )}
-
-              {order.status === "approved" && (
+              {selectedOrder.status === "approved" && (
                 <button
                   onClick={() => {
-                    dispatch(startPrinting(order.id));
+                    dispatch(startPrinting(selectedOrder.id));
                     toast.success("Printing started");
                   }}
-                  className="bg-blue-600 text-white px-3 py-2 rounded-lg"
-                >
-                  Start
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg">
+                  Start Printing
                 </button>
               )}
-
-              {order.status === "printing" && (
+              {selectedOrder.status === "printing" && (
                 <button
                   onClick={() => {
-                    dispatch(completePrint(order.id));
-                    toast.success("Order completed");
+                    dispatch(completePrint(selectedOrder.id));
+                    toast.success("Completed");
                   }}
-                  className="bg-purple-600 text-white px-3 py-2 rounded-lg"
-                >
+                  className="bg-purple-600 text-white px-4 py-2 rounded-lg">
                   Complete
                 </button>
               )}
+
               <button
-                onClick={() => handleReject(order.id)}
-                className="bg-red-500 text-white px-3 py-2 rounded-lg">
+                onClick={() => setShowReject(true)}
+                className="border px-4 py-2 rounded-lg text-red-500"
+              >
                 Reject
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+      {showReject && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+
+          <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl w-[400px] space-y-4">
+
+            <h3 className="text-lg font-bold">Reject Order</h3>
+
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Enter reason..."
+              className="w-full border dark:border-zinc-700 rounded-lg p-3 bg-gray-50 dark:bg-zinc-800"
+            />
+
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setShowReject(false)}>
+                Cancel
+              </button>
+
+              <button
+                onClick={handleReject}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg"
+              >
+                Confirm
               </button>
             </div>
 
           </div>
-        ))}
-
-      </div>
+        </div>
+      )}
     </div>
   );
 };

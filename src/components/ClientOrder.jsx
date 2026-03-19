@@ -16,9 +16,11 @@ const ClientOrder = () => {
   const [products, setProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isCustomProduct, setIsCustomProduct] = useState(false);
 
   const [formData, setFormData] = useState({
     product: productId || "",
+    custom_product_name: "",
     quantity: 1,
     needs_design: false,
     design_file: null,
@@ -63,39 +65,53 @@ const ClientOrder = () => {
   }, [createdInvoiceId, navigate]);
 
   // HANDLE SUBMIT
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    if (actionLoading) return;
+  if (actionLoading) return;
 
-    // VALIDATION
-    if (!formData.product) {
-      toast.error("Please select a product");
-      return;
-    }
+  
+  if (!isCustomProduct && !formData.product) {
+    toast.error("Please select a product");
+    return;
+  }
 
-    if (formData.quantity < 1) {
-      toast.error("Quantity must be at least 1");
-      return;
-    }
+  if (isCustomProduct && !formData.custom_product_name.trim()) {
+    toast.error("Please enter your product name");
+    return;
+  }
 
-    const data = new FormData();
+  if (formData.quantity < 1) {
+    toast.error("Quantity must be at least 1");
+    return;
+  }
+
+  
+  const data = new FormData();
+
+  if (isCustomProduct) {
+    data.append("custom_product_name", formData.custom_product_name);
+  } else {
     data.append("product", formData.product);
-    data.append("quantity", formData.quantity);
-    data.append("needs_design", formData.needs_design);
-    data.append("description", formData.notes);
+  }
 
-    if (formData.design_file) {
-      data.append("design_file", formData.design_file);
-    }
+  data.append("quantity", formData.quantity);
+  data.append("needs_design", formData.needs_design);
+  data.append("description", formData.notes);
 
-    dispatch(createOrder(data));
-  };
+  if (formData.design_file) {
+    data.append("design_file", formData.design_file);
+  }
+
+  dispatch(createOrder(data));
+};
 
   const total =
     selectedProduct?.price && formData.quantity
       ? selectedProduct.price * formData.quantity
       : 0;
+
+
  return (
   <div className="max-w-4xl mx-auto px-4 py-8">
     {/* HEADER */}
@@ -111,30 +127,62 @@ const ClientOrder = () => {
     <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-8">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-          {/* PRODUCT */}
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={isCustomProduct}
+                onChange={() => setIsCustomProduct(!isCustomProduct)}
+              />
+              <label className="text-sm dark:text-gray-300">
+                Want your own product?
+              </label>
+            </div>
+        {!isCustomProduct ? (
+          // NORMAL SELECT
           <div>
             <label className="block text-sm font-medium mb-2 dark:text-gray-300">
               Product
             </label>
-            {loadingProducts ? (
-              <p className="text-gray-400">Loading...</p>
-            ) : (
-              <select
-                value={formData.product}
-                onChange={(e) =>
-                  setFormData({ ...formData, product: e.target.value })
-                }
-                className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none">
-                <option value="">Select product</option>
-                {products.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            )}
+
+            <select
+              value={formData.product}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  product: e.target.value,
+                })
+              }
+              className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none"
+            >
+              <option value="">Select product</option>
+              {products.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
           </div>
+        ) : (
+          // CUSTOM PRODUCT INPUT
+          <div>
+            <label className="block text-sm font-medium mb-2 dark:text-gray-300">
+              Your Product Name
+            </label>
+
+            <input
+              type="text"
+              placeholder="e.g Custom T-shirt, Banner, Sticker..."
+              value={formData.custom_product_name}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  custom_product_name: e.target.value,
+                })
+              }
+              className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none"
+            />
+          </div>
+        )}
           {/* QUANTITY */}
           <div>
             <label className="block text-sm font-medium mb-2 dark:text-gray-300">

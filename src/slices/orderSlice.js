@@ -9,8 +9,6 @@ export const createOrder = createAsyncThunk(
       const response = await api.post("/api/orders/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      // IMPORTANT: refresh list after create
       thunkAPI.dispatch(fetchOrders());
 
       return response.data;
@@ -75,6 +73,9 @@ export const printApprove = createAsyncThunk(
   "orders/printApprove",
   async (orderId, thunkAPI) => {
     await api.put(`/api/orders/${orderId}/approve/`);
+
+    thunkAPI.dispatch(fetchOrders()); 
+
     return orderId;
   }
 );
@@ -153,23 +154,31 @@ const orderSlice = createSlice({
         state.error = action.payload;
       })
 
-      // STATUS UPDATES (safe update)
+      // STATUS UPDATES 
       .addMatcher(
         (action) =>
           action.type.endsWith("/fulfilled") &&
-          action.payload &&
-          typeof action.payload === "number",
+          action.payload,
         (state, action) => {
-          const order = state.orders.find(
-            (o) => o.id === action.payload
-          );
+          const id =
+            typeof action.payload === "number"
+              ? action.payload
+              : action.payload.orderId;
+
+          const order = state.orders.find((o) => o.id === id);
           if (!order) return;
 
           if (action.type.includes("designComplete"))
             order.status = "design_completed";
 
+          if (action.type.includes("designReject"))
+            order.status = "design_rejected";
+
           if (action.type.includes("printApprove"))
             order.status = "approved";
+
+          if (action.type.includes("printReject"))
+            order.status = "print_rejected";
 
           if (action.type.includes("startPrinting"))
             order.status = "printing";
@@ -177,7 +186,7 @@ const orderSlice = createSlice({
           if (action.type.includes("completePrint"))
             order.status = "completed";
         }
-      );
+      )
   },
 });
 

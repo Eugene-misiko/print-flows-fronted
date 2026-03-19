@@ -48,11 +48,10 @@ const { invoice, loading, error } = useSelector(
     <>
     <Navbar/>
     <Sidebar/>
-    <div className="min-h-screen bg-gray-100 flex justify-center py-10">
+    <div className="min-h-screen dark:bg-zinc-900 bg-gray-100 flex justify-center py-10">
 
-      {/* Invoice container */}
-
-      <div className="bg-white w-[900px] shadow-xl p-10 rounded-lg">
+    
+      <div className="bg-white w-[900px] shadow-xl p-10 dark:bg-gray-900/60 rounded-lg">
 
         {/* Header */}
 
@@ -113,10 +112,10 @@ const { invoice, loading, error } = useSelector(
 
         {/* Table */}
 
-        <table className="w-full mt-4 border text-sm">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border p-2 text-left">
+        <table className="w-full mt-4 border text-sm ">
+          <thead className="bg-gray-100 ">
+            <tr className="dark:bg-gray-700">
+              <th className="border p-2 text-left ">
                 Description
               </th>
               <th className="border p-2">
@@ -225,7 +224,7 @@ const { invoice, loading, error } = useSelector(
           </button>
         </div>
         {/* Footer */}
-        <div className="mt-12 border-t-4 border-orange-500 pt-4 text-sm flex justify-center gap-6 text-gray-700">
+        <div className="mt-12 dark:text-white border-t-4 border-orange-500 pt-4 text-sm flex justify-center gap-6 text-gray-700">
           <span>Printing</span>
           <span>Branding</span>
           <span>Stationery</span>
