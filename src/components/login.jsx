@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "@/slices/authslice";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import backgroundImage from "../assets/printImg.png";
 
 const Login = () => {
@@ -10,19 +12,26 @@ const Login = () => {
 
   const { loading, error, token } = useSelector((state) => state.auth);
 
-  const [first_name, setFirstName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = (e) => {
     e.preventDefault();
-    dispatch(loginUser({ first_name, password }));
+    dispatch(loginUser({ email, password }));
   };
 
   useEffect(() => {
     if (token) {
+      toast.success("Login Successful!");
       navigate("/authen");
     }
   }, [token, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   return (
     <div
@@ -49,32 +58,30 @@ const Login = () => {
           Login to manage your printing orders
         </p>
 
-        <form onSubmit={handleLogin} className="mt-8 space-y-6">
+        <form onSubmit={handleLogin} className="mt-8 space-y-5">
           <div className="space-y-2">
-            <label className="font-semibold text-white">
-              First Name
+            <label className="font-semibold text-white text-sm">
+              Email Address
             </label>
-
             <input
-              type="text"
-              placeholder="Enter your first name"
-              value={first_name}
-              onChange={(e) => setFirstName(e.target.value)}
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               className="
-              w-full px-4 py-2
+              w-full px-4 py-3
               rounded-lg
               bg-white/70
               outline-none
-              focus:ring-2 focus:ring-emerald-500"
+              focus:ring-2 focus:ring-emerald-500 transition"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="font-semibold text-white">
+            <label className="font-semibold text-white text-sm">
               Password
             </label>
-
             <input
               type="password"
               placeholder="Enter your password"
@@ -82,12 +89,21 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="
-              w-full px-4 py-2
+              w-full px-4 py-3
               rounded-lg
               bg-white/70
               outline-none
-              focus:ring-2 focus:ring-emerald-500"
+              focus:ring-2 focus:ring-emerald-500 transition"
             />
+          </div>
+
+          <div className="text-right">
+            <Link 
+              to="/forgot-password" 
+              className="text-sm text-emerald-300 hover:text-emerald-200 hover:underline"
+            >
+              Forgot Password?
+            </Link>
           </div>
 
           <button
@@ -99,47 +115,25 @@ const Login = () => {
             hover:bg-emerald-700
             text-white
             font-semibold
-            py-2
+            py-3
             rounded-lg
             transition
-            cursor-pointer"
+            shadow-lg
+            disabled:opacity-50"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-
-          {error && (
-            <p className="text-red-400 text-sm text-center">
-              {error}
-            </p>
-          )}
         </form>
 
         <p className="text-center mt-6 text-sm text-gray-200">
           Don't have an account?{" "}
           <Link
             to="/register"
-            className="text-emerald-400 hover:text-emerald-500 font-medium"
+            className="text-emerald-400 hover:text-emerald-500 font-medium hover:underline"
           >
             Register here
           </Link>
         </p>
-
-        <div className="mt-8 flex justify-center">
-          <Link
-            to="/"
-            className="
-            bg-emerald-600/80
-            hover:bg-emerald-700
-            text-white
-            px-6 py-2
-            rounded-lg
-            text-sm
-            font-semibold
-            transition"
-          >
-            ← Learn More
-          </Link>
-        </div>
       </div>
     </div>
   );
