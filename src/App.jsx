@@ -21,6 +21,7 @@ import EditProduct from "./components/EditProduct";
 import OrderDetail from "./components/OrderDetail";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
+import ForgotPassword from "./components/ForgotPassword";
 function App() {
   const { user } = useSelector((state) => state.auth);
 
@@ -33,6 +34,7 @@ function App() {
         {/* PUBLIC ROUTES */}
         
         <Route path="/" element={<Landing />} />
+        <Route path="/forgot-password" element={<ForgotPassword/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/invoice/:id" element={<InvoicePage />} />
