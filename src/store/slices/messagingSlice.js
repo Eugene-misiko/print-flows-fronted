@@ -48,3 +48,28 @@ export const fetchMessages = createAsyncThunk(
     }
   }
 );
+
+
+export const sendMessage = createAsyncThunk(
+  "messaging/sendMessage",
+  async ({ conversationId, data }, { rejectWithValue }) => {
+    try {
+      const response = await messagingAPI.sendMessage(conversationId, data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to send message");
+    }
+  }
+);
+
+export const markMessagesAsRead = createAsyncThunk(
+  "messaging/markMessagesAsRead",
+  async (conversationId, { rejectWithValue }) => {
+    try {
+      await messagingAPI.markMessagesAsRead(conversationId);
+      return conversationId;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to mark as read");
+    }
+  }
+);
