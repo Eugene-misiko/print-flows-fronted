@@ -73,3 +73,69 @@ export const markMessagesAsRead = createAsyncThunk(
     }
   }
 );
+
+
+const initialState = {
+  conversations: [],
+  currentConversation: null,
+  messages: [],
+  isLoading: false,
+  error: null,
+};
+
+const messagingSlice = createSlice({
+  name: "messaging",
+  initialState,
+  reducers: {
+    addMessage: (state, action) => {
+      state.messages.push(action.payload);
+      // Update last message in conversation list
+      const convIndex = state.conversations.findIndex(
+        c => c.id === action.payload.conversation
+      );
+      if (convIndex !== -1) {
+        state.conversations[convIndex].last_message = action.payload;
+      }
+    },
+    clearMessages: (state) => {
+      state.messages = [];
+    },
+    clearCurrentConversation: (state) => {
+      state.currentConversation = null;
+      state.messages = [];
+    },
+    clearMessagingError: (state) => {
+      state.error = null;
+    },
+  },
+  extraReducers: (builder) => {
+    // Fetch Conversations
+    builder
+      .addCase(fetchConversations.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchConversations.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.conversations = action.payload.results || action.payload;
+      })
+      .addCase(fetchConversations.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Fetch Single Conversation
+    builder
+      .addCase(fetchConversation.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchConversation.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentConversation = action.payload;
+      })
+      .addCase(fetchConversation.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
