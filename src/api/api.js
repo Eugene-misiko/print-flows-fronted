@@ -117,3 +117,22 @@ export const ordersAPI = {
   getPrinterDashboard: () => api.get("/orders/printer-dashboard/"),
   getClientDashboard: () => api.get("/orders/client-dashboard/"),
 };
+
+
+
+// Payments API
+export const paymentsAPI = {
+  getInvoices: (params) => api.get("/payments/invoices/", { params }),
+  getInvoice: (id) => api.get(`/payments/invoices/${id}/`),
+  createInvoice: (data) => api.post("/payments/invoices/", data),
+  downloadInvoice: (id) => api.get(`/payments/invoices/${id}/download/`, { responseType: "blob" }),
+  
+  // M-Pesa payments
+  initiateMpesaPayment: (data) => api.post("/payments/mpesa/stk-push/", data),
+  checkMpesaStatus: (checkoutRequestId) => api.get(`/payments/mpesa/status/${checkoutRequestId}/`),
+  
+  // Payments
+  getPayments: (params) => api.get("/payments/payments/", { params }),
+  getReceipt: (paymentId) => api.get(`/payments/receipts/${paymentId}/`),
+  downloadReceipt: (paymentId) => api.get(`/payments/receipts/${paymentId}/download/`, { responseType: "blob" }),
+};
