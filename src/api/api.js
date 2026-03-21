@@ -48,3 +48,15 @@ export const authAPI = {
   resetPassword: (data) => api.post("/auth/reset-password/", data),
   acceptInvitation: (data) => api.post("/auth/accept-invitation/", data),
 };
+
+// Company API
+export const companyAPI = {
+  getCompany: () => api.get("/companies/my-company/"),
+  updateCompany: (data) => api.patch("/companies/my-company/", data),
+  getSettings: () => api.get("/companies/settings/"),
+  updateSettings: (data) => api.patch("/companies/settings/", data),
+  inviteUser: (data) => api.post("/companies/invite/", data),
+  getInvitations: () => api.get("/companies/invitations/"),
+  cancelInvitation: (id) => api.delete(`/companies/invitations/${id}/`),
+  getDashboard: () => api.get("/companies/dashboard/"),
+};
