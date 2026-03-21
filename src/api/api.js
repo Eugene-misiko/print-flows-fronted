@@ -79,10 +79,41 @@ export const productsAPI = {
   createCategory: (data) => api.post("/products/categories/", data),
   updateCategory: (id, data) => api.patch(`/products/categories/${id}/`, data),
   deleteCategory: (id) => api.delete(`/products/categories/${id}/`),
-  
   getProducts: (params) => api.get("/products/products/", { params }),
   getProduct: (id) => api.get(`/products/products/${id}/`),
   createProduct: (data) => api.post("/products/products/", data),
   updateProduct: (id, data) => api.patch(`/products/products/${id}/`, data),
   deleteProduct: (id) => api.delete(`/products/products/${id}/`),
+};
+
+// Orders API
+export const ordersAPI = {
+  getOrders: (params) => api.get("/orders/orders/", { params }),
+  getOrder: (id) => api.get(`/orders/orders/${id}/`),
+  createOrder: (data) => api.post("/orders/orders/", data),
+  updateOrder: (id, data) => api.patch(`/orders/orders/${id}/`, data),
+  deleteOrder: (id) => api.delete(`/orders/orders/${id}/`),
+  
+  // Status updates
+  submitDesign: (id, data) => api.post(`/orders/orders/${id}/submit-design/`, data),
+  approveDesign: (id) => api.post(`/orders/orders/${id}/approve-design/`),
+  rejectDesign: (id, data) => api.post(`/orders/orders/${id}/reject-design/`, data),
+  startPrinting: (id) => api.post(`/orders/orders/${id}/start-printing/`),
+  completePrinting: (id) => api.post(`/orders/orders/${id}/complete-printing/`),
+  startPolishing: (id) => api.post(`/orders/orders/${id}/start-polishing/`),
+  completeOrder: (id) => api.post(`/orders/orders/${id}/complete/`),
+  cancelOrder: (id, data) => api.post(`/orders/orders/${id}/cancel/`, data),
+  
+  // Print jobs
+  getPrintJobs: (params) => api.get("/orders/print-jobs/", { params }),
+  assignPrinter: (id, printerId) => api.post(`/orders/print-jobs/${id}/assign/`, { printer_id: printerId }),
+  updatePrintJobStatus: (id, status) => api.patch(`/orders/print-jobs/${id}/`, { status }),
+  
+  // Transportation
+  updateTransportation: (orderId, data) => api.post(`/orders/orders/${orderId}/transportation/`, data),
+  
+  // Dashboards
+  getDesignerDashboard: () => api.get("/orders/designer-dashboard/"),
+  getPrinterDashboard: () => api.get("/orders/printer-dashboard/"),
+  getClientDashboard: () => api.get("/orders/client-dashboard/"),
 };
