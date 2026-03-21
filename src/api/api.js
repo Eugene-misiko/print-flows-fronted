@@ -60,3 +60,14 @@ export const companyAPI = {
   cancelInvitation: (id) => api.delete(`/companies/invitations/${id}/`),
   getDashboard: () => api.get("/companies/dashboard/"),
 };
+
+// Users API
+export const usersAPI = {
+  getUsers: (params) => api.get("/accounts/users/", { params }),
+  getUser: (id) => api.get(`/accounts/users/${id}/`),
+  updateUser: (id, data) => api.patch(`/accounts/users/${id}/`, data),
+  deleteUser: (id) => api.delete(`/accounts/users/${id}/`),
+  getDesigners: () => api.get("/accounts/users/", { params: { role: "DESIGNER" } }),
+  getPrinters: () => api.get("/accounts/users/", { params: { role: "PRINTER" } }),
+  getClients: () => api.get("/accounts/users/", { params: { role: "CLIENT" } }),
+};
