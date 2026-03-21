@@ -139,3 +139,68 @@ const messagingSlice = createSlice({
         state.error = action.payload;
       });
 
+// Create Conversation
+    builder
+      .addCase(createConversation.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(createConversation.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.conversations.unshift(action.payload);
+        state.currentConversation = action.payload;
+      })
+      .addCase(createConversation.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Fetch Messages
+    builder
+      .addCase(fetchMessages.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchMessages.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.messages = action.payload.data.results || action.payload.data;
+      })
+      .addCase(fetchMessages.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Send Message
+    builder
+      .addCase(sendMessage.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(sendMessage.fulfilled, (state, action) => {
+        state.messages.push(action.payload);
+        // Update last message in conversation list
+        const convIndex = state.conversations.findIndex(
+          c => c.id === action.payload.conversation
+        );
+        if (convIndex !== -1) {
+          state.conversations[convIndex].last_message = action.payload;
+        }
+      })
+      .addCase(sendMessage.rejected, (state, action) => {
+        state.error = action.payload;
+      });
+
+    // Mark Messages as Read
+    builder
+      .addCase(markMessagesAsRead.fulfilled, (state, action) => {
+        state.messages = state.messages.map(m => ({ ...m, is_read: true }));
+      });
+  },
+});
+
+export const { 
+  addMessage, 
+  clearMessages, 
+  clearCurrentConversation, 
+  clearMessagingError 
+} = messagingSlice.actions;
+export default messagingSlice.reducer;      
