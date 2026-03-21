@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import api from "@/api";
+import api from "@/api/api";
 
 const ProductDetail = () => {
   const { id } = useParams();

@@ -66,7 +66,6 @@ export default function Register() {
           <p className="text-center text-gray-200 text-sm mb-8">
             Register to start managing your printing orders
           </p>
-
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <input
@@ -88,7 +87,6 @@ export default function Register() {
                 className="input-style"
               />
             </div>
-
             <input
               type="email"
               name="email"

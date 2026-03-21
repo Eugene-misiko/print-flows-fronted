@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createOrder } from "@/slices/orderSlice";
-import api from "@/api";
+import api from "@/api/api";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
