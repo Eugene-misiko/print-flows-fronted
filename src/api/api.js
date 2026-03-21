@@ -136,3 +136,22 @@ export const paymentsAPI = {
   getReceipt: (paymentId) => api.get(`/payments/receipts/${paymentId}/`),
   downloadReceipt: (paymentId) => api.get(`/payments/receipts/${paymentId}/download/`, { responseType: "blob" }),
 };
+// Notifications API
+export const notificationsAPI = {
+  getNotifications: (params) => api.get("/notifications/notifications/", { params }),
+  markAsRead: (id) => api.patch(`/notifications/notifications/${id}/`, { is_read: true }),
+  markAllAsRead: () => api.post("/notifications/notifications/mark-all-read/"),
+  getUnreadCount: () => api.get("/notifications/notifications/unread-count/"),
+  getPreferences: () => api.get("/notifications/preferences/"),
+  updatePreferences: (data) => api.patch("/notifications/preferences/", data),
+};
+
+// Messaging API
+export const messagingAPI = {
+  getConversations: () => api.get("/messaging/conversations/"),
+  getConversation: (id) => api.get(`/messaging/conversations/${id}/`),
+  createConversation: (data) => api.post("/messaging/conversations/", data),
+  getMessages: (conversationId, params) => api.get(`/messaging/conversations/${conversationId}/messages/`, { params }),
+  sendMessage: (conversationId, data) => api.post(`/messaging/conversations/${conversationId}/messages/`, data),
+  markMessagesAsRead: (conversationId) => api.post(`/messaging/conversations/${conversationId}/mark-read/`),
+};
