@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchOrders } from "@/slices/orderSlice";
+import { fetchOrders } from "@/store/slices/orderSlice";
 import { useNavigate } from "react-router-dom";
 
 const steps = ["pending_design", "design_completed", "approved", "printing", "completed"];

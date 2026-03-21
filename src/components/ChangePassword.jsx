@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { changePassword, resetPasswordState } from "@/slices/authslice";
+import { changePassword, resetPasswordState } from "@/store/slices/authslice";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
 

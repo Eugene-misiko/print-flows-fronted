@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchInvoice, downloadInvoice } from "@/slices/invoiceSlice";
+import { fetchInvoice, downloadInvoice } from "@/store/slices/invoiceSlice";
 import Navbar from "./Navbar";
 import Sidebar from "./sidebar";
 

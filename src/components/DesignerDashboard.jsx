@@ -4,7 +4,7 @@ import {
   fetchOrders,
   designReject,
   designComplete,
-} from "@/slices/orderSlice";
+} from "@/store/slices/orderSlice";
 import { toast } from "react-toastify";
 
 export default function DesignerDashboard() {

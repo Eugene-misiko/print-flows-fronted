@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
-import { logoutUser } from "@/slices/authslice";
-import { fetchProfile } from "@/slices/profileSlice";
+import { logoutUser } from "@/store/slices/authslice";
+import { fetchProfile } from "@/store/slices/profileSlice";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";

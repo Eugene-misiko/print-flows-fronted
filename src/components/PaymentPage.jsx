@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { initiatePayment } from "@/slices/paymentSlice";
+import { initiatePayment } from "@/store/slices/paymentSlice";
 import Navbar from "./Navbar";
 import Sidebar from "./sidebar";
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProfile, updateProfile } from "@/slices/profileSlice";
-import { changePassword } from "@/slices/authslice"; 
+import { fetchProfile, updateProfile } from "@/store/slices/profileSlice";
+import { changePassword } from "@/store/slices/authslice"; 
 import { Pencil, KeyRound, ArrowLeft } from "lucide-react"; 
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";

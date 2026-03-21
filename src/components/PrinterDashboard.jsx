@@ -6,7 +6,7 @@ import {
   printReject,
   startPrinting,
   completePrint,
-} from "@/slices/orderSlice";
+} from "@/store/slices/orderSlice";
 import { toast } from "react-toastify";
 
 const steps = ["design_completed", "approved", "printing", "completed"];

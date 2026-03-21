@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createOrder } from "@/slices/orderSlice";
+import { createOrder } from "@/store/slices/orderSlice";
 import api from "@/api/api";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";

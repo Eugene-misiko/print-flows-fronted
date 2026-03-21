@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { confirmPasswordReset } from "@/slices/authslice";
+import { confirmPasswordReset } from "@/store/slices/authslice";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import backgroundImage from "../assets/printImg.png";

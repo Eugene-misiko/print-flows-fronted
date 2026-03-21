@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchOrderById } from "@/slices/orderSlice";
+import { fetchOrderById } from "@/store/slices/orderSlice";
 import Navbar from "./Navbar";
 import Sidebar from "./sidebar";
 
