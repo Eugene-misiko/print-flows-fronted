@@ -71,3 +71,18 @@ export const usersAPI = {
   getPrinters: () => api.get("/accounts/users/", { params: { role: "PRINTER" } }),
   getClients: () => api.get("/accounts/users/", { params: { role: "CLIENT" } }),
 };
+
+// Products API
+export const productsAPI = {
+  getCategories: () => api.get("/products/categories/"),
+  getCategory: (id) => api.get(`/products/categories/${id}/`),
+  createCategory: (data) => api.post("/products/categories/", data),
+  updateCategory: (id, data) => api.patch(`/products/categories/${id}/`, data),
+  deleteCategory: (id) => api.delete(`/products/categories/${id}/`),
+  
+  getProducts: (params) => api.get("/products/products/", { params }),
+  getProduct: (id) => api.get(`/products/products/${id}/`),
+  createProduct: (data) => api.post("/products/products/", data),
+  updateProduct: (id, data) => api.patch(`/products/products/${id}/`, data),
+  deleteProduct: (id) => api.delete(`/products/products/${id}/`),
+};
