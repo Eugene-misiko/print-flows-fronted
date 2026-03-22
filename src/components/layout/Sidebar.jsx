@@ -74,4 +74,98 @@ const Sidebar = () => {
         return commonItems;
     }
   };  
-}
+  const menuItems = getRoleBasedMenu();
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
+  return (
+    <aside
+      className={`fixed left-0 top-0 z-40 h-screen bg-white border-r border-gray-200 transition-all duration-300 ${
+        sidebarOpen ? "w-64" : "w-20"
+      }`}>
+      {/* Logo */}
+      <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+        {sidebarOpen && (
+          <Link to="/dashboard" className="flex items-center gap-2">
+            <div className="bg-gradient-to-br from-orange-500 to-red-600 p-2 rounded-lg">
+              <Printer className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-lg font-bold text-gray-900">PrintFlow</span>
+          </Link>
+        )}
+        <button
+          onClick={() => dispatch(toggleSidebar())}
+          className="p-2 rounded-lg hover:bg-gray-100 text-gray-500">
+          <ChevronLeft
+            className={`h-5 w-5 transition-transform ${
+              !sidebarOpen ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+      </div>
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors relative ${
+                isActive
+                  ? "bg-orange-50 text-orange-600 font-medium"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}>
+              <item.icon className="h-5 w-5 flex-shrink-0" />
+              {sidebarOpen && (
+                <>
+                  <span className="flex-1">{item.label}</span>
+                  {item.badge > 0 && (
+                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
+                </>
+              )}
+              {!sidebarOpen && item.badge > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                  {item.badge}
+                </span>
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+      {/* User Profile */}
+      <div className="border-t border-gray-200 p-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+            <span className="text-orange-600 font-medium">
+              {user?.full_name?.charAt(0) || user?.email?.charAt(0).toUpperCase()}
+            </span>
+          </div>
+          {sidebarOpen && (
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                {user?.full_name || "User"}
+              </p>
+              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+            </div>
+          )}
+        </div>
+        <button
+          onClick={handleLogout}
+          className={`mt-3 flex items-center gap-2 text-gray-500 hover:text-red-600 transition-colors ${
+            sidebarOpen ? "w-full px-3 py-2" : "justify-center"
+          }`}>
+          <LogOut className="h-4 w-4" />
+          {sidebarOpen && <span className="text-sm">Logout</span>}
+        </button>
+      </div>
+    </aside>
+  );
+};
+
+export default Sidebar;
