@@ -1,76 +1,39 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "@/api/api";
+import { productsAPI } from "@/api/api";
 
-//FETCH ALL PRODUCTS GET /api/products/
-
-export const fetchProducts = createAsyncThunk(
-  "products/fetchProducts",
-  async (_, thunkAPI) => {
+// Categories
+export const fetchCategories = createAsyncThunk(
+  "products/fetchCategories",
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/api/products/");
+      const response = await productsAPI.getCategories();
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data || "Failed to fetch products"
-      );
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch categories");
     }
   }
 );
 
-//FETCH SINGLE PRODUCT GET /api/products/{id}
-
-export const fetchProductById = createAsyncThunk(
-  "products/fetchProductById",
-  async (id, thunkAPI) => {
+export const createCategory = createAsyncThunk(
+  "products/createCategory",
+  async (data, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/api/products/${id}/`);
+      const response = await productsAPI.createCategory(data);
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data || "Failed to fetch product"
-      );
+      return rejectWithValue(error.response?.data?.message || "Failed to create category");
     }
   }
 );
-const productsSlice = createSlice({
-  name: "products",
 
-  initialState: {
-    items: [],
-    product: null,
-    loading: false,
-    error: null,
-  },
-  reducers: {},
-  extraReducers: (builder) => {
-    builder
-      // FETCH PRODUCTS
-      .addCase(fetchProducts.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchProducts.fulfilled, (state, action) => {
-        state.loading = false;
-        state.items = action.payload;
-      })
-      .addCase(fetchProducts.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-
-      // FETCH SINGLE PRODUCT
-      .addCase(fetchProductById.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(fetchProductById.fulfilled, (state, action) => {
-        state.loading = false;
-        state.product = action.payload;
-      })
-      .addCase(fetchProductById.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
-  },
-});
-
-export default productsSlice.reducer;
+export const updateCategory = createAsyncThunk(
+  "products/updateCategory",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const response = await productsAPI.updateCategory(id, data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to update category");
+    }
+  }
+);
