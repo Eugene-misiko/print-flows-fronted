@@ -75,3 +75,39 @@ export const fetchProduct = createAsyncThunk(
     }
   }
 );
+
+export const createProduct = createAsyncThunk(
+  "products/createProduct",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await productsAPI.createProduct(data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to create product");
+    }
+  }
+);
+
+export const updateProduct = createAsyncThunk(
+  "products/updateProduct",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const response = await productsAPI.updateProduct(id, data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to update product");
+    }
+  }
+);
+
+export const deleteProduct = createAsyncThunk(
+  "products/deleteProduct",
+  async (id, { rejectWithValue }) => {
+    try {
+      await productsAPI.deleteProduct(id);
+      return id;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to delete product");
+    }
+  }
+);
