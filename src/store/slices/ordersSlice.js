@@ -576,5 +576,10 @@ const ordersSlice = createSlice({
   },
 });
 
-
-    
+export const { 
+  clearOrdersError, 
+  clearOrderSuccess, 
+  setCurrentOrder, 
+  clearCurrentOrder 
+} = ordersSlice.actions;
+export default ordersSlice.reducer;    
