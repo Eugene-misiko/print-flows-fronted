@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css"
 // Auth Components
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
+import AcceptInvitation from "./components/auth/AcceptInvitation";
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/" element={<AcceptInvitation />} />
       </Routes>
     </Router>
     </>

@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { acceptInvitation, clearError } from "@/store/slices/authslice";
 import { Printer, Lock, Eye, EyeOff, User, CheckCircle } from "lucide-react";
-import toast from "react-toastify";
+import { toast } from 'react-toastify';
 
 const AcceptInvitation = () => {
   const dispatch = useDispatch();
