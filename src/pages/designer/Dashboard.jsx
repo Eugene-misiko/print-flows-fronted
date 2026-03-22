@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { fetchDesignerDashboard } from "../../store/slices/ordersSlice";
 import { submitDesign } from "../../store/slices/ordersSlice";
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 
 const DesignerDashboard = () => {
   const dispatch = useDispatch();
@@ -229,8 +229,7 @@ const DesignerDashboard = () => {
                   <div className="flex items-center gap-2">
                     <Link
                       to={`/orders/${order.id}`}
-                      className="inline-flex items-center px-3 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
-                    >
+                      className="inline-flex items-center px-3 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
                       <Eye className="h-4 w-4 mr-1" />
                       View
                     </Link>

@@ -104,8 +104,7 @@ const AdminDashboard = () => {
         </div>
         <Link
           to="/orders/new"
-          className="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition-all"
-        >
+          className="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition-all">
           Create Order
           <ArrowRight className="ml-2 h-4 w-4" />
         </Link>
@@ -238,8 +237,7 @@ const AdminDashboard = () => {
           <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
           <Link
             to="/orders"
-            className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center"
-          >
+            className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center">
             View All
             <ArrowRight className="ml-1 h-4 w-4" />
           </Link>
