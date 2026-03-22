@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { fetchOrder, submitDesign, approveDesign, rejectDesign, startPrinting, completePrinting, completeOrder } from "../store/slices/ordersSlice";
 import { initiateMpesaPayment, checkMpesaStatus } from "../store/slices/paymentsSlice";
-import toast from "react-hot-toast";
+import toast from "react-toastify";
 
 const OrderDetail = () => {
   const dispatch = useDispatch();
