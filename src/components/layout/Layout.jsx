@@ -23,8 +23,7 @@ const Layout = () => {
       <main
         className={`pt-16 min-h-screen transition-all duration-300 ${
           sidebarOpen ? "lg:pl-64" : "lg:pl-20"
-        }`}
-      >
+        }`}>
         <div className="p-4 md:p-6">
           <Outlet />
         </div>
