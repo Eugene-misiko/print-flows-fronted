@@ -291,3 +291,74 @@ const ordersSlice = createSlice({
           };
         }
       })
+      .addCase(fetchOrders.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Fetch Single Order
+    builder
+      .addCase(fetchOrder.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchOrder.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentOrder = action.payload;
+      })
+      .addCase(fetchOrder.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Create Order
+    builder
+      .addCase(createOrder.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(createOrder.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.orders.unshift(action.payload);
+        state.successMessage = "Order created successfully";
+      })
+      .addCase(createOrder.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Update Order
+    builder
+      .addCase(updateOrder.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateOrder.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const index = state.orders.findIndex(o => o.id === action.payload.id);
+        if (index !== -1) {
+          state.orders[index] = action.payload;
+        }
+        state.currentOrder = action.payload;
+        state.successMessage = "Order updated successfully";
+      })
+      .addCase(updateOrder.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Delete Order
+    builder
+      .addCase(deleteOrder.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteOrder.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.orders = state.orders.filter(o => o.id !== action.payload);
+        state.successMessage = "Order deleted successfully";
+      })
+      .addCase(deleteOrder.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
