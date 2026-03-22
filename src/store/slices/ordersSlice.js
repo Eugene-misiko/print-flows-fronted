@@ -421,7 +421,7 @@ const ordersSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       });    
-      
+
    // Start Printing
     builder
       .addCase(startPrinting.pending, (state) => {
@@ -510,6 +510,71 @@ const ordersSlice = createSlice({
         state.error = action.payload;
       });
 
+    // Fetch Print Jobs
+    builder
+      .addCase(fetchPrintJobs.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchPrintJobs.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.printJobs = action.payload.results || action.payload;
+      })
+      .addCase(fetchPrintJobs.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Assign Printer
+    builder
+      .addCase(assignPrinter.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(assignPrinter.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const index = state.printJobs.findIndex(j => j.id === action.payload.id);
+        if (index !== -1) {
+          state.printJobs[index] = action.payload;
+        }
+        state.successMessage = "Printer assigned successfully";
+      })
+      .addCase(assignPrinter.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Update Transportation
+    builder
+      .addCase(updateTransportation.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateTransportation.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (state.currentOrder) {
+          state.currentOrder.transportation = action.payload;
+        }
+        state.successMessage = "Transportation updated successfully";
+      })
+      .addCase(updateTransportation.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Dashboards
+    builder
+      .addCase(fetchDesignerDashboard.fulfilled, (state, action) => {
+        state.designerDashboard = action.payload;
+      })
+      .addCase(fetchPrinterDashboard.fulfilled, (state, action) => {
+        state.printerDashboard = action.payload;
+      })
+      .addCase(fetchClientDashboard.fulfilled, (state, action) => {
+        state.clientDashboard = action.payload;
+      });
+  },
+});
 
 
-    }})
+    
