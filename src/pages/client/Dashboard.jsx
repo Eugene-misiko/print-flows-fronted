@@ -176,7 +176,6 @@ const ClientDashboard = () => {
             </div>
           </div>
         </div>
-
         {/* Completed */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between">
@@ -240,8 +239,7 @@ const ClientDashboard = () => {
                       <div className="flex items-center gap-2">
                         <Link
                           to={`/orders/${order.id}`}
-                          className="inline-flex items-center px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
-                        >
+                          className="inline-flex items-center px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
                           <Eye className="h-4 w-4 mr-1" />
                           Preview
                         </Link>
