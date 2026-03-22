@@ -421,7 +421,95 @@ const ordersSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       });    
-
-
       
+   // Start Printing
+    builder
+      .addCase(startPrinting.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(startPrinting.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentOrder = action.payload;
+        state.successMessage = "Printing started";
+      })
+      .addCase(startPrinting.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Complete Printing
+    builder
+      .addCase(completePrinting.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(completePrinting.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentOrder = action.payload;
+        state.successMessage = "Printing completed";
+      })
+      .addCase(completePrinting.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Start Polishing
+    builder
+      .addCase(startPolishing.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(startPolishing.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentOrder = action.payload;
+        state.successMessage = "Polishing started";
+      })
+      .addCase(startPolishing.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Complete Order
+    builder
+      .addCase(completeOrder.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(completeOrder.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentOrder = action.payload;
+        const index = state.orders.findIndex(o => o.id === action.payload.id);
+        if (index !== -1) {
+          state.orders[index] = action.payload;
+        }
+        state.successMessage = "Order completed successfully";
+      })
+      .addCase(completeOrder.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Cancel Order
+    builder
+      .addCase(cancelOrder.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(cancelOrder.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentOrder = action.payload;
+        const index = state.orders.findIndex(o => o.id === action.payload.id);
+        if (index !== -1) {
+          state.orders[index] = action.payload;
+        }
+        state.successMessage = "Order cancelled";
+      })
+      .addCase(cancelOrder.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+
+
     }})
