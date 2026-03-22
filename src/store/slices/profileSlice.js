@@ -1,82 +1,109 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "@/api/api";
+import { authAPI } from "../../api/api";
 
-// Fetch authenticated user profile
+// Async thunks
 export const fetchProfile = createAsyncThunk(
   "profile/fetchProfile",
-  async (_, thunkAPI) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/auth/profile/");
+      const response = await authAPI.getProfile();
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || "Failed to fetch profile");
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch profile");
     }
   }
 );
 
-// Update profile (supports FormData for avatar)
-export const updateProfile = createAsyncThunk(
+export const updateProfileData = createAsyncThunk(
   "profile/updateProfile",
-  async (updatedData, thunkAPI) => {
+  async (data, { rejectWithValue }) => {
     try {
-      let response;
-      // If sending FormData (file upload)
-      if (updatedData instanceof FormData) {
-        response = await api.put("/auth/profile/", updatedData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      } else {
-        // fallback for normal JSON updates
-        response = await api.put("/auth/profile/", updatedData);
-      }
+      const response = await authAPI.updateProfile(data);
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || "Failed to update profile");
+      return rejectWithValue(error.response?.data?.message || "Failed to update profile");
+    }
+  }
+);
+
+export const changePassword = createAsyncThunk(
+  "profile/changePassword",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await authAPI.changePassword(data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to change password");
     }
   }
 );
 
 const initialState = {
   profile: null,
-  loading: false,
+  isLoading: false,
   error: null,
-  updateLoading: false,
-  updateError: null,
+  successMessage: null,
 };
 
 const profileSlice = createSlice({
   name: "profile",
   initialState,
-  reducers: {},
+  reducers: {
+    clearProfileError: (state) => {
+      state.error = null;
+    },
+    clearSuccessMessage: (state) => {
+      state.successMessage = null;
+    },
+  },
   extraReducers: (builder) => {
+    // Fetch Profile
     builder
-      // Fetch profile
       .addCase(fetchProfile.pending, (state) => {
-        state.loading = true;
+        state.isLoading = true;
         state.error = null;
       })
       .addCase(fetchProfile.fulfilled, (state, action) => {
-        state.loading = false;
+        state.isLoading = false;
         state.profile = action.payload;
       })
       .addCase(fetchProfile.rejected, (state, action) => {
-        state.loading = false;
+        state.isLoading = false;
         state.error = action.payload;
+      });
+
+    // Update Profile
+    builder
+      .addCase(updateProfileData.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
       })
-      // Update profile
-      .addCase(updateProfile.pending, (state) => {
-        state.updateLoading = true;
-        state.updateError = null;
-      })
-      .addCase(updateProfile.fulfilled, (state, action) => {
-        state.updateLoading = false;
+      .addCase(updateProfileData.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.profile = action.payload;
+        state.successMessage = "Profile updated successfully";
       })
-      .addCase(updateProfile.rejected, (state, action) => {
-        state.updateLoading = false;
-        state.updateError = action.payload;
+      .addCase(updateProfileData.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Change Password
+    builder
+      .addCase(changePassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(changePassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.successMessage = "Password changed successfully";
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });
 
+export const { clearProfileError, clearSuccessMessage } = profileSlice.actions;
 export default profileSlice.reducer;

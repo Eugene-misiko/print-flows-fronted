@@ -7,6 +7,7 @@ import Register from "./components/auth/Register";
 import AcceptInvitation from "./components/auth/AcceptInvitation";
 //layout 
 import Layout from "./components/layout/Layout";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 function App() {
 
