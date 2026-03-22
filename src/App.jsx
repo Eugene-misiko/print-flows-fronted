@@ -6,6 +6,8 @@ import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import AcceptInvitation from "./components/auth/AcceptInvitation";
 
+//layout components
+import Header from "./components/layout/Header";
 function App() {
 
   return (
@@ -17,6 +19,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<AcceptInvitation />} />
+        <Route path="/header" element={<Header />} />
       </Routes>
     </Router>
     </>
