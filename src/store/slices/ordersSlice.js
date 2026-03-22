@@ -197,3 +197,97 @@ export const updateTransportation = createAsyncThunk(
     }
   }
 );
+
+// Dashboard data
+export const fetchDesignerDashboard = createAsyncThunk(
+  "orders/fetchDesignerDashboard",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await ordersAPI.getDesignerDashboard();
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch dashboard");
+    }
+  }
+);
+
+export const fetchPrinterDashboard = createAsyncThunk(
+  "orders/fetchPrinterDashboard",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await ordersAPI.getPrinterDashboard();
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch dashboard");
+    }
+  }
+);
+
+export const fetchClientDashboard = createAsyncThunk(
+  "orders/fetchClientDashboard",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await ordersAPI.getClientDashboard();
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch dashboard");
+    }
+  }
+);
+
+const initialState = {
+  orders: [],
+  currentOrder: null,
+  printJobs: [],
+  designerDashboard: null,
+  printerDashboard: null,
+  clientDashboard: null,
+  pagination: {
+    count: 0,
+    next: null,
+    previous: null,
+    page: 1,
+    totalPages: 0,
+  },
+  isLoading: false,
+  error: null,
+  successMessage: null,
+};
+
+const ordersSlice = createSlice({
+  name: "orders",
+  initialState,
+  reducers: {
+    clearOrdersError: (state) => {
+      state.error = null;
+    },
+    clearOrderSuccess: (state) => {
+      state.successMessage = null;
+    },
+    setCurrentOrder: (state, action) => {
+      state.currentOrder = action.payload;
+    },
+    clearCurrentOrder: (state) => {
+      state.currentOrder = null;
+    },
+  },
+  extraReducers: (builder) => {
+    // Fetch Orders
+    builder
+      .addCase(fetchOrders.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchOrders.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.orders = action.payload.results || action.payload;
+        if (action.payload.count !== undefined) {
+          state.pagination = {
+            count: action.payload.count,
+            next: action.payload.next,
+            previous: action.payload.previous,
+            page: action.meta.arg?.page || 1,
+            totalPages: Math.ceil(action.payload.count / 10),
+          };
+        }
+      })
