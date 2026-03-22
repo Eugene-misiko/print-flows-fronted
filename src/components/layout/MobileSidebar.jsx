@@ -108,8 +108,7 @@ const MobileSidebar = () => {
           </Link>
           <button
             onClick={handleClose}
-            className="p-2 rounded-lg hover:bg-gray-100 text-gray-500"
-          >
+            className="p-2 rounded-lg hover:bg-gray-100 text-gray-500">
             <X className="h-5 w-5" />
           </button>
         </div>

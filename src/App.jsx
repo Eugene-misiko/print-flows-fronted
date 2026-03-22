@@ -5,9 +5,9 @@ import "react-toastify/dist/ReactToastify.css"
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import AcceptInvitation from "./components/auth/AcceptInvitation";
+//layout 
+import Layout from "./components/layout/Layout";
 
-//layout components
-import Header from "./components/layout/Header";
 function App() {
 
   return (
@@ -16,10 +16,17 @@ function App() {
     <ToastContainer/>
     <Router>
       <Routes>
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<AcceptInvitation />} />
-        <Route path="/header" element={<Header />} />
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/accept-invitation" element={<AcceptInvitation />} />
+          
+          {/* Protected Routes */}
+          <Route path="/" element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>}>
+          </Route>
       </Routes>
     </Router>
     </>
