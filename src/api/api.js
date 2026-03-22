@@ -58,7 +58,7 @@ export const companyAPI = {
   inviteUser: (data) => api.post("/companies/invite/", data),
   getInvitations: () => api.get("/companies/invitations/"),
   cancelInvitation: (id) => api.delete(`/companies/invitations/${id}/`),
-  getDashboard: () => api.get("/companies/dashboard/"),
+  getDashboard: () => api.get("/company/dashboard/"),
 };
 
 // Users API

@@ -5,6 +5,8 @@ import "react-toastify/dist/ReactToastify.css"
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import AcceptInvitation from "./components/auth/AcceptInvitation";
+//users dashboards
+import AdminDashboard from "./pages/admin/Dashboard";
 //layout 
 import Layout from "./components/layout/Layout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -21,6 +23,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/accept-invitation" element={<AcceptInvitation />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           
           {/* Protected Routes */}
           <Route path="/" element={
