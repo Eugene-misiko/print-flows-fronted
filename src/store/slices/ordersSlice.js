@@ -362,3 +362,66 @@ const ordersSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       });
+    // Submit Design
+    builder
+      .addCase(submitDesign.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(submitDesign.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentOrder = action.payload;
+        const index = state.orders.findIndex(o => o.id === action.payload.id);
+        if (index !== -1) {
+          state.orders[index] = action.payload;
+        }
+        state.successMessage = "Design submitted successfully";
+      })
+      .addCase(submitDesign.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Approve Design
+    builder
+      .addCase(approveDesign.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(approveDesign.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentOrder = action.payload;
+        const index = state.orders.findIndex(o => o.id === action.payload.id);
+        if (index !== -1) {
+          state.orders[index] = action.payload;
+        }
+        state.successMessage = "Design approved successfully";
+      })
+      .addCase(approveDesign.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Reject Design
+    builder
+      .addCase(rejectDesign.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(rejectDesign.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentOrder = action.payload;
+        const index = state.orders.findIndex(o => o.id === action.payload.id);
+        if (index !== -1) {
+          state.orders[index] = action.payload;
+        }
+        state.successMessage = "Design rejected";
+      })
+      .addCase(rejectDesign.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });    
+
+
+      
+    }})
