@@ -271,3 +271,11 @@ const productsSlice = createSlice({
       });
   },
 });
+
+export const { 
+  clearProductsError, 
+  clearProductSuccess, 
+  setCurrentProduct, 
+  clearCurrentProduct 
+} = productsSlice.actions;
+export default productsSlice.reducer;
