@@ -1,15 +1,25 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from './slices/authslice'
+import {authReducer} from "@slices/authSlice";
+import profileReducer from "./slices/profileSlice"
+import usersReducer from "./slices/usersSlice";
+import ordersReducer from "./slices/ordersSlice";
+import productsReducer from "./slices/productsSlice";
+import paymentsReducer from "./slices/paymentsSlice";
 import notificationsReducer from "./slices/notificationsSlice";
+import messagingReducer from "./slices/messagingSlice";
 import uiReducer from "./slices/uiSlice";
-import profileReducer from "./slices/profileSlice";
+
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    profile: profileReducer,
+    users: usersReducer,
+    orders: ordersReducer,
+    products: productsReducer,
+    payments: paymentsReducer,
     notifications: notificationsReducer,
+    messaging: messagingReducer,
     ui: uiReducer,
-    profile: profileReducer
-   
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
