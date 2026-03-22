@@ -37,3 +37,41 @@ export const updateCategory = createAsyncThunk(
     }
   }
 );
+
+
+export const deleteCategory = createAsyncThunk(
+  "products/deleteCategory",
+  async (id, { rejectWithValue }) => {
+    try {
+      await productsAPI.deleteCategory(id);
+      return id;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to delete category");
+    }
+  }
+);
+
+// Products
+export const fetchProducts = createAsyncThunk(
+  "products/fetchProducts",
+  async (params, { rejectWithValue }) => {
+    try {
+      const response = await productsAPI.getProducts(params);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch products");
+    }
+  }
+);
+
+export const fetchProduct = createAsyncThunk(
+  "products/fetchProduct",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await productsAPI.getProduct(id);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch product");
+    }
+  }
+);
