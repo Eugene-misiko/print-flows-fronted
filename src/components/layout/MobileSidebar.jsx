@@ -1,8 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  LayoutDashboard,
+import { LayoutDashboard,
   Package,
   Users,
   Settings,
@@ -17,7 +16,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { setMobileSidebarOpen } from "../../store/slices/uiSlice";
-import { logout } from "@/store/slices/authslice";
+import { logout } from "@/store/slices/authSlice";
 const MobileSidebar = () => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -36,7 +35,7 @@ const MobileSidebar = () => {
     ];
 
     switch (role) {
-      case "ADMIN":
+      case "admin":
         return [
           ...commonItems,
           { path: "/products", icon: Package, label: "Products" },
@@ -45,7 +44,7 @@ const MobileSidebar = () => {
           { path: "/invoices", icon: FileText, label: "Invoices" },
           { path: "/settings", icon: Settings, label: "Settings" },
         ];
-      case "DESIGNER":
+      case "designer":
         return [
           { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
           { path: "/design-tasks", icon: Palette, label: "Design Tasks" },
@@ -53,7 +52,7 @@ const MobileSidebar = () => {
           { path: "/messages", icon: MessageSquare, label: "Messages" },
           { path: "/notifications", icon: Bell, label: "Notifications", badge: unreadCount },
         ];
-      case "PRINTER":
+      case "printer":
         return [
           { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
           { path: "/print-jobs", icon: Printer, label: "Print Jobs" },
@@ -61,7 +60,7 @@ const MobileSidebar = () => {
           { path: "/messages", icon: MessageSquare, label: "Messages" },
           { path: "/notifications", icon: Bell, label: "Notifications", badge: unreadCount },
         ];
-      case "CLIENT":
+      case "client":
         return [
           { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
           { path: "/orders", icon: ShoppingCart, label: "My Orders" },
@@ -157,8 +156,7 @@ const MobileSidebar = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="mt-3 flex items-center gap-2 w-full px-3 py-2 text-gray-500 hover:text-red-600 transition-colors"
-          >
+            className="mt-3 flex items-center gap-2 w-full px-3 py-2 text-gray-500 hover:text-red-600 transition-colors">
             <LogOut className="h-4 w-4" />
             <span className="text-sm">Logout</span>
           </button>

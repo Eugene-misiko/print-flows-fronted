@@ -1,80 +1,110 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../store/slices/authSlice";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { Bell, MessageSquare, Search, Menu } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { toggleMobileSidebar } from "@/store/slices/uiSlice";
+import { Bell, LogOut, User, Shield, Palette, Printer as PrinterIcon } from "lucide-react";
+import ThemeToggle from "../ThemeToggle";
 
+// Roles are LOWERCASE: 'admin', 'designer', 'printer', 'client', 'platform_admin'
 const Header = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const { unreadCount } = useSelector((state) => state.notifications);
-  const { sidebarOpen } = useSelector((state) => state.ui);
+
+  const handleLogout = async () => {
+    await dispatch(logout());
+    navigate("/login");
+  };
+
+  const getRoleIcon = (role) => {
+    switch (role) {
+      case "admin":
+      case "platform_admin":
+        return <Shield className="w-4 h-4" />;
+      case "designer":
+        return <Palette className="w-4 h-4" />;
+      case "printer":
+        return <PrinterIcon className="w-4 h-4" />;
+      default:
+        return <User className="w-4 h-4" />;
+    }
+  };
+
+  const getRoleColor = (role) => {
+    switch (role) {
+      case "admin":
+      case "platform_admin":
+        return "bg-purple-100 text-purple-700";
+      case "designer":
+        return "bg-pink-100 text-pink-700";
+      case "printer":
+        return "bg-cyan-100 text-cyan-700";
+      default:
+        return "bg-orange-100 text-orange-700";
+    }
+  };
+
+  const getRoleLabel = (role) => {
+    if (!role) return "User";
+    return role.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase());
+  };
 
   return (
-    <header
-      className={`fixed top-0 right-0 z-30 bg-white border-b border-gray-200 transition-all duration-300 ${
-        sidebarOpen ? "left-64" : "left-20"
-      }`}
-    >
-      <div className="flex items-center justify-between h-16 px-4 md:px-6">
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => dispatch(toggleMobileSidebar())}
-          className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
-        >
-          <Menu className="h-5 w-5 text-gray-600" />
-        </button>
-
-        {/* Search */}
-        <div className="hidden md:flex items-center flex-1 max-w-md">
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search orders, products..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            />
-          </div>
+    <header className="bg-white border-b border-gray-200 px-6 py-3.5 dark:text-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700">
+      <div className="flex items-center justify-between">
+        {/* Greeting */}
+        <div>
+          <h1 className="text-lg text-white font-semibold text-gray-900 dark:text-white">
+            Welcome, {user?.first_name || "User"}
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-white/60">
+            {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "numeric"})}
+          </p>
         </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-2">
-          {/* Messages */}
-          <Link
-            to="/messages"
-            className="relative p-2 rounded-lg hover:bg-gray-100 text-gray-600"
-          >
-            <MessageSquare className="h-5 w-5" />
-          </Link>
-
+        {/* Right Side */}
+        <div className="flex items-center gap-4">
           {/* Notifications */}
-          <Link
-            to="/notifications"
-            className="relative p-2 rounded-lg hover:bg-gray-100 text-gray-600"
-          >
-            <Bell className="h-5 w-5" />
+          <ThemeToggle/>
+          <button className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors">
+            <Link to="/notifications">
+            <Bell className="w-5 h-5" />
+            </Link>
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+              <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}
-          </Link>
-
-          {/* User Avatar */}
-          <Link
-            to="/profile"
-            className="flex items-center gap-2 ml-2 p-1 rounded-lg hover:bg-gray-100"
-          >
-            <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-              <span className="text-orange-600 font-medium text-sm">
-                {user?.full_name?.charAt(0) || user?.email?.charAt(0).toUpperCase()}
+          </button>
+          
+          {/* User Info */}
+          <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
+            <Link to="/profile">
+            <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white font-semibold">
+              
+              {user?.first_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
+            </div>
+            </Link>
+            <div className="hidden sm:block">
+              <p className="text-sm font-medium text-gray-900 text-white/60">
+                {user?.first_name} {user?.last_name} 
+              </p>
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user?.role)}`}>
+                {getRoleIcon(user?.role)}
+                {getRoleLabel(user?.role)}
               </span>
             </div>
-            <span className="hidden md:block text-sm font-medium text-gray-700">
-              {user?.full_name?.split(" ")[0] || "User"}
-            </span>
-          </Link>
+          </div>
+
+          {/* Logout */}
+          <button
+            onClick={handleLogout}
+            className="p-2 text-gray-500 hover:bg-gray-100 cursor-pointer hover:text-red-600 rounded-lg transition-colors"
+            title="Logout">
+            <LogOut className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </header>

@@ -1,62 +1,65 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { register, clearError } from "@/store/slices/authslice";
-import { Printer, Mail, Lock, Eye, EyeOff, User, Building2 } from "lucide-react";
-import { toast } from 'react-toastify';
+import { registerCompany, clearError } from "../../store/slices/authSlice";
+import toast from "react-hot-toast";
+import { Building2, User, Lock, Eye, EyeOff, Printer } from "lucide-react";
+
 const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error } = useSelector((state) => state.auth);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    full_name: "",
+  const [form, setForm] = useState({
     company_name: "",
-    phone: "",
+    company_email: "",
+    company_phone: "",
+    company_address: "",
+    company_city: "",
+    admin_first_name: "",
+    admin_last_name: "",
+    admin_email: "",
+    admin_password: "",
+    admin_phone: "",
   });
+
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
     if (error) dispatch(clearError());
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.email || !formData.password || !formData.full_name || !formData.company_name) {
-      toast.error("Please fill in all required fields");
-      return;
+    if (!form.company_name.trim()) return toast.error("Company name is required");
+    if (!form.company_email.trim()) return toast.error("Company email is required");
+    if (!form.admin_first_name.trim()) return toast.error("Admin first name is required");
+    if (!form.admin_last_name.trim()) return toast.error("Admin last name is required");
+    if (!form.admin_email.trim()) return toast.error("Admin email is required");
+
+    if (!form.admin_password) return toast.error("Password is required");
+    if (form.admin_password.length < 8) {
+      return toast.error("Password must be at least 8 characters");
     }
 
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
+    const company_slug = form.company_name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
 
-    if (formData.password.length < 8) {
-      toast.error("Password must be at least 8 characters");
-      return;
-    }
+    const payload = {
+      ...form,
+      company_slug,
+      company_country: "Kenya",
+    };
 
-    const result = await dispatch(register({
-      email: formData.email,
-      password: formData.password,
-      full_name: formData.full_name,
-      company_name: formData.company_name,
-      phone: formData.phone,
-      role: "ADMIN",
-    }));
+    const result = await dispatch(registerCompany(payload));
 
-    if (register.fulfilled.match(result)) {
-      toast.success("Account created successfully!");
+    if (registerCompany.fulfilled.match(result)) {
+      toast.success("Company registered successfully!");
       navigate("/dashboard");
     } else {
       toast.error(result.payload || "Registration failed");
@@ -64,174 +67,164 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-3xl">
+
+        {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl mb-4">
-            <Printer className="h-8 w-8 text-white" />
+          <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <Printer className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Create Account</h1>
-          <p className="text-gray-500 mt-1">Register your printing company</p>
+          <h1 className="text-3xl font-bold text-gray-900">Register Your Company</h1>
+          <p className="text-gray-500 mt-1">Create your PrintFlow account</p>
         </div>
 
-        {/* Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Card */}
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+
+          <form onSubmit={handleSubmit} className="space-y-8">
+
+            {/* Error */}
             {error && (
-              <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-lg text-sm">
                 {error}
               </div>
             )}
 
-            {/* Company Name */}
+            {/* COMPANY SECTION */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Company Name *
-              </label>
-              <div className="relative">
-                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-orange-500" />
+                Company Details
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
                 <input
-                  type="text"
                   name="company_name"
-                  value={formData.company_name}
+                  value={form.company_name}
                   onChange={handleChange}
-                  placeholder="Your Company Ltd"
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="Company Name *"
+                  className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
+                />
+
+                <input
+                  name="company_email"
+                  value={form.company_email}
+                  onChange={handleChange}
+                  placeholder="Company Email *"
+                  className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
+                />
+
+                <input
+                  name="company_phone"
+                  value={form.company_phone}
+                  onChange={handleChange}
+                  placeholder="Phone"
+                  className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                />
+
+                <input
+                  name="company_city"
+                  value={form.company_city}
+                  onChange={handleChange}
+                  placeholder="City"
+                  className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                />
+
+                <input
+                  name="company_address"
+                  value={form.company_address}
+                  onChange={handleChange}
+                  placeholder="Address"
+                  className="w-full px-4 py-2.5 border rounded-lg md:col-span-2 focus:ring-2 focus:ring-orange-500"
                 />
               </div>
             </div>
 
-            {/* Full Name */}
+            {/* ADMIN SECTION */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name *
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <User className="w-5 h-5 text-orange-500" />
+                Admin Account
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
                 <input
-                  type="text"
-                  name="full_name"
-                  value={formData.full_name}
+                  name="admin_first_name"
+                  value={form.admin_first_name}
                   onChange={handleChange}
-                  placeholder="Eugene Zelder"
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="First Name *"
+                  className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500"
                 />
-              </div>
-            </div>
 
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address *
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
+                  name="admin_last_name"
+                  value={form.admin_last_name}
                   onChange={handleChange}
-                  placeholder="you@example.com"
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="Last Name *"
+                  className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500"
                 />
-              </div>
-            </div>
 
-            {/* Phone */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone Number
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  +254
-                </span>
                 <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
+                  name="admin_email"
+                  value={form.admin_email}
                   onChange={handleChange}
-                  placeholder="712345678"
-                  className="w-full pl-14 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="Admin Email *"
+                  className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500"
                 />
-              </div>
-            </div>
 
-            {/* Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Password *
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
+                  name="admin_phone"
+                  value={form.admin_phone}
                   onChange={handleChange}
-                  placeholder="Min. 8 characters"
-                  className="w-full pl-10 pr-12 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="Phone"
+                  className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
+
+                {/* PASSWORD */}
+                <div className="md:col-span-2 relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="admin_password"
+                    value={form.admin_password}
+                    onChange={handleChange}
+                    placeholder="Password *"
+                    className="w-full pl-10 pr-12 py-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  >
+                    {showPassword ? <EyeOff /> : <Eye />}
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Confirm Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password *
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Confirm your password"
-                  className="w-full pl-10 pr-12 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"/>
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Submit */}
+            {/* BUTTON */}
             <button
-              type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-2.5 rounded-lg font-medium hover:from-orange-600 hover:to-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-6">
-              {isLoading ? "Creating account..." : "Create Account"}
+              className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-3 rounded-lg font-medium hover:from-orange-600 hover:to-red-700 cursor-pointer transition-all shadow-md"
+            >
+              {isLoading ? "Creating..." : "Create Account"}
             </button>
+
           </form>
 
-          {/* Login Link */}
-          <p className="text-center text-gray-600 mt-6">
+          {/* FOOTER */}
+          <p className="text-center mt-6 text-gray-600">
             Already have an account?{" "}
-            <Link
-              to="/login"
-              className="text-orange-600 hover:text-orange-700 font-medium">
-              Sign in
+            <Link to="/login" className="text-orange-600 font-medium hover:underline">
+              Sign In
             </Link>
           </p>
+
         </div>
       </div>
     </div>

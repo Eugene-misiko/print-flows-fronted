@@ -1,255 +1,127 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { paymentsAPI } from "../../api/api";
+import { paymentsAPI, mpesaAPI, invoicesAPI} from "../../api/api";
 
-// Invoices
+// ===================== ASYNC THUNKS =====================
+
+// ----- Invoices -----
 export const fetchInvoices = createAsyncThunk(
   "payments/fetchInvoices",
   async (params, { rejectWithValue }) => {
     try {
-      const response = await paymentsAPI.getInvoices(params);
+      const response = await invoicesAPI.getAll(params);
       return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch invoices");
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
     }
   }
 );
 
-export const fetchInvoice = createAsyncThunk(
-  "payments/fetchInvoice",
-  async (id, { rejectWithValue }) => {
-    try {
-      const response = await paymentsAPI.getInvoice(id);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch invoice");
-    }
-  }
-);
-
-export const createInvoice = createAsyncThunk(
-  "payments/createInvoice",
-  async (data, { rejectWithValue }) => {
-    try {
-      const response = await paymentsAPI.createInvoice(data);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to create invoice");
-    }
-  }
-);
-
-// M-Pesa
-export const initiateMpesaPayment = createAsyncThunk(
-  "payments/initiateMpesaPayment",
-  async (data, { rejectWithValue }) => {
-    try {
-      const response = await paymentsAPI.initiateMpesaPayment(data);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to initiate payment");
-    }
-  }
-);
-
-export const checkMpesaStatus = createAsyncThunk(
-  "payments/checkMpesaStatus",
-  async (checkoutRequestId, { rejectWithValue }) => {
-    try {
-      const response = await paymentsAPI.checkMpesaStatus(checkoutRequestId);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to check payment status");
-    }
-  }
-);
-
-// Payments
+// ----- Payments -----
 export const fetchPayments = createAsyncThunk(
-  "payments/fetchPayments",
+  "payments/fetchAll",
   async (params, { rejectWithValue }) => {
     try {
-      const response = await paymentsAPI.getPayments(params);
+      const response = await paymentsAPI.getAll(params);
       return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch payments");
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
     }
   }
 );
 
-export const fetchReceipt = createAsyncThunk(
-  "payments/fetchReceipt",
-  async (paymentId, { rejectWithValue }) => {
+export const fetchPaymentStats = createAsyncThunk(
+  "payments/fetchStats",
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await paymentsAPI.getReceipt(paymentId);
+      const response = await paymentsAPI.getStats();
       return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch receipt");
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
     }
   }
 );
 
+export const recordPayment = createAsyncThunk(
+  "payments/record",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await paymentsAPI.record(data);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
+// ----- MPesa -----
+export const stkPushPayment = createAsyncThunk(
+  "payments/stkPush",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await mpesaAPI.stkPush(data);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
+// ====== INITIAL STATE ====
 const initialState = {
   invoices: [],
-  currentInvoice: null,
   payments: [],
-  currentReceipt: null,
-  mpesaStatus: null,
-  pagination: {
-    count: 0,
-    next: null,
-    previous: null,
-    page: 1,
-    totalPages: 0,
-  },
-  isLoading: false,
+  stats: {},
+  mpesaResponse: null,
+  loading: false,
   error: null,
-  successMessage: null,
 };
 
+// = SLICE ==
 const paymentsSlice = createSlice({
   name: "payments",
   initialState,
   reducers: {
-    clearPaymentsError: (state) => {
+    clearPayment: (state) => {
+      state.payment = null;
       state.error = null;
     },
-    clearPaymentSuccess: (state) => {
-      state.successMessage = null;
+    clearPayments: (state) => {
+      state.payments = [];
+      state.error = null;
     },
-    setCurrentInvoice: (state, action) => {
-      state.currentInvoice = action.payload;
-    },
-    clearCurrentInvoice: (state) => {
-      state.currentInvoice = null;
-    },
-    clearMpesaStatus: (state) => {
-      state.mpesaStatus = null;
+    clearMpesaResponse: (state) => {
+      state.mpesaResponse = null;
     },
   },
   extraReducers: (builder) => {
-    // Fetch Invoices
+    // ----- Invoices -----
     builder
-      .addCase(fetchInvoices.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(fetchInvoices.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.invoices = action.payload.results || action.payload;
-        if (action.payload.count !== undefined) {
-          state.pagination = {
-            count: action.payload.count,
-            next: action.payload.next,
-            previous: action.payload.previous,
-            page: action.meta.arg?.page || 1,
-            totalPages: Math.ceil(action.payload.count / 10),
-          };
-        }
-      })
-      .addCase(fetchInvoices.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      });
+      .addCase(fetchInvoices.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(fetchInvoices.fulfilled, (state, action) => { state.loading = false; state.invoices = action.payload; })
+      .addCase(fetchInvoices.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
 
-    // Fetch Single Invoice
+    // ----- Payments -----
     builder
-      .addCase(fetchInvoice.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(fetchInvoice.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.currentInvoice = action.payload;
-      })
-      .addCase(fetchInvoice.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      });
+      .addCase(fetchPayments.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(fetchPayments.fulfilled, (state, action) => { state.loading = false; state.payments = action.payload; })
+      .addCase(fetchPayments.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
 
-    // Create Invoice
-    builder
-      .addCase(createInvoice.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(createInvoice.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.invoices.unshift(action.payload);
-        state.currentInvoice = action.payload;
-        state.successMessage = "Invoice created successfully";
-      })
-      .addCase(createInvoice.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      });
+      .addCase(fetchPaymentStats.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(fetchPaymentStats.fulfilled, (state, action) => { state.loading = false; state.stats = action.payload; })
+      .addCase(fetchPaymentStats.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
 
-    // M-Pesa Payment
-    builder
-      .addCase(initiateMpesaPayment.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(initiateMpesaPayment.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.mpesaStatus = action.payload;
-        state.successMessage = "Payment initiated. Check your phone for M-Pesa prompt.";
-      })
-      .addCase(initiateMpesaPayment.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      });
+      .addCase(recordPayment.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(recordPayment.fulfilled, (state, action) => { state.loading = false; state.payments.unshift(action.payload.payment); })
+      .addCase(recordPayment.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
 
-    // Check M-Pesa Status
+    // ----- MPesa -----
     builder
-      .addCase(checkMpesaStatus.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(checkMpesaStatus.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.mpesaStatus = action.payload;
-      })
-      .addCase(checkMpesaStatus.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      });
-
-    // Fetch Payments
-    builder
-      .addCase(fetchPayments.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(fetchPayments.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.payments = action.payload.results || action.payload;
-      })
-      .addCase(fetchPayments.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      });
-
-    // Fetch Receipt
-    builder
-      .addCase(fetchReceipt.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(fetchReceipt.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.currentReceipt = action.payload;
-      })
-      .addCase(fetchReceipt.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      });
+      .addCase(stkPushPayment.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(stkPushPayment.fulfilled, (state, action) => { state.loading = false; state.mpesaResponse = action.payload; })
+      .addCase(stkPushPayment.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
   },
 });
 
-export const { 
-  clearPaymentsError, 
-  clearPaymentSuccess, 
-  setCurrentInvoice, 
-  clearCurrentInvoice,
-  clearMpesaStatus 
-} = paymentsSlice.actions;
+export const initiateMpesaPayment = stkPushPayment;
+export const { clearPayment, clearPayments, clearMpesaResponse ,downloadInvoice,sendInvoice} = paymentsSlice.actions;
 export default paymentsSlice.reducer;

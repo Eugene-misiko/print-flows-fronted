@@ -1,196 +1,268 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Plus, Search, Package, Edit, Trash2, Grid, List } from "lucide-react";
-import { fetchProducts, deleteProduct } from "../store/slices/productsSlice";
-import { toast } from "react-toastify";
+import { fetchProducts, createProduct, deleteProduct, fetchCategories, createCategory } from "@/store/slices/productsSlice";
+import toast from "react-hot-toast";
+import { Package, Plus, FolderPlus, Folder, Edit, Trash2 } from "lucide-react";
 
 const ProductsList = () => {
   const dispatch = useDispatch();
-  const { products, isLoading } = useSelector((state) => state.products);
+  const { products, categories, isLoading } = useSelector((state) => state.products);
   const { user } = useSelector((state) => state.auth);
+  
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [productForm, setProductForm] = useState({ name: "", category: "", price: "", description: "" });
+  const [categoryForm, setCategoryForm] = useState({ name: "", description: "" });
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [viewMode, setViewMode] = useState("grid");
+  const isAdmin = user?.role === "admin" || user?.role === "platform_admin";
 
   useEffect(() => {
-    dispatch(fetchProducts({ search: searchTerm }));
-  }, [dispatch, searchTerm]);
+    dispatch(fetchProducts());
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-KE", {
-      style: "currency",
-      currency: "KES",
-    }).format(amount || 0);
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
-    try {
-      await dispatch(deleteProduct(id)).unwrap();
-      toast.success("Product deleted successfully");
-    } catch (error) {
-      toast.error(error || "Failed to delete product");
+  const handleCreateProduct = async (e) => {
+    e.preventDefault();
+    if (!productForm.name.trim()) {
+      toast.error("Product name is required");
+      return;
+    }
+    if (!productForm.price) {
+      toast.error("Price is required");
+      return;
+    }
+    
+    const result = await dispatch(createProduct({
+      name: productForm.name,
+      category: productForm.category || null,
+      price: parseFloat(productForm.price),
+      description: productForm.description || "",
+    }));
+    
+    if (createProduct.fulfilled.match(result)) {
+      toast.success("Product created");
+      setShowProductModal(false);
+      setProductForm({ name: "", category: "", price: "", description: "" });
+    } else {
+      toast.error(result.payload || "Failed to create product");
     }
   };
 
-  const isAdmin = user?.role === "ADMIN";
+  const handleCreateCategory = async (e) => {
+    e.preventDefault();
+    if (!categoryForm.name.trim()) {
+      toast.error("Category name is required");
+      return;
+    }
+    
+    const result = await dispatch(createCategory({
+      name: categoryForm.name,
+      description: categoryForm.description || "",
+    }));
+    
+    if (createCategory.fulfilled.match(result)) {
+      toast.success("Category created");
+      setShowCategoryModal(false);
+      setCategoryForm({ name: "", description: "" });
+    } else {
+      toast.error(result.payload || "Failed to create category");
+    }
+  };
+
+  const handleDeleteProduct = async (id) => {
+    if (!confirm("Delete this product?")) return;
+    const result = await dispatch(deleteProduct(id));
+    if (deleteProduct.fulfilled.match(result)) {
+      toast.success("Product deleted");
+    }
+  };
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-          <p className="text-gray-500 mt-1">Browse available products</p>
+          <p className="text-gray-500">Manage products and categories</p>
         </div>
         {isAdmin && (
-          <button className="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Product
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowCategoryModal(true)}
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              <FolderPlus className="w-4 h-4" />
+              Category
+            </button>
+            <button
+              onClick={() => setShowProductModal(true)}
+              className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 text-white px-4 py-2 rounded-lg"
+            >
+              <Plus className="w-4 h-4" />
+              Product
+            </button>
+          </div>
         )}
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search products..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`p-2 rounded-lg border ${
-                viewMode === "grid"
-                  ? "bg-orange-50 border-orange-200 text-orange-600"
-                  : "border-gray-200 text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              <Grid className="h-5 w-5" />
-            </button>
-            <button
-              onClick={() => setViewMode("list")}
-              className={`p-2 rounded-lg border ${
-                viewMode === "list"
-                  ? "bg-orange-50 border-orange-200 text-orange-600"
-                  : "border-gray-200 text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              <List className="h-5 w-5" />
-            </button>
-          </div>
+      {/* Categories */}
+      <div className="bg-white rounded-xl shadow-sm border p-6">
+        <h2 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <Folder className="w-5 h-5 text-orange-500" />
+          Categories
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          {categories?.length === 0 ? (
+            <p className="text-gray-500 text-sm">No categories yet</p>
+          ) : (
+            categories?.map((cat) => (
+              <span key={cat.id} className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700">
+                {cat.name}
+              </span>
+            ))
+          )}
         </div>
       </div>
 
-      {/* Products Grid/List */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="animate-pulse bg-gray-200 rounded-xl h-64"></div>
-          ))}
-        </div>
-      ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
-            >
-              <div className="h-40 bg-gray-100 flex items-center justify-center">
-                {product.image ? (
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <Package className="h-12 w-12 text-gray-300" />
-                )}
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-900">{product.name}</h3>
-                <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                  {product.description}
-                </p>
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-lg font-bold text-orange-600">
-                    {formatCurrency(product.price)}
-                  </span>
-                  {isAdmin && (
-                    <div className="flex gap-2">
-                      <button className="p-1 text-gray-400 hover:text-gray-600">
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(product.id)}
-                        className="p-1 text-gray-400 hover:text-red-600"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  )}
+      {/* Products Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {isLoading ? (
+          <div className="col-span-full text-center py-12">
+            <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full mx-auto"></div>
+          </div>
+        ) : products?.length === 0 ? (
+          <div className="col-span-full text-center py-12">
+            <Package className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+            <p className="text-gray-500">No products yet</p>
+          </div>
+        ) : (
+          products?.map((product) => (
+            <div key={product.id} className="bg-white rounded-xl shadow-sm border p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="font-semibold text-gray-900">{product.name}</h3>
+                  <p className="text-sm text-gray-500">{product.category_name || "No category"}</p>
                 </div>
+                <p className="font-bold text-orange-600">KES {(product.price || 0).toLocaleString()}</p>
               </div>
+              {product.description && (
+                <p className="text-sm text-gray-500 mt-2">{product.description}</p>
+              )}
+              {isAdmin && (
+                <div className="mt-4 pt-4 border-t flex justify-end gap-2">
+                  <button className="text-gray-500 hover:text-gray-700">
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteProduct(product.id)}
+                    className="text-gray-500 hover:text-red-600"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Product</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Category</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Price</th>
-                {isAdmin && <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {products.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <Package className="h-5 w-5 text-gray-400" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{product.name}</p>
-                        <p className="text-sm text-gray-500 truncate max-w-xs">{product.description}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{product.category?.name || "N/A"}</td>
-                  <td className="px-6 py-4 font-medium text-gray-900">{formatCurrency(product.price)}</td>
-                  {isAdmin && (
-                    <td className="px-6 py-4">
-                      <div className="flex gap-2">
-                        <button className="p-1 text-gray-400 hover:text-gray-600">
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button onClick={() => handleDelete(product.id)} className="p-1 text-gray-400 hover:text-red-600">
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          ))
+        )}
+      </div>
+
+      {/* Product Modal */}
+      {showProductModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md">
+            <h3 className="font-semibold text-lg mb-4">Add Product</h3>
+            <form onSubmit={handleCreateProduct} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Name *</label>
+                <input
+                  type="text"
+                  value={productForm.name}
+                  onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Product name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Category</label>
+                <select
+                  value={productForm.category}
+                  onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="">No category</option>
+                  {categories?.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Price (KES) *</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={productForm.price}
+                  onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="0.00"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description</label>
+                <textarea
+                  value={productForm.description}
+                  onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  rows="2"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button type="button" onClick={() => setShowProductModal(false)} className="flex-1 px-4 py-2 border rounded-lg">
+                  Cancel
+                </button>
+                <button type="submit" className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg">
+                  Create
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
-      {products.length === 0 && !isLoading && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
-          <Package className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-          <p className="text-gray-500">No products found</p>
+      {/* Category Modal */}
+      {showCategoryModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md">
+            <h3 className="font-semibold text-lg mb-4">Add Category</h3>
+            <form onSubmit={handleCreateCategory} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Name *</label>
+                <input
+                  type="text"
+                  value={categoryForm.name}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Category name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description</label>
+                <textarea
+                  value={categoryForm.description}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  rows="2"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button type="button" onClick={() => setShowCategoryModal(false)} className="flex-1 px-4 py-2 border rounded-lg cursor-pointer">
+                  Cancel
+                </button>
+                <button type="submit" className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg cursor-pointer">
+                  Create
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

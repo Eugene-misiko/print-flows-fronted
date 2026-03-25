@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  Package,
-  Clock,
-  MapPin,
+import {ArrowLeft, Package, Clock, MapPin,
   User,
   Phone,
   Mail,
@@ -20,9 +16,9 @@ import {
   CheckSquare,
   AlertCircle,
 } from "lucide-react";
-import { fetchOrder, submitDesign, approveDesign, rejectDesign, startPrinting, completePrinting, completeOrder } from "../store/slices/ordersSlice";
-import { initiateMpesaPayment, checkMpesaStatus } from "../store/slices/paymentsSlice";
-import toast from "react-toastify";
+import { fetchOrder,rejectDesign,startPrintJob, submitDesign,completePrintJob, approveDesign,moveToPolishing } from "@/store/slices/ordersSlice"//, rejectDesign
+import { initiateMpesaPayment} from "@/store/slices/paymentsSlice";
+import { toast, ToastContainer } from "react-toastify"; 
 
 const OrderDetail = () => {
   const dispatch = useDispatch();
@@ -140,7 +136,7 @@ const OrderDetail = () => {
   const handleStartPrinting = async () => {
     setIsProcessing(true);
     try {
-      await dispatch(startPrinting(id)).unwrap();
+      await dispatch(startPrintJob(id)).unwrap();
       toast.success("Printing started!");
       dispatch(fetchOrder(id));
     } catch (error) {
@@ -153,7 +149,7 @@ const OrderDetail = () => {
   const handleCompletePrinting = async () => {
     setIsProcessing(true);
     try {
-      await dispatch(completePrinting(id)).unwrap();
+      await dispatch(moveToPolishing(id)).unwrap();
       toast.success("Printing completed!");
       dispatch(fetchOrder(id));
     } catch (error) {
@@ -166,7 +162,7 @@ const OrderDetail = () => {
   const handleCompleteOrder = async () => {
     setIsProcessing(true);
     try {
-      await dispatch(completeOrder(id)).unwrap();
+      await dispatch(completePrintJob(id)).unwrap();
       toast.success("Order completed!");
       dispatch(fetchOrder(id));
     } catch (error) {
@@ -208,22 +204,22 @@ const OrderDetail = () => {
     );
   }
 
-  const canSubmitDesign = user?.role === "DESIGNER" && 
+  const canSubmitDesign = user?.role === "designer" && 
     ["PENDING_DESIGN", "DESIGN_REJECTED"].includes(currentOrder.status);
   
-  const canApproveReject = user?.role === "CLIENT" && 
+  const canApproveReject = user?.role === "client" && 
     currentOrder.status === "DESIGN_SUBMITTED";
   
-  const canStartPrinting = user?.role === "PRINTER" && 
+  const canStartPrinting = user?.role === "printer" && 
     currentOrder.status === "AWAITING_PRINT";
   
-  const canCompletePrinting = user?.role === "PRINTER" && 
+  const canCompletePrinting = user?.role === "printer" && 
     currentOrder.status === "PRINTING";
   
-  const canCompleteOrder = user?.role === "PRINTER" && 
+  const canCompleteOrder = user?.role === "printer" && 
     currentOrder.status === "POLISHING";
 
-  const needsPayment = user?.role === "CLIENT" && 
+  const needsPayment = user?.role === "client" && 
     currentOrder.invoice && 
     !currentOrder.invoice.is_paid;
 

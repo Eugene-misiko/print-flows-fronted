@@ -1,34 +1,44 @@
 import axios from "axios";
 
+// Base axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
+  headers: { "Content-Type": "application/json" },
 });
 
-// Request interceptor to add auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+// Request interceptor - add auth token
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("access_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+  return config;
+});
 
-// Response interceptor to handle errors
+// Response interceptor - handle 401 and token refresh
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url.includes("/auth/refresh/")) {
+      originalRequest._retry = true;
+      const refreshToken = localStorage.getItem("refresh_token");
+      if (refreshToken) {
+        try {
+          const response = await axios.post(
+            `${api.defaults.baseURL}/auth/refresh/`,
+            { refresh: refreshToken });
+          const { access } = response.data;
+          localStorage.setItem("access_token", access);
+          originalRequest.headers.Authorization = `Bearer ${access}`;
+          return api(originalRequest);
+        } catch (err) {
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+          localStorage.removeItem("user");
+          window.location.href = "/login";
+        }
+      }
     }
     return Promise.reject(error);
   }
@@ -36,122 +46,174 @@ api.interceptors.response.use(
 
 export default api;
 
-// Auth API
+// ===================== AUTH =====================
+// Roles are LOWERCASE: 'admin', 'designer', 'printer', 'client', 'platform_admin'
 export const authAPI = {
-  login: (credentials) => api.post("/auth/login/", credentials),
-  register: (data) => api.post("/auth/register/", data),
-  logout: () => api.post("/auth/logout/"),
+  login: (data) => api.post("/auth/login/", data),
+  getMe: () => api.get("/auth/me/"),
+  logout: () => api.post("/auth/logout/", {refresh_token: localStorage.getItem("refresh_token"),}),
+  register: (data) => api.post("/auth/register/", data), // Invitation registration
+  registerCompany: (data) => api.post("/auth/register-company/", data),
   getProfile: () => api.get("/auth/profile/"),
   updateProfile: (data) => api.patch("/auth/profile/", data),
   changePassword: (data) => api.post("/auth/change-password/", data),
-  forgotPassword: (email) => api.post("/auth/forgot-password/", { email }),
-  resetPassword: (data) => api.post("/auth/reset-password/", data),
-  acceptInvitation: (data) => api.post("/auth/accept-invitation/", data),
+  requestPasswordReset: (email) => api.post("/auth/password-reset/", { email }),
+  confirmPasswordReset: (data) => api.post("/auth/password-reset/confirm/", data),
 };
 
-// Company API
-export const companyAPI = {
-  getCompany: () => api.get("/companies/my-company/"),
-  updateCompany: (data) => api.patch("/companies/my-company/", data),
-  getSettings: () => api.get("/companies/settings/"),
-  updateSettings: (data) => api.patch("/companies/settings/", data),
-  inviteUser: (data) => api.post("/companies/invite/", data),
-  getInvitations: () => api.get("/companies/invitations/"),
-  cancelInvitation: (id) => api.delete(`/companies/invitations/${id}/`),
-  getDashboard: () => api.get("/company/dashboard/"),
-};
-
-// Users API
+// ===================== USERS =====================
 export const usersAPI = {
-  getUsers: (params) => api.get("/accounts/users/", { params }),
-  getUser: (id) => api.get(`/accounts/users/${id}/`),
-  updateUser: (id, data) => api.patch(`/accounts/users/${id}/`, data),
-  deleteUser: (id) => api.delete(`/accounts/users/${id}/`),
-  getDesigners: () => api.get("/accounts/users/", { params: { role: "DESIGNER" } }),
-  getPrinters: () => api.get("/accounts/users/", { params: { role: "PRINTER" } }),
-  getClients: () => api.get("/accounts/users/", { params: { role: "CLIENT" } }),
+  getAll: (params) => api.get("/users/", { params }),
+  getById: (id) => api.get(`/users/${id}/`),
+  update: (id, data) => api.patch(`/users/${id}/`, data),
+  deactivate: (id) => api.post(`/users/${id}/deactivate/`),
+  changeRole: (id, role) => api.post(`/users/${id}/change-role/`, { role }),
 };
 
-// Products API
+// ===================== INVITATIONS =====================
+export const invitationsAPI = {
+  getAll: () => api.get("/invitations/"),
+  getByToken: (token) => api.get(`/invitations/${token}/`),
+  create: (data) => api.post("/invitations/", data),
+  cancel: (token) => api.post(`/invitations/${token}/cancel/`),
+  resend: (token) => api.post(`/invitations/${token}/resend/`),
+};
+
+// ===================== COMPANY =====================
+export const companyAPI = {
+  get: () => api.get("/company/"),
+  update: (data) => api.patch("/company/update/", data),
+  getSettings: () => api.get("/company/settings/"),
+  updateSettings: (data) => api.patch("/company/settings/", data),
+  getPaymentSettings: () => api.get("/company/payment-settings/"),
+  updatePaymentSettings: (data) => api.patch("/company/payment-settings/", data),
+  getDashboard: () => api.get("/company/dashboard/"),
+  getStaff: () => api.get("/company/staff/"),
+  getStaffStats: () => api.get("/company/staff/stats/"),
+};
+
+// ===================== CATEGORIES =====================
+export const categoriesAPI = {
+  getAll: () => api.get("/categories/"),
+  getById: (id) => api.get(`/categories/${id}/`),
+  create: (data) => api.post("/categories/create/", data),
+  update: (id, data) => api.patch(`/categories/${id}/update/`, data),
+  delete: (id) => api.delete(`/categories/${id}/delete/`),
+};
+
+// ===================== PRODUCTS =====================
 export const productsAPI = {
-  getCategories: () => api.get("/products/categories/"),
-  getCategory: (id) => api.get(`/products/categories/${id}/`),
-  createCategory: (data) => api.post("/products/categories/", data),
-  updateCategory: (id, data) => api.patch(`/products/categories/${id}/`, data),
-  deleteCategory: (id) => api.delete(`/products/categories/${id}/`),
-  getProducts: (params) => api.get("/products/products/", { params }),
-  getProduct: (id) => api.get(`/products/products/${id}/`),
-  createProduct: (data) => api.post("/products/products/", data),
-  updateProduct: (id, data) => api.patch(`/products/products/${id}/`, data),
-  deleteProduct: (id) => api.delete(`/products/products/${id}/`),
+  getAll: (params) => api.get("/products/", { params }),
+  getFeatured: () => api.get("/products/featured/"),
+  getById: (id) => api.get(`/products/${id}/`),
+  create: (data) => api.post("/products/create/", data),
+  update: (id, data) => api.patch(`/products/${id}/update/`, data),
+  delete: (id) => api.delete(`/products/${id}/delete/`),
+  getPublic: (params) => api.get("/public/products/", { params }),
+  getPublicCategories: () => api.get("/public/categories/"),
 };
 
-// Orders API
+// ===================== ORDERS =====================
+// Status values are LOWERCASE: 'pending', 'assigned_to_designer', 'design_in_progress', etc.
 export const ordersAPI = {
-  getOrders: (params) => api.get("/orders/orders/", { params }),
-  getOrder: (id) => api.get(`/orders/orders/${id}/`),
-  createOrder: (data) => api.post("/orders/orders/", data),
-  updateOrder: (id, data) => api.patch(`/orders/orders/${id}/`, data),
-  deleteOrder: (id) => api.delete(`/orders/orders/${id}/`),
+  getAll: (params) => api.get("/orders/", { params }),
+  getById: (id) => api.get(`/orders/${id}/`),
+  create: (data) => api.post("/orders/", data),
+  update: (id, data) => api.patch(`/orders/${id}/`, data),
+  delete: (id) => api.delete(`/orders/${id}/`),
   
-  // Status updates
-  submitDesign: (id, data) => api.post(`/orders/orders/${id}/submit-design/`, data),
-  approveDesign: (id) => api.post(`/orders/orders/${id}/approve-design/`),
-  rejectDesign: (id, data) => api.post(`/orders/orders/${id}/reject-design/`, data),
-  startPrinting: (id) => api.post(`/orders/orders/${id}/start-printing/`),
-  completePrinting: (id) => api.post(`/orders/orders/${id}/complete-printing/`),
-  startPolishing: (id) => api.post(`/orders/orders/${id}/start-polishing/`),
-  completeOrder: (id) => api.post(`/orders/orders/${id}/complete/`),
-  cancelOrder: (id, data) => api.post(`/orders/orders/${id}/cancel/`, data),
+  // Workflow - uses designer_id and printer_id
+  assignDesigner: (id, designerId) => api.post(`/orders/${id}/assign-designer/`, { designer_id: designerId }),
+  assignPrinter: (id, printerId) => api.post(`/orders/${id}/assign-printer/`, { printer_id: printerId }),
+  startDesign: (id) => api.post(`/orders/${id}/start-design/`),
+  submitDesign: (id, data) => api.post(`/orders/${id}/submit-design/`, data),
+  approveDesign: (id, approved, rejectionReason) => api.post(`/orders/${id}/approve-design/`, { approved, rejection_reason: rejectionReason }),
+  cancel: (id, reason) => api.post(`/orders/${id}/cancel/`, { reason }),
   
-  // Print jobs
-  getPrintJobs: (params) => api.get("/orders/print-jobs/", { params }),
-  assignPrinter: (id, printerId) => api.post(`/orders/print-jobs/${id}/assign/`, { printer_id: printerId }),
-  updatePrintJobStatus: (id, status) => api.patch(`/orders/print-jobs/${id}/`, { status }),
-  
-  // Transportation
-  updateTransportation: (orderId, data) => api.post(`/orders/orders/${orderId}/transportation/`, data),
-  
-  // Dashboards
-  getDesignerDashboard: () => api.get("/orders/designer-dashboard/"),
-  getPrinterDashboard: () => api.get("/orders/printer-dashboard/"),
-  getClientDashboard: () => api.get("/orders/client-dashboard/"),
+  // Dashboard
+  getMyOrders: () => api.get("/my-orders/"),
+  getMyAssignments: () => api.get("/my-assignments/"),
+  getMyPrintJobs: () => api.get("/my-print-jobs/"),
+  getUnassigned: () => api.get("/unassigned/"),
 };
 
+// ===================== PRINT JOBS =====================
+export const printJobsAPI = {
+  getAll: (params) => api.get("/print-jobs/", { params }),
+  getById: (id) => api.get(`/print-jobs/${id}/`),
+  start: (id) => api.post(`/print-jobs/${id}/start/`),
+  moveToPolishing: (id) => api.post(`/print-jobs/${id}/polishing/`),
+  complete: (id) => api.post(`/print-jobs/${id}/complete/`),
+};
 
+// ===================== TRANSPORTATION =====================
+export const transportationAPI = {
+  getAll: (params) => api.get("/transportation/", { params }),
+  getById: (id) => api.get(`/transportation/${id}/`),
+};
 
-// Payments API
+// ===================== INVOICES =====================
+export const invoicesAPI = {
+  getAll: (params) => api.get("/invoices/", { params }),
+  getById: (id) => api.get(`/invoices/${id}/`),
+  download: (id) => api.get(`/invoices/${id}/download/`, { responseType: "blob" }),
+  send: (id) => api.post(`/invoices/${id}/send/`),
+  getPendingDeposit: () => api.get("/invoices/pending-deposit/"),
+  getPendingBalance: () => api.get("/invoices/pending-balance/"),
+};
+
+// ===================== PAYMENTS =====================
 export const paymentsAPI = {
-  getInvoices: (params) => api.get("/payments/invoices/", { params }),
-  getInvoice: (id) => api.get(`/payments/invoices/${id}/`),
-  createInvoice: (data) => api.post("/payments/invoices/", data),
-  downloadInvoice: (id) => api.get(`/payments/invoices/${id}/download/`, { responseType: "blob" }),
-  
-  // M-Pesa payments
-  initiateMpesaPayment: (data) => api.post("/payments/mpesa/stk-push/", data),
-  checkMpesaStatus: (checkoutRequestId) => api.get(`/payments/mpesa/status/${checkoutRequestId}/`),
-  
-  // Payments
-  getPayments: (params) => api.get("/payments/payments/", { params }),
-  getReceipt: (paymentId) => api.get(`/payments/receipts/${paymentId}/`),
-  downloadReceipt: (paymentId) => api.get(`/payments/receipts/${paymentId}/download/`, { responseType: "blob" }),
-};
-// Notifications API
-export const notificationsAPI = {
-  getNotifications: (params) => api.get("/notifications/notifications/", { params }),
-  markAsRead: (id) => api.patch(`/notifications/notifications/${id}/`, { is_read: true }),
-  markAllAsRead: () => api.post("/notifications/notifications/mark-all-read/"),
-  getUnreadCount: () => api.get("/notifications/notifications/unread-count/"),
-  getPreferences: () => api.get("/notifications/preferences/"),
-  updatePreferences: (data) => api.patch("/notifications/preferences/", data),
+  getAll: (params) => api.get("/payments/", { params }),
+  getById: (id) => api.get(`/payments/${id}/`),
+  // Required: invoice_id, amount, payment_type ('deposit'|'balance'|'full'), payment_method ('mpesa'|'cash'|'card')
+  record: (data) => api.post("/record-payment/", data),
+  getStats: () => api.get("/payment-stats/"),
 };
 
-// Messaging API
+// ===================== MPESA =====================
+// Phone must be format: 2547XXXXXXXX
+export const mpesaAPI = {
+  // Required: invoice_id, phone_number
+  stkPush: (data) => api.post("/mpesa/stk-push/", data),
+};
+
+// ===================== RECEIPTS =====================
+export const receiptsAPI = {
+  getAll: (params) => api.get("/receipts/", { params }),
+  getById: (id) => api.get(`/receipts/${id}/`),
+  download: (id) => api.get(`/receipts/${id}/download/`, { responseType: "blob" }),
+};
+
+// ===================== NOTIFICATIONS =====================
+export const notificationsAPI = {
+  getAll: (params) => api.get("/notifications/", { params }),
+  getById: (id) => api.get(`/notifications/${id}/`),
+  markAsRead: (id) => api.post(`/notifications/${id}/mark-read/`),
+  markAllAsRead: () => api.post("/notifications/mark-all-read/"),
+  getUnreadCount: () => api.get("/notifications/unread-count/"),
+};
+
+// ===================== CONVERSATIONS =====================
+export const conversationsAPI = {
+  getAll: () => api.get("/conversations/"),
+  getById: (id) => api.get(`/conversations/${id}/`),
+  create: (data) => api.post("/conversations/", data),
+  update: (id, data) => api.patch(`/conversations/${id}/`, data),
+  delete: (id) => api.delete(`/conversations/${id}/`),
+  getMessages: (id, params) => api.get(`/conversations/${id}/messages/`, { params }),
+  setTyping: (id, isTyping) => api.post(`/conversations/${id}/typing/`, { is_typing: isTyping }),
+  start: (data) => api.post("/start-conversation/", data),
+};
+
+// ===================== MESSAGES =====================
+export const messagesAPI = {
+  getAll: (params) => api.get("/messages/", { params }),
+  getById: (id) => api.get(`/messages/${id}/`),
+  send: (data) => api.post("/messages/", data),
+};
+
+// ===================== MESSAGING =====================
 export const messagingAPI = {
-  getConversations: () => api.get("/messaging/conversations/"),
-  getConversation: (id) => api.get(`/messaging/conversations/${id}/`),
-  createConversation: (data) => api.post("/messaging/conversations/", data),
-  getMessages: (conversationId, params) => api.get(`/messaging/conversations/${conversationId}/messages/`, { params }),
-  sendMessage: (conversationId, data) => api.post(`/messaging/conversations/${conversationId}/messages/`, data),
-  markMessagesAsRead: (conversationId) => api.post(`/messaging/conversations/${conversationId}/mark-read/`),
+  getUnread: () => api.get("/unread/"),
 };

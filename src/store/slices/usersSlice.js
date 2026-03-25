@@ -1,111 +1,137 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { usersAPI, companyAPI } from "../../api/api";
+import { usersAPI, invitationsAPI } from "../../api/api";
 
-// Async thunks
+// Fetch all users
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
   async (params, { rejectWithValue }) => {
     try {
-      const response = await usersAPI.getUsers(params);
+      const response = await usersAPI.getAll(params);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch users");
+      return rejectWithValue(error.response?.data?.error || "Failed to fetch users");
     }
   }
 );
 
+// Fetch single user
 export const fetchUser = createAsyncThunk(
   "users/fetchUser",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await usersAPI.getUser(id);
+      const response = await usersAPI.getById(id);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch user");
+      return rejectWithValue(error.response?.data?.error || "Failed to fetch user");
     }
   }
 );
 
+// Update user
 export const updateUser = createAsyncThunk(
   "users/updateUser",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await usersAPI.updateUser(id, data);
+      const response = await usersAPI.update(id, data);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to update user");
+      return rejectWithValue(error.response?.data?.error || "Failed to update user");
     }
   }
 );
 
-export const deleteUser = createAsyncThunk(
-  "users/deleteUser",
+// Deactivate user
+export const deactivateUser = createAsyncThunk(
+  "users/deactivateUser",
   async (id, { rejectWithValue }) => {
     try {
-      await usersAPI.deleteUser(id);
+      await usersAPI.deactivate(id);
       return id;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to delete user");
+      return rejectWithValue(error.response?.data?.error || "Failed to deactivate user");
     }
   }
 );
 
-export const inviteUser = createAsyncThunk(
-  "users/inviteUser",
-  async (data, { rejectWithValue }) => {
+// Change user role - role must be lowercase: 'designer', 'printer', 'client'
+export const changeUserRole = createAsyncThunk(
+  "users/changeUserRole",
+  async ({ id, role }, { rejectWithValue }) => {
     try {
-      const response = await companyAPI.inviteUser(data);
+      const response = await usersAPI.changeRole(id, role);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to send invitation");
+      return rejectWithValue(error.response?.data?.error || "Failed to change role");
     }
   }
 );
 
+// Fetch invitations
 export const fetchInvitations = createAsyncThunk(
   "users/fetchInvitations",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await companyAPI.getInvitations();
+      const response = await invitationsAPI.getAll();
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch invitations");
+      return rejectWithValue(error.response?.data?.error || "Failed to fetch invitations");
     }
   }
 );
 
+// Fetch invitation by token
+export const fetchInvitationByToken = createAsyncThunk(
+  "users/fetchInvitationByToken",
+  async (token, { rejectWithValue }) => {
+    try {
+      const response = await invitationsAPI.getByToken(token);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.error || "Invalid invitation");
+    }
+  }
+);
+
+// Create invitation - role must be lowercase: 'designer', 'printer', 'client'
+export const createInvitation = createAsyncThunk(
+  "users/createInvitation",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await invitationsAPI.create(data);
+      return response.data;
+    } catch (error) {
+      const errors = error.response?.data;
+      if (typeof errors === "object") {
+        const firstError = Object.values(errors)[0];
+        return rejectWithValue(Array.isArray(firstError) ? firstError[0] : firstError);
+      }
+      return rejectWithValue("Failed to send invitation");
+    }
+  }
+);
+
+// Cancel invitation
 export const cancelInvitation = createAsyncThunk(
   "users/cancelInvitation",
   async (id, { rejectWithValue }) => {
     try {
-      await companyAPI.cancelInvitation(id);
+      await invitationsAPI.cancel(id);
       return id;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to cancel invitation");
+      return rejectWithValue(error.response?.data?.error || "Failed to cancel invitation");
     }
   }
 );
 
-export const fetchDesigners = createAsyncThunk(
-  "users/fetchDesigners",
-  async (_, { rejectWithValue }) => {
+// Resend invitation
+export const resendInvitation = createAsyncThunk(
+  "users/resendInvitation",
+  async (id, { rejectWithValue }) => {
     try {
-      const response = await usersAPI.getDesigners();
+      const response = await invitationsAPI.resend(id);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch designers");
-    }
-  }
-);
-
-export const fetchPrinters = createAsyncThunk(
-  "users/fetchPrinters",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await usersAPI.getPrinters();
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch printers");
+      return rejectWithValue(error.response?.data?.error || "Failed to resend invitation");
     }
   }
 );
@@ -114,15 +140,7 @@ const initialState = {
   users: [],
   currentUser: null,
   invitations: [],
-  designers: [],
-  printers: [],
-  pagination: {
-    count: 0,
-    next: null,
-    previous: null,
-    page: 1,
-    totalPages: 0,
-  },
+  currentInvitation: null,
   isLoading: false,
   error: null,
   successMessage: null,
@@ -132,155 +150,85 @@ const usersSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
-    clearUsersError: (state) => {
-      state.error = null;
-    },
-    clearUserSuccess: (state) => {
-      state.successMessage = null;
-    },
-    setCurrentUser: (state, action) => {
-      state.currentUser = action.payload;
-    },
-    clearCurrentUser: (state) => {
-      state.currentUser = null;
-    },
+    clearError: (state) => { state.error = null; },
+    clearSuccess: (state) => { state.successMessage = null; },
+    clearCurrentInvitation: (state) => { state.currentInvitation = null; },
   },
   extraReducers: (builder) => {
-    // Fetch Users
     builder
-      .addCase(fetchUsers.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
+      // Fetch users
+      .addCase(fetchUsers.pending, (state) => { state.isLoading = true; state.error = null; })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.isLoading = false;
         state.users = action.payload.results || action.payload;
-        if (action.payload.count !== undefined) {
-          state.pagination = {
-            count: action.payload.count,
-            next: action.payload.next,
-            previous: action.payload.previous,
-            page: action.meta.arg?.page || 1,
-            totalPages: Math.ceil(action.payload.count / 10),
-          };
-        }
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-      });
-
-    // Fetch Single User
-    builder
-      .addCase(fetchUser.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
       })
+      // Fetch user
       .addCase(fetchUser.fulfilled, (state, action) => {
-        state.isLoading = false;
         state.currentUser = action.payload;
       })
-      .addCase(fetchUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      });
-
-    // Update User
-    builder
-      .addCase(updateUser.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
+      // Update user
       .addCase(updateUser.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.currentUser = action.payload;
-        const index = state.users.findIndex(u => u.id === action.payload.id);
-        if (index !== -1) {
-          state.users[index] = action.payload;
-        }
-        state.successMessage = "User updated successfully";
+        const idx = state.users.findIndex(u => u.id === action.payload.id);
+        if (idx !== -1) state.users[idx] = action.payload;
+        state.successMessage = "User updated";
       })
-      .addCase(updateUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      });
-
-    // Delete User
-    builder
-      .addCase(deleteUser.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(deleteUser.fulfilled, (state, action) => {
-        state.isLoading = false;
+      // Deactivate user
+      .addCase(deactivateUser.fulfilled, (state, action) => {
         state.users = state.users.filter(u => u.id !== action.payload);
-        state.successMessage = "User deleted successfully";
+        state.successMessage = "User deactivated";
       })
-      .addCase(deleteUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      });
-
-    // Invite User
-    builder
-      .addCase(inviteUser.pending, (state) => {
+      // Change role
+      .addCase(changeUserRole.fulfilled, (state, action) => {
+        const user = action.payload.user;
+        if (user) {
+          const idx = state.users.findIndex(u => u.id === user.id);
+          if (idx !== -1) state.users[idx] = user;
+        }
+        state.successMessage = "Role changed";
+      })
+      // Fetch invitations
+      .addCase(fetchInvitationByToken.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(inviteUser.fulfilled, (state, action) => {
+      .addCase(fetchInvitationByToken.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.invitations.push(action.payload);
-        state.successMessage = "Invitation sent successfully";
+        state.currentInvitation = action.payload;
       })
-      .addCase(inviteUser.rejected, (state, action) => {
+      .addCase(fetchInvitationByToken.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-      });
-
-    // Fetch Invitations
-    builder
-      .addCase(fetchInvitations.pending, (state) => {
+        state.currentInvitation = null;
+      })
+      // Create invitation
+      .addCase(createInvitation.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(fetchInvitations.fulfilled, (state, action) => {
+      .addCase(createInvitation.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.invitations = action.payload.results || action.payload;
+        state.invitations.unshift(action.payload);
+        state.successMessage = "Invitation sent";
       })
-      .addCase(fetchInvitations.rejected, (state, action) => {
+      .addCase(createInvitation.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-      });
-
-    // Cancel Invitation
-    builder
-      .addCase(cancelInvitation.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
       })
+      // Cancel invitation
       .addCase(cancelInvitation.fulfilled, (state, action) => {
-        state.isLoading = false;
         state.invitations = state.invitations.filter(i => i.id !== action.payload);
-        state.successMessage = "Invitation cancelled successfully";
+        state.successMessage = "Invitation cancelled";
       })
-      .addCase(cancelInvitation.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      });
-
-    // Fetch Designers
-    builder
-      .addCase(fetchDesigners.fulfilled, (state, action) => {
-        state.designers = action.payload.results || action.payload;
-      });
-
-    // Fetch Printers
-    builder
-      .addCase(fetchPrinters.fulfilled, (state, action) => {
-        state.printers = action.payload.results || action.payload;
+      // Resend invitation
+      .addCase(resendInvitation.fulfilled, (state) => {
+        state.successMessage = "Invitation resent";
       });
   },
 });
 
-export const { clearUsersError, clearUserSuccess, setCurrentUser, clearCurrentUser } = usersSlice.actions;
+export const { clearError, clearSuccess, clearCurrentInvitation } = usersSlice.actions;
 export default usersSlice.reducer;

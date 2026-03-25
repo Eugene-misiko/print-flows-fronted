@@ -1,16 +1,18 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Bell, CheckCircle, AlertCircle, Info, Check } from "lucide-react";
-import { fetchNotifications, markAsRead, markAllAsRead } from "../store/slices/notificationsSlice";
+import { fetchNotifications, markAsRead, markAllAsRead } from "@/store/slices/notificationsSlice";
 import toast from "react-hot-toast";
 
 const NotificationsList = () => {
   const dispatch = useDispatch();
   const { notifications, isLoading } = useSelector((state) => state.notifications);
 
-  useEffect(() => {
-    dispatch(fetchNotifications());
-  }, [dispatch]);
+useEffect(() => {
+  dispatch(fetchNotifications())
+    .unwrap()
+    .catch(() => toast.error("Failed to load notifications"));
+}, [dispatch]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -29,12 +31,18 @@ const NotificationsList = () => {
 
   const getIcon = (type) => {
     switch (type) {
-      case "SUCCESS":
+      case "order":
+        return <CheckCircle className="h-5 w-5 text-blue-600" />;
+      case "payment":
         return <CheckCircle className="h-5 w-5 text-green-600" />;
-      case "WARNING":
+      case "design":
+        return <Info className="h-5 w-5 text-purple-600" />;
+      case "printing":
         return <AlertCircle className="h-5 w-5 text-yellow-600" />;
-      case "ERROR":
-        return <AlertCircle className="h-5 w-5 text-red-600" />;
+      case "delivery":
+        return <CheckCircle className="h-5 w-5 text-indigo-600" />;
+      case "system":
+        return <Info className="h-5 w-5 text-gray-600" />;
       default:
         return <Info className="h-5 w-5 text-blue-600" />;
     }
@@ -58,6 +66,9 @@ const NotificationsList = () => {
   };
 
   return (
+    <>
+  
+   
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -66,10 +77,9 @@ const NotificationsList = () => {
         </div>
         <button
           onClick={handleMarkAllAsRead}
-          className="inline-flex items-center px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
-        >
-          <Check className="h-4 w-4 mr-2" />
-          Mark all as read
+          className="inline-flex items-center px-4 py-2 border  border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50 hover:text-black">
+          <Check className="h-4 w-4 mr-2 hover:text-black" />
+          <p className="text-white cursor-pointer hover:text-black">Mark all as read</p>
         </button>
       </div>
 
@@ -122,6 +132,7 @@ const NotificationsList = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

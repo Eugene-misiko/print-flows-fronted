@@ -3,31 +3,19 @@ import { Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import MobileSidebar from "./MobileSidebar";
 
 const Layout = () => {
-  const { sidebarOpen } = useSelector((state) => state.ui);
+  const { user } = useSelector((state) => state.auth);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Mobile Sidebar */}
-      <MobileSidebar />
-
-      {/* Header */}
-      <Header />
-
-      {/* Main Content */}
-      <main
-        className={`pt-16 min-h-screen transition-all duration-300 ${
-          sidebarOpen ? "lg:pl-64" : "lg:pl-20"
-        }`}>
-        <div className="p-4 md:p-6">
+    <div className="flex dark:text-black min-h-screen dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700">
+      <Sidebar user={user} />
+      <div className="flex-1 flex flex-col">
+        <Header />
+        <main className="flex-1 p-6 overflow-auto">
           <Outlet />
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };

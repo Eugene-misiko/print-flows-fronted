@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMoon, faSun } from "@fortawesome/free-regular-svg-icons";
 import { Sun, Moon } from "lucide-react";
 
 export default function ThemeToggle() {
@@ -47,10 +45,8 @@ export default function ThemeToggle() {
       text-white
       dark:text-black
       hover:scale-105
-      transition
-      cursor-pointer
-      "
-    >
+      transition cursor-pointer
+      ">
      {dark ? <Sun size={20} /> : <Moon size={20} />}
     </button>
   );
