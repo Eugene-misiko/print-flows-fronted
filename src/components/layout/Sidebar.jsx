@@ -49,7 +49,7 @@ const Sidebar = ({ user }) => {
         {/* Dashboard - Everyone */}
         <NavLink to="/dashboard" className={linkClass}>
           <LayoutDashboard className="w-5 h-5 " />
-         <p class="text-white dark:text-white">Dashboard</p>
+         <p className="text-white dark:text-white">Dashboard</p>
         </NavLink>
 
         {/* Orders - Everyone */}
