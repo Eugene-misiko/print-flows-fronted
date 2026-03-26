@@ -8,7 +8,7 @@ const ResetPassword = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
 
-  const token = params.get("token");
+  const token= params.get("token");
 
   const [form, setForm] = useState({
     password: "",
@@ -61,7 +61,6 @@ const ResetPassword = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
