@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 # securing evironment
 .env
+
+.vercel
