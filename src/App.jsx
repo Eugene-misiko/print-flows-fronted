@@ -27,7 +27,6 @@ import SettingsPage from "./pages/SettingsPage";
 import MessagesPage from "./pages/MessagesPage";
 import NotificationsList from "./pages/NotificationsList";
 import MobileSidebar from "./components/layout/MobileSidebar";
-
 // Dashboard router based on user role
 // Roles are LOWERCASE: 'admin', 'designer', 'printer', 'client', 'platform_admin'
 const DashboardRouter = () => {
@@ -56,24 +55,24 @@ function App() {
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-           <Route path="/reset-password" element={<ResetPassword />} /> 
+          <Route path="/reset-password" element={<ResetPassword />} /> 
           <Route path="/register" element={<Register />} />
           <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
           <Route path="/mobile" element={<MobileSidebar/>}/>
           {/* Protected Routes */}
           <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<DashboardRouter />} />
-            <Route path="orders" element={<OrdersList />} />          
-            <Route path="orders/new" element={<CreateOrder />} />
-            <Route path="orders/:id" element={<OrderDetail />} />
-            <Route path="users" element={<UsersList />} />
-            <Route path="products" element={<ProductsList />} />
+            <Route path="/dashboard" element={<DashboardRouter />} />
+            <Route path="/orders" element={<OrdersList />} />          
+            <Route path="/orders/new" element={<CreateOrder />} />
+            <Route path="/orders/:id" element={<OrderDetail />} />
+            <Route path="/users" element={<UsersList />} />
+            <Route path="/products" element={<ProductsList />} />
             <Route path="payments" element={<PaymentsPage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="settings" element={<SettingsPage />} />
-            <Route path="messages" element={<MessagesPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/messages" element={<MessagesPage />} />
             <Route path="/notifications" element={<NotificationsList />} />
           </Route>
           {/* Catch all */}
