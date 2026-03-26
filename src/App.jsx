@@ -2,8 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
-import store from "./store/store";
-
+import store from "./store/store.js";
 import Layout from "./components/layout/Layout";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
