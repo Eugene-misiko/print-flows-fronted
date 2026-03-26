@@ -1,13 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "./slices/authSlice";
-import usersReducer from "./slices/usersSlice";
-import productsReducer from "./slices/productsSlice";
-import ordersReducer from "./slices/ordersSlice";
-import paymentsReducer from "./slices/paymentsSlice";
-import notificationsReducer from "./slices/notificationsSlice";
-import messagingReducer from "./slices/messagingSlice";
-import companyReducer from "./slices/companySlice";
-import uiReducer from "./slices/uiSlice";
+import authReducer from "./slices/authSlice.js";
+import usersReducer from "./slices/usersSlice.js";
+import productsReducer from "./slices/productsSlice.js";
+import ordersReducer from "./slices/ordersSlice.js";
+import paymentsReducer from "./slices/paymentsSlice.js";
+import notificationsReducer from "./slices/notificationsSlice.js";
+import messagingReducer from "./slices/messagingSlice.js";
+import companyReducer from "./slices/companySlice.js";
+import uiReducer from "./slices/uiSlice.js";
 
 export const store = configureStore({
   reducer: {
