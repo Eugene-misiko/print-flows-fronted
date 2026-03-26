@@ -2,8 +2,8 @@ import axios from "axios";
 
 // Base axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
-  headers: { "Content-Type": "application/json" },
+  baseURL: import.meta.env.VITE_API_URL
+  //headers: { "Content-Type": "application/json" },
 });
 
 // Request interceptor - add auth token
@@ -52,7 +52,7 @@ export const authAPI = {
   login: (data) => api.post("/auth/login/", data),
   getMe: () => api.get("/auth/me/"),
   logout: () => api.post("/auth/logout/", {refresh_token: localStorage.getItem("refresh_token"),}),
-  register: (data) => api.post("/auth/register/", data), // Invitation registration
+  register: (data) => api.post("/auth/register/", data), 
   registerCompany: (data) => api.post("/auth/register-company/", data),
   getProfile: () => api.get("/auth/profile/"),
   updateProfile: (data) => api.patch("/auth/profile/", data),
@@ -106,11 +106,13 @@ export const productsAPI = {
   getAll: (params) => api.get("/products/", { params }),
   getFeatured: () => api.get("/products/featured/"),
   getById: (id) => api.get(`/products/${id}/`),
-  create: (data) => api.post("/products/create/", data),
-  update: (id, data) => api.patch(`/products/${id}/update/`, data),
+  create: (data) => api.post("/products/create/", data, {headers: { "Content-Type": "multipart/form-data" }}),
+  update: (id, data) => api.patch(`/products/${id}/update/`, data, {headers: { "Content-Type": "multipart/form-data" }}),
   delete: (id) => api.delete(`/products/${id}/delete/`),
   getPublic: (params) => api.get("/public/products/", { params }),
-  getPublicCategories: () => api.get("/public/categories/"),
+  getPublicCategories: (params) => api.get("/public/categories/", { params }),
+  getPublicById: (id, params) => api.get(`/public/products/${id}/`, { params }),
+  getPublicCategoryById: (id, params) => api.get(`/public/categories/${id}/`, { params }),
 };
 
 // ===================== ORDERS =====================
