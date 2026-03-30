@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import { Bell, LogOut, User, Shield, Palette, Printer as PrinterIcon } from "lucide-react";
 import ThemeToggle from "../ThemeToggle";
 
-// Roles are LOWERCASE: 'admin', 'designer', 'printer', 'client', 'platform_admin'
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -36,13 +35,13 @@ const Header = () => {
     switch (role) {
       case "admin":
       case "platform_admin":
-        return "bg-purple-100 text-purple-700";
+        return "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400";
       case "designer":
-        return "bg-pink-100 text-pink-700";
+        return "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400";
       case "printer":
-        return "bg-cyan-100 text-cyan-700";
+        return "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400";
       default:
-        return "bg-orange-100 text-orange-700";
+        return "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400";
     }
   };
 
@@ -52,43 +51,44 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 px-6 py-3.5 dark:text-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700">
+    <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-3.5 transition-colors duration-200">
       <div className="flex items-center justify-between">
         {/* Greeting */}
         <div>
-          <h1 className="text-lg text-white font-semibold text-gray-900 dark:text-white">
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
             Welcome, {user?.first_name || "User"}
           </h1>
-          <p className="text-sm text-gray-500 dark:text-white/60">
-            {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "numeric"})}
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "numeric" })}
           </p>
         </div>
 
         {/* Right Side */}
         <div className="flex items-center gap-4">
+          {/* Theme Toggle */}
+          <ThemeToggle />
+          
           {/* Notifications */}
-          <ThemeToggle/>
-          <button className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors">
+          <button className="relative p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
             <Link to="/notifications">
-            <Bell className="w-5 h-5" />
+              <Bell className="w-5 h-5" />
             </Link>
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}
           </button>
           
           {/* User Info */}
-          <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
+          <div className="flex items-center gap-3 pl-4 border-l border-gray-200 dark:border-gray-700">
             <Link to="/profile">
-            <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white font-semibold">
-              
-              {user?.first_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
-            </div>
+              <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white font-semibold shadow-sm">
+                {user?.first_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
+              </div>
             </Link>
             <div className="hidden sm:block">
-              <p className="text-sm font-medium text-gray-900 text-white/60">
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
                 {user?.first_name} {user?.last_name} 
               </p>
               <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user?.role)}`}>
@@ -101,7 +101,7 @@ const Header = () => {
           {/* Logout */}
           <button
             onClick={handleLogout}
-            className="p-2 text-gray-500 hover:bg-gray-100 cursor-pointer hover:text-red-600 rounded-lg transition-colors"
+            className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-600 dark:hover:text-red-500 rounded-lg transition-colors"
             title="Logout">
             <LogOut className="w-5 h-5" />
           </button>
