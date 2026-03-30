@@ -85,32 +85,35 @@ const CreateOrder = () => {
   };
 
   const total = calculateTotal();
+  
+  // Common input classes
+  const inputClass = "w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-colors";
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link to="/orders" className="p-2 hover:bg-gray-100 rounded-lg">
+        <Link to="/orders" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-300 transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Create New Order</h1>
-          <p className="text-gray-500">Add products and specify requirements</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create New Order</h1>
+          <p className="text-gray-500 dark:text-gray-400">Add products and specify requirements</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Items Section */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-200">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+            <h2 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <ShoppingBag className="w-5 h-5 text-orange-500" />
               Order Items
             </h2>
             <button
               type="button"
               onClick={addItem}
-              className="flex items-center gap-1 text-sm text-orange-600 hover:text-orange-700"
+              className="flex items-center gap-1 text-sm text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               Add Item
@@ -122,17 +125,17 @@ const CreateOrder = () => {
               const product = products?.find(p => p.id === parseInt(item.product));
               
               return (
-                <div key={index} className="border border-gray-200 rounded-lg p-4">
+                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700/30 transition-colors">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     {/* Product Select */}
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Product *
                       </label>
                       <select
                         value={item.product}
                         onChange={(e) => handleItemChange(index, "product", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                        className={inputClass}
                         required
                       >
                         <option value="">Select product</option>
@@ -146,7 +149,7 @@ const CreateOrder = () => {
 
                     {/* Quantity */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Quantity *
                       </label>
                       <input
@@ -154,24 +157,24 @@ const CreateOrder = () => {
                         min="1"
                         value={item.quantity}
                         onChange={(e) => handleItemChange(index, "quantity", parseInt(e.target.value) || 1)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                        className={inputClass}
                         required
                       />
                     </div>
 
                     {/* Subtotal */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Subtotal
                       </label>
-                      <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 font-medium">
+                      <div className="px-3 py-2 bg-gray-100 dark:bg-gray-600 border border-gray-200 dark:border-gray-500 rounded-lg text-gray-900 dark:text-white font-medium">
                         KES {((product?.price || 0) * (item.quantity || 0)).toLocaleString()}
                       </div>
                     </div>
 
                     {/* Notes */}
                     <div className="md:col-span-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Notes
                       </label>
                       <input
@@ -179,7 +182,7 @@ const CreateOrder = () => {
                         value={item.notes}
                         onChange={(e) => handleItemChange(index, "notes", e.target.value)}
                         placeholder="Special instructions for this item"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                        className={inputClass}
                       />
                     </div>
                   </div>
@@ -189,7 +192,7 @@ const CreateOrder = () => {
                     <button
                       type="button"
                       onClick={() => removeItem(index)}
-                      className="mt-3 text-sm text-red-600 hover:text-red-700 flex items-center gap-1"
+                      className="mt-3 text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 flex items-center gap-1 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                       Remove
@@ -202,27 +205,27 @@ const CreateOrder = () => {
         </div>
 
         {/* Design & Details Section */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h2 className="font-semibold text-gray-900 mb-4">Order Details</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-200">
+          <h2 className="font-semibold text-gray-900 dark:text-white mb-4">Order Details</h2>
           
           <div className="space-y-4">
             {/* Needs Design */}
-            <label className="flex items-center gap-3">
+            <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 checked={orderDetails.needs_design}
                 onChange={(e) => setOrderDetails({ ...orderDetails, needs_design: e.target.checked })}
-                className="w-5 h-5 text-orange-600 rounded focus:ring-orange-500"
+                className="w-5 h-5 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 dark:focus:ring-orange-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
               />
               <div>
-                <span className="font-medium text-gray-900">Requires Design Service</span>
-                <p className="text-sm text-gray-500">A designer will create the artwork</p>
+                <span className="font-medium text-gray-900 dark:text-white">Requires Design Service</span>
+                <p className="text-sm text-gray-500 dark:text-gray-400">A designer will create the artwork</p>
               </div>
             </label>
 
             {orderDetails.needs_design && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Design Description
                 </label>
                 <textarea
@@ -230,14 +233,14 @@ const CreateOrder = () => {
                   onChange={(e) => setOrderDetails({ ...orderDetails, design_description: e.target.value })}
                   rows="3"
                   placeholder="Describe what you need designed..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                  className={inputClass}
                 />
               </div>
             )}
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Order Description
               </label>
               <textarea
@@ -245,19 +248,19 @@ const CreateOrder = () => {
                 onChange={(e) => setOrderDetails({ ...orderDetails, description: e.target.value })}
                 rows="2"
                 placeholder="Any additional notes about this order..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                className={inputClass}
               />
             </div>
 
             {/* Priority */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Priority
               </label>
               <select
                 value={orderDetails.priority}
                 onChange={(e) => setOrderDetails({ ...orderDetails, priority: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                className={inputClass}
               >
                 <option value="low">Low</option>
                 <option value="normal">Normal</option>
@@ -269,26 +272,26 @@ const CreateOrder = () => {
         </div>
 
         {/* Summary */}
-        <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl p-6">
-          <h2 className="font-semibold text-gray-900 flex items-center gap-2 mb-4">
+        <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-6 transition-colors duration-200">
+          <h2 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
             <Calculator className="w-5 h-5 text-orange-500" />
             Order Summary
           </h2>
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-gray-600">Subtotal</span>
-              <span className="font-medium">KES {total.toLocaleString()}</span>
+              <span className="text-gray-600 dark:text-gray-300">Subtotal</span>
+              <span className="font-medium text-gray-900 dark:text-white">KES {total.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between text-orange-600">
+            <div className="flex justify-between text-orange-600 dark:text-orange-400">
               <span>Deposit (70%)</span>
               <span className="font-bold">KES {Math.round(total * 0.7).toLocaleString()}</span>
             </div>
-            <div className="flex justify-between text-gray-500 text-sm">
+            <div className="flex justify-between text-gray-500 dark:text-gray-400 text-sm">
               <span>Balance (30%)</span>
               <span>KES {Math.round(total * 0.3).toLocaleString()}</span>
             </div>
           </div>
-          <p className="text-xs text-gray-500 mt-4">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
             70% deposit required before work begins
           </p>
         </div>
@@ -298,14 +301,14 @@ const CreateOrder = () => {
           <button
             type="button"
             onClick={() => navigate("/orders")}
-            className="flex-1 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="flex-1 py-3 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isLoading || items.every(i => !i.product)}
-            className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 text-white py-3 rounded-lg font-medium hover:from-orange-600 hover:to-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 text-white py-3 rounded-lg font-medium hover:from-orange-600 hover:to-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
           >
             {isLoading ? "Creating..." : "Create Order"}
           </button>
