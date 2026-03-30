@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCompany, updateCompany, fetchSettings, updateSettings } from "@/store/slices/companySlice";
 import toast from "react-hot-toast";
-import { Building2, Settings, CreditCard, Save } from "lucide-react";
+import { Building2, Settings, Save } from "lucide-react";
 
 const SettingsPage = () => {
   const dispatch = useDispatch();
@@ -70,78 +70,82 @@ const SettingsPage = () => {
     }
   };
 
+  // Common input classes for consistency
+  const inputClass = `w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-colors disabled:bg-gray-100 dark:disabled:bg-gray-700/50 disabled:cursor-not-allowed`;
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-500">Manage your company settings</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
+        <p className="text-gray-500 dark:text-gray-400">Manage your company settings</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Company Settings */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-200">
+          <h2 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
             <Building2 className="w-5 h-5 text-orange-500" />
             Company Information
           </h2>
           <form onSubmit={handleCompanySubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company Name</label>
               <input
                 type="text"
                 value={companyForm.name}
                 onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })}
                 disabled={!isAdmin}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none disabled:bg-gray-100"
+                className={inputClass}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
               <input
                 type="email"
                 value={companyForm.email}
                 onChange={(e) => setCompanyForm({ ...companyForm, email: e.target.value })}
                 disabled={!isAdmin}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none disabled:bg-gray-100"
+                className={inputClass}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
                 <input
                   type="tel"
                   value={companyForm.phone}
                   onChange={(e) => setCompanyForm({ ...companyForm, phone: e.target.value })}
                   disabled={!isAdmin}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none disabled:bg-gray-100"
+                  className={inputClass}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
                 <input
                   type="text"
                   value={companyForm.city}
                   onChange={(e) => setCompanyForm({ ...companyForm, city: e.target.value })}
                   disabled={!isAdmin}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none disabled:bg-gray-100"
+                  className={inputClass}
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
               <textarea
                 value={companyForm.address}
                 onChange={(e) => setCompanyForm({ ...companyForm, address: e.target.value })}
                 disabled={!isAdmin}
                 rows="2"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none disabled:bg-gray-100"
+                className={inputClass}
               />
             </div>
             {isAdmin && (
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 text-white px-4 py-2 rounded-lg"
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white px-4 py-2.5 rounded-lg shadow-sm transition-all duration-200 disabled:opacity-50 w-full sm:w-auto"
               >
                 <Save className="w-4 h-4" />
                 {isLoading ? "Saving..." : "Save Changes"}
@@ -151,14 +155,14 @@ const SettingsPage = () => {
         </div>
 
         {/* System Settings */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-200">
+          <h2 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
             <Settings className="w-5 h-5 text-orange-500" />
             System Settings
           </h2>
           <form onSubmit={handleSettingsSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Deposit Percentage (%)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deposit Percentage (%)</label>
               <input
                 type="number"
                 min="0"
@@ -166,17 +170,17 @@ const SettingsPage = () => {
                 value={settingsForm.deposit_percentage}
                 onChange={(e) => setSettingsForm({ ...settingsForm, deposit_percentage: parseInt(e.target.value) })}
                 disabled={!isAdmin}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none disabled:bg-gray-100"
+                className={inputClass}
               />
-              <p className="text-xs text-gray-500 mt-1">Default deposit required before work begins</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Default deposit required before work begins</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Currency</label>
               <select
                 value={settingsForm.currency}
                 onChange={(e) => setSettingsForm({ ...settingsForm, currency: e.target.value })}
                 disabled={!isAdmin}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none disabled:bg-gray-100"
+                className={inputClass}
               >
                 <option value="KES">KES - Kenyan Shilling</option>
                 <option value="USD">USD - US Dollar</option>
@@ -186,7 +190,7 @@ const SettingsPage = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 text-white px-4 py-2 rounded-lg"
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white px-4 py-2.5 rounded-lg shadow-sm transition-all duration-200 disabled:opacity-50 w-full sm:w-auto"
               >
                 <Save className="w-4 h-4" />
                 {isLoading ? "Saving..." : "Save Settings"}
