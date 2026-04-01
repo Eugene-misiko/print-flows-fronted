@@ -124,8 +124,7 @@ const InvoicesPage = () => {
                         <button
                           onClick={() => handleSend(invoice.id)}
                           className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                          title="Send to client"
-                        >
+                          title="Send to client">
                           <Send className="w-4 h-4" />
                         </button>
                       </div>

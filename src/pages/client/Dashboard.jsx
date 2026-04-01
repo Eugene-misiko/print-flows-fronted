@@ -87,7 +87,7 @@ const ClientDashboard = () => {
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <h2 className="font-semibold text-gray-900 dark:text-white">My Orders</h2>
           <Link to="/orders" className="text-sm text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors">
-            View all
+            View all 
           </Link>
         </div>
         <div className="divide-y divide-gray-200 dark:divide-gray-700">

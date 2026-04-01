@@ -2,7 +2,8 @@ import axios from "axios";
 
 // Base axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  withCredentials: true
   //headers: { "Content-Type": "application/json" },
 });
 
@@ -106,7 +107,7 @@ export const productsAPI = {
   getAll: (params) => api.get("/products/", { params }),
   getFeatured: () => api.get("/products/featured/"),
   getById: (id) => api.get(`/products/${id}/`),
-  create: (data) => api.post("/products/create/", data, {headers: { "Content-Type": "multipart/form-data" }}),
+  create: (data) => api.post("/products/create/", data),
   update: (id, data) => api.patch(`/products/${id}/update/`, data, {headers: { "Content-Type": "multipart/form-data" }}),
   delete: (id) => api.delete(`/products/${id}/delete/`),
   getPublic: (params) => api.get("/public/products/", { params }),

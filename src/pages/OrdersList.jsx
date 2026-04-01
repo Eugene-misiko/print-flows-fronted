@@ -27,13 +27,12 @@ const OrdersList = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Orders</h1>
-          <p className="text-gray-500 dark:text-gray-400">Manage all orders</p>
+          <p className="text-gray-500 dark:text-gray-400">Manage all orders </p>
         </div>
         {isAdmin && (
           <Link
             to="/orders/new"
-            className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white px-4 py-2.5 rounded-lg shadow-sm transition-all duration-200"
-          >
+            className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white px-4 py-2.5 rounded-lg shadow-sm transition-all duration-200">
             <Plus className="w-4 h-4" />
             New Order
           </Link>
@@ -59,11 +58,11 @@ const OrdersList = () => {
             className={inputClass}
           >
             <option value="">All Status</option>
-            <option value="PENDING">Pending</option>
-            <option value="IN_DESIGN">In Design</option>
-            <option value="PRINTING">Printing</option>
-            <option value="COMPLETED">Completed</option>
-            <option value="CANCELLED">Cancelled</option>
+            <option value="pending">Pending</option>
+            <option value="in_design">In Design</option>
+            <option value="printing">Printing</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
           </select>
         </div>
       </div>
@@ -102,7 +101,7 @@ const OrdersList = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="font-medium text-gray-900 dark:text-white">#{order.id}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{order.client_name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{order.user_name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{order.product_name}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2.5 py-1 text-xs rounded-full font-medium inline-block ${
@@ -118,7 +117,7 @@ const OrdersList = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                      KES {order.total_amount?.toLocaleString()}
+                      KES {order.total_price?.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Link

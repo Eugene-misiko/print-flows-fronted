@@ -56,11 +56,12 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} /> 
           <Route path="/register" element={<Register />} />
-          <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
+          
           <Route path="/mobile" element={<MobileSidebar/>}/>
           {/* Protected Routes */}
           <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
             <Route path="/dashboard" element={<DashboardRouter />} />
             <Route path="/orders" element={<OrdersList />} />          
             <Route path="/orders/new" element={<CreateOrder />} />

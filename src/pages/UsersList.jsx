@@ -185,7 +185,7 @@ const UsersList = () => {
                               <button
                                 onClick={() => handleDeactivate(user.id)}
                                 className="text-red-600 dark:text-red-400 text-sm hover:underline transition-colors">
-                                Deactivate
+                                Deactivate 
                               </button>
                             )}
                           </div>
@@ -243,7 +243,7 @@ const UsersList = () => {
                   placeholder="user@example.com"/>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ">Role *</label>
                 <select
                   value={inviteForm.role}
                   onChange={(e) => setInviteForm({ ...inviteForm, role: e.target.value })}
@@ -266,12 +266,12 @@ const UsersList = () => {
                 <button
                   type="button"
                   onClick={() => setShowInviteModal(false)}
-                  className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  className="flex-1 px-4 cursor-pointer py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg shadow-sm transition-colors">
+                  className="flex-1 cursor-pointer px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg shadow-sm transition-colors">
                   Send Invite
                 </button>
               </div>

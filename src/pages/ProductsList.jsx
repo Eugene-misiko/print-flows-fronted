@@ -64,7 +64,7 @@ const ProductsList = () => {
     try {
       let result;
       if (editingProduct) {
-        result = await dispatch(updateProduct({ id: editingProduct.id, data: payload, config }));
+        result = await dispatch(updateProduct({ id: editingProduct.id, data: payload }));
         if (updateProduct.fulfilled.match(result)) {
           toast.success("Product updated");
           setShowModal(false);
@@ -75,7 +75,7 @@ const ProductsList = () => {
           toast.error(result.payload || "Failed to update product");
         }
       } else {
-        result = await dispatch(createProduct({ data: payload, config }));
+        result = await dispatch(createProduct(payload));
         if (createProduct.fulfilled.match(result)) {
           toast.success("Product created");
           setShowModal(false);

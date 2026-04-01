@@ -215,10 +215,10 @@ const OrderDetail = () => {
     currentOrder.status === "AWAITING_PRINT";
 
   const canCompletePrinting = user?.role === "printer" &&
-    currentOrder.status === "PRINTING";
+    currentOrder.status === "printing";
 
   const canCompleteOrder = user?.role === "printer" &&
-    currentOrder.status === "POLISHING";
+    currentOrder.status === "polishing";
 
   const needsPayment = user?.role === "client" &&
     currentOrder.invoice &&
@@ -256,7 +256,6 @@ const OrderDetail = () => {
               Submit Design
             </button>
           )}
-
           {canApproveReject && (
             <>
               <button
@@ -334,14 +333,14 @@ const OrderDetail = () => {
                 Status: {currentOrder.status?.replace(/_/g, " ")}
               </p>
               <p className="text-sm opacity-80">
-                {currentOrder.status === "PENDING" && "Waiting for processing"}
-                {currentOrder.status === "PENDING_DESIGN" && "Waiting for designer assignment"}
-                {currentOrder.status === "DESIGN_IN_PROGRESS" && "Designer is working on your design"}
-                {currentOrder.status === "DESIGN_SUBMITTED" && "Design ready for your review"}
-                {currentOrder.status === "AWAITING_PRINT" && "Ready for printing"}
-                {currentOrder.status === "PRINTING" && "Currently being printed"}
-                {currentOrder.status === "POLISHING" && "Final touches being applied"}
-                {currentOrder.status === "COMPLETED" && "Order is ready!"}
+                {currentOrder.status === "pending" && "Waiting for processing"}
+                {currentOrder.status === "pending_design" && "Waiting for designer assignment"}
+                {currentOrder.status === "design_in_progress" && "Designer is working on your design"}
+                {currentOrder.status === "design_submitted" && "Design ready for your review"}
+                {currentOrder.status === "awaiting_print" && "Ready for printing"}
+                {currentOrder.status === "printing" && "Currently being printed"}
+                {currentOrder.status === "polishing" && "Final touches being applied"}
+                {currentOrder.status === "completed" && "Order is ready!"}
               </p>
             </div>
           </div>
@@ -403,7 +402,7 @@ const OrderDetail = () => {
               )}
               <div className="flex justify-between font-semibold text-gray-900 dark:text-white pt-2 border-t dark:border-gray-700">
                 <span>Total</span>
-                <span>{formatCurrency(currentOrder.total_amount)}</span>
+                <span>{formatCurrency(currentOrder.total_price)}</span>
               </div>
             </div>
           </div>
@@ -461,7 +460,7 @@ const OrderDetail = () => {
                   </div>
                   <div className="flex-1 pb-4">
                     <p className="font-medium text-gray-900 dark:text-white">
-                      {history.status?.replace(/_/g, " ")}
+                      {history.status?.replace(/_/g, " ")} 
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{formatDate(history.created_at)}</p>
                     {history.notes && (

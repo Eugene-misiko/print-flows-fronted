@@ -60,7 +60,7 @@ const NotificationsList = () => {
       await dispatch(markAllAsRead()).unwrap();
       toast.success("All notifications marked as read");
     } catch (error) {
-      toast.error("Failed to mark all as read");
+      toast.error("Failed to mark all as reading");
     }
   };
 

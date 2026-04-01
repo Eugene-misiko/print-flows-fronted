@@ -74,7 +74,7 @@ const Sidebar = ({ user }) => {
         )}
 
         {/* Products - Admin Only */}
-        {isAdmin && (
+        { (isAdmin || isClient )&& (
           <NavLink to="/products" className={linkClass}>
             <Package className="w-5 h-5" />
             <span>Products</span>
