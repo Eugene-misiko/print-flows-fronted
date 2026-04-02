@@ -174,43 +174,79 @@ const ProductsList = () => {
         </div>
       </div>
 
-      {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {isLoading ? (
-          <div className="col-span-full text-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full mx-auto"></div>
-          </div>
-        ) : products?.length === 0 ? (
-          <div className="col-span-full text-center py-12">
-            <Package className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-            <p className="text-gray-500 dark:text-gray-400">No products yet</p>
-          </div>
-        ) : (
-          products.map((product) => (
-            <div key={product.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-200 flex flex-col">
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">{product.name}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{product.category_name || "No category"}</p>
-                </div>
-                <p className="font-bold text-orange-600 dark:text-orange-400">KES {(product.price || 0).toLocaleString()}</p>
+    {/* Products Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {isLoading ? (
+        <div className="col-span-full text-center py-12">
+          <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full mx-auto"></div>
+        </div>
+      ) : products?.length === 0 ? (
+        <div className="col-span-full text-center py-12">
+          <Package className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+          <p className="text-gray-500 dark:text-gray-400">No products yet</p>
+        </div>
+      ) : (
+        products.map((product) => (
+          <div
+            key={product.id}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col"
+          >
+            {/* IMAGE */}
+            <div className="relative h-44 w-full overflow-hidden">
+              <img
+                src={product.image || "https://via.placeholder.com/400x300"}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
+
+              {/* CATEGORY BADGE */}
+              <span className="absolute top-3 right-3 text-xs px-3 py-1 rounded-full bg-white/90 dark:bg-gray-900/80 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+                {product.category_name || "General"}
+              </span>
+            </div>
+
+            {/* CONTENT */}
+            <div className="p-4 flex flex-col flex-1">
+              <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
+                {product.name}
+              </h3>
+
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 flex-1">
+                {product.description || "No description available"}
+              </p>
+              <div className="flex items-center justify-between mt-4">
+                <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                  KES {(product.price || 0).toLocaleString()}
+                </span>
+
+                <button className="px-4 py-2 text-sm font-medium rounded-lg bg-green-600 hover:bg-green-700 text-white transition-colors">
+                  Add to Order
+                </button>
               </div>
-              {product.description && <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 flex-1">{product.description}</p>}
-              
+
+              {/* ADMIN ACTIONS */}
               {isAdmin && (
-                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-2">
-                  <button onClick={() => openEditModal(product)} className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                    <Edit className="w-4 h-4" />
+                <div className="flex justify-end gap-2 mt-3">
+                  <button
+                    onClick={() => openEditModal(product)}
+                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                  >
+                    <Edit className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   </button>
-                  <button onClick={() => handleDeleteProduct(product.id)} className="p-2 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                    <Trash2 className="w-4 h-4" />
+
+                  <button
+                    onClick={() => handleDeleteProduct(product.id)}
+                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                  >
+                    <Trash2 className="w-4 h-4 text-red-500" />
                   </button>
                 </div>
               )}
             </div>
-          ))
-        )}
-      </div>
+          </div>
+        ))
+      )}
+    </div>
 
       {/* Product Modal (Create/Edit) */}
       {showModal && (
