@@ -136,7 +136,7 @@ const Login = () => {
             <p className="text-gray-600">
               Don't have an account?{" "}
               <Link
-                to="/register"
+                to="/user-register"
                 className="text-orange-600 hover:text-orange-700 font-medium"
               >
                 Register your company

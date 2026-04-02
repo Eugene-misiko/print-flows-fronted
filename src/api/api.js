@@ -52,6 +52,7 @@ export default api;
 export const authAPI = {
   login: (data) => api.post("/auth/login/", data),
   getMe: () => api.get("/auth/me/"),
+  registerUser: (data) => api.post("/auth/register-user/", data),
   logout: () => api.post("/auth/logout/", {refresh_token: localStorage.getItem("refresh_token"),}),
   register: (data) => api.post("/auth/register/", data), 
   registerCompany: (data) => api.post("/auth/register-company/", data),
@@ -83,6 +84,7 @@ export const invitationsAPI = {
 // ===================== COMPANY =====================
 export const companyAPI = {
   get: () => api.get("/company/"),
+  getCompanies: () => api.get("/companies/"),
   update: (data) => api.patch("/company/update/", data),
   getSettings: () => api.get("/company/settings/"),
   updateSettings: (data) => api.patch("/company/settings/", data),

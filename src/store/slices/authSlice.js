@@ -24,6 +24,46 @@ export const login = createAsyncThunk(
   }
 );
 
+// ===================== REGISTER USER (CLIENT) =====================
+export const registerUser = createAsyncThunk(
+  "auth/registerUser",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await authAPI.registerUser(data); 
+      const { user, tokens } = response.data;
+
+      localStorage.setItem("access_token", tokens.access);
+      localStorage.setItem("refresh_token", tokens.refresh);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      return { user };
+    } catch (error) {
+      const errors = error.response?.data;
+
+      if (errors && typeof errors === "object") {
+        const firstError = Object.values(errors)[0];
+        return rejectWithValue(
+          Array.isArray(firstError) ? firstError[0] : firstError
+        );
+      }
+
+      return rejectWithValue("User registration failed");
+    }
+  }
+);
+
+// ===================== FETCH COMPANIES =====================
+export const fetchCompanies = createAsyncThunk(
+  "auth/fetchCompanies",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authAPI.getCompanies(); // make sure API exists
+      return response.data;
+    } catch (error) {
+      return rejectWithValue("Failed to fetch companies");
+    }
+  }
+);
 // ===================== REGISTER COMPANY =====================
 export const registerCompany = createAsyncThunk(
   "auth/registerCompany",
@@ -144,6 +184,7 @@ const getStoredUser = () => {
 const initialState = {
   user: getStoredUser(),
   currentInvitation: null,
+  companies: [],
   isAuthenticated: !!localStorage.getItem("access_token"),
   isLoading: false,
   error: null,
@@ -167,6 +208,33 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+    // FETCH COMPANIES
+    .addCase(fetchCompanies.pending, (state) => {
+      state.isLoading = true;
+    })
+    .addCase(fetchCompanies.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.companies = action.payload.results || action.payload;
+    })
+    .addCase(fetchCompanies.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    })
+
+    // REGISTER USER
+    .addCase(registerUser.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    })
+    .addCase(registerUser.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.user = action.payload.user;
+      state.isAuthenticated = true;
+    })
+    .addCase(registerUser.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    })    
       // LOGIN
       .addCase(login.pending, (state) => { state.isLoading = true; state.error = null; })
       .addCase(login.fulfilled, (state, action) => { state.isLoading = false; state.user = action.payload.user; state.isAuthenticated = true; })

@@ -26,6 +26,7 @@ import SettingsPage from "./pages/SettingsPage";
 import MessagesPage from "./pages/MessagesPage";
 import NotificationsList from "./pages/NotificationsList";
 import MobileSidebar from "./components/layout/MobileSidebar";
+import UserRegister from "./components/auth/userRegister.jsx";
 // Dashboard router based on user role
 // Roles are LOWERCASE: 'admin', 'designer', 'printer', 'client', 'platform_admin'
 const DashboardRouter = () => {
@@ -56,6 +57,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} /> 
           <Route path="/register" element={<Register />} />
+          <Route path="/user-register" element={<UserRegister />} />
           
           <Route path="/mobile" element={<MobileSidebar/>}/>
           {/* Protected Routes */}
