@@ -110,17 +110,18 @@ export const fetchStaffStats = createAsyncThunk(
 );
 
 const initialState = {
-  company: null,
-  settings: null,
-  paymentSettings: null,
-  dashboard: null,
+  company: {},
+  settings: {},
+  paymentSettings: {},
+  dashboard: {},
   staff: [],
-  staffStats: null,
+  staffStats: {},
   isLoading: false,
   error: null,
   successMessage: null,
 };
-
+const normalizeList = (payload) =>
+  payload?.results || payload?.data || payload || [];
 const companySlice = createSlice({
   name: "company",
   initialState,
@@ -128,39 +129,140 @@ const companySlice = createSlice({
     clearError: (state) => { state.error = null; },
     clearSuccess: (state) => { state.successMessage = null; },
   },
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchCompany.fulfilled, (state, action) => {
-        state.company = action.payload;
-      })
-      .addCase(updateCompany.fulfilled, (state, action) => {
-        state.company = action.payload;
-        state.successMessage = "Company updated";
-      })
-      .addCase(fetchSettings.fulfilled, (state, action) => {
-        state.settings = action.payload;
-      })
-      .addCase(updateSettings.fulfilled, (state, action) => {
-        state.settings = action.payload;
-        state.successMessage = "Settings updated";
-      })
-      .addCase(fetchPaymentSettings.fulfilled, (state, action) => {
-        state.paymentSettings = action.payload;
-      })
-      .addCase(updatePaymentSettings.fulfilled, (state, action) => {
-        state.paymentSettings = action.payload;
-        state.successMessage = "Payment settings updated";
-      })
-      .addCase(fetchDashboard.fulfilled, (state, action) => {
-        state.dashboard = action.payload;
-      })
-      .addCase(fetchStaff.fulfilled, (state, action) => {
-        state.staff = action.payload.results || action.payload;
-      })
-      .addCase(fetchStaffStats.fulfilled, (state, action) => {
-        state.staffStats = action.payload;
-      });
-  },
+    extraReducers: (builder) => {
+      builder
+        //FETCH COMPANY
+        .addCase(fetchCompany.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+        })
+        .addCase(fetchCompany.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.company = action.payload;
+        })
+        .addCase(fetchCompany.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        // UPDATE COMPANY
+        .addCase(updateCompany.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+          state.successMessage = null;
+        })
+        .addCase(updateCompany.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.company = action.payload;
+          state.successMessage = "Company updated";
+        })
+        .addCase(updateCompany.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        //FETCH SETTINGS 
+        .addCase(fetchSettings.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+        })
+        .addCase(fetchSettings.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.settings = action.payload;
+        })
+        .addCase(fetchSettings.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        //UPDATE SETTINGS
+        .addCase(updateSettings.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+          state.successMessage = null;
+        })
+        .addCase(updateSettings.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.settings = action.payload;
+          state.successMessage = "Settings updated";
+        })
+        .addCase(updateSettings.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        //FETCH PAYMENT SETTINGS 
+        .addCase(fetchPaymentSettings.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+        })
+        .addCase(fetchPaymentSettings.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.paymentSettings = action.payload;
+        })
+        .addCase(fetchPaymentSettings.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        // UPDATE PAYMENT SETTINGS
+        .addCase(updatePaymentSettings.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+          state.successMessage = null;
+        })
+        .addCase(updatePaymentSettings.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.paymentSettings = action.payload;
+          state.successMessage = "Payment settings updated";
+        })
+        .addCase(updatePaymentSettings.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        // DASHBOARD
+        .addCase(fetchDashboard.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+        })
+        .addCase(fetchDashboard.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.dashboard = action.payload;
+        })
+        .addCase(fetchDashboard.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        // STAFF
+        .addCase(fetchStaff.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+        })
+        .addCase(fetchStaff.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.staff = normalizeList(action.payload);
+        })
+        .addCase(fetchStaff.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        // STAFF STATS
+        .addCase(fetchStaffStats.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+        })
+        .addCase(fetchStaffStats.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.staffStats = action.payload;
+        })
+        .addCase(fetchStaffStats.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        });
+    }
 });
 
 export const { clearError, clearSuccess } = companySlice.actions;
