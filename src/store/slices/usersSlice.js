@@ -154,80 +154,136 @@ const usersSlice = createSlice({
     clearSuccess: (state) => { state.successMessage = null; },
     clearCurrentInvitation: (state) => { state.currentInvitation = null; },
   },
-  extraReducers: (builder) => {
-    builder
-      // Fetch users
-      .addCase(fetchUsers.pending, (state) => { state.isLoading = true; state.error = null; })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.users = action.payload.results || action.payload;
-      })
-      .addCase(fetchUsers.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      // Fetch user
-      .addCase(fetchUser.fulfilled, (state, action) => {
-        state.currentUser = action.payload;
-      })
-      // Update user
-      .addCase(updateUser.fulfilled, (state, action) => {
-        const idx = state.users.findIndex(u => u.id === action.payload.id);
-        if (idx !== -1) state.users[idx] = action.payload;
-        state.successMessage = "User updated";
-      })
-      // Deactivate user
-      .addCase(deactivateUser.fulfilled, (state, action) => {
-        state.users = state.users.filter(u => u.id !== action.payload);
-        state.successMessage = "User deactivated";
-      })
-      // Change role
-      .addCase(changeUserRole.fulfilled, (state, action) => {
-        const user = action.payload.user;
-        if (user) {
-          const idx = state.users.findIndex(u => u.id === user.id);
-          if (idx !== -1) state.users[idx] = user;
-        }
-        state.successMessage = "Role changed";
-      })
-      // Fetch invitations
-      .addCase(fetchInvitationByToken.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(fetchInvitationByToken.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.currentInvitation = action.payload;
-      })
-      .addCase(fetchInvitationByToken.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-        state.currentInvitation = null;
-      })
-      // Create invitation
-      .addCase(createInvitation.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(createInvitation.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.invitations.unshift(action.payload);
-        state.successMessage = "Invitation sent";
-      })
-      .addCase(createInvitation.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      // Cancel invitation
-      .addCase(cancelInvitation.fulfilled, (state, action) => {
-        state.invitations = state.invitations.filter(i => i.id !== action.payload);
-        state.successMessage = "Invitation cancelled";
-      })
-      // Resend invitation
-      .addCase(resendInvitation.fulfilled, (state) => {
-        state.successMessage = "Invitation resent";
-      });
-  },
+    extraReducers: (builder) => {
+      builder
+
+        //  FETCH USERS 
+        .addCase(fetchUsers.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+        })
+        .addCase(fetchUsers.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.users = action.payload.results || action.payload;
+        })
+        .addCase(fetchUsers.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        // FETCH USER 
+        .addCase(fetchUser.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+        })
+        .addCase(fetchUser.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.currentUser = action.payload;
+        })
+        .addCase(fetchUser.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        //UPDATE USER 
+        .addCase(updateUser.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+          state.successMessage = null;
+        })
+        .addCase(updateUser.fulfilled, (state, action) => {
+          state.isLoading = false;
+
+          const idx = state.users.findIndex(u => u.id === action.payload.id);
+          if (idx !== -1) state.users[idx] = action.payload;
+
+          state.successMessage = "User updated";
+        })
+        .addCase(updateUser.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        //DEACTIVATE USER 
+        .addCase(deactivateUser.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+        })
+        .addCase(deactivateUser.fulfilled, (state, action) => {
+          state.isLoading = false;
+
+          const idx = state.users.findIndex(u => u.id === action.payload);
+          if (idx !== -1) {
+            state.users[idx].is_active = false;
+          }
+
+          state.successMessage = "User deactivated";
+        })
+        .addCase(deactivateUser.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        //CHANGE ROLE
+        .addCase(changeUserRole.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+        })
+        .addCase(changeUserRole.fulfilled, (state, action) => {
+          state.isLoading = false;
+
+          const updatedUser = action.payload;
+          const idx = state.users.findIndex(u => u.id === updatedUser.id);
+          if (idx !== -1) state.users[idx] = updatedUser;
+
+          state.successMessage = "Role changed";
+        })
+        .addCase(changeUserRole.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        // INVITATIONS 
+        .addCase(fetchInvitations.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+        })
+        .addCase(fetchInvitations.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.invitations = action.payload.results || action.payload;
+        })
+        .addCase(fetchInvitations.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        // CREATE INVITATION 
+        .addCase(createInvitation.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+          state.successMessage = null;
+        })
+        .addCase(createInvitation.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.invitations.unshift(action.payload);
+          state.successMessage = "Invitation sent";
+        })
+        .addCase(createInvitation.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
+
+        //  CANCEL INVITATION
+        .addCase(cancelInvitation.fulfilled, (state, action) => {
+          state.invitations = state.invitations.filter(i => i.id !== action.payload);
+          state.successMessage = "Invitation cancelled";
+        })
+
+        // RESEND INVITATION 
+        .addCase(resendInvitation.fulfilled, (state) => {
+          state.successMessage = "Invitation resent";
+        });
+    }
 });
 
 export const { clearError, clearSuccess, clearCurrentInvitation } = usersSlice.actions;
