@@ -94,6 +94,13 @@ export const companyAPI = {
   getStaff: () => api.get("/company/staff/"),
   getStaffStats: () => api.get("/company/staff/stats/"),
 };
+// ===================== COMPANY INVITATIONS =====================
+export const companyInvitationsAPI = {
+  // Platform admin sends invite
+  create: (data) => api.post("/company/invitations/", data),
+  // Validate company invite token
+  getByToken: (token) => api.get(`/company-invitations/${token}/`),
+};
 
 // ===================== CATEGORIES =====================
 export const categoriesAPI = {
