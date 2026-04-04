@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { authAPI, invitationsAPI } from "../../api/api";
+import { authAPI, invitationsAPI,invitationsAPI } from "../../api/api";
 
 // ===================== LOGIN =====================
 export const login = createAsyncThunk(
@@ -57,7 +57,7 @@ export const fetchCompanies = createAsyncThunk(
   "auth/fetchCompanies",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authAPI.getCompanies(); // make sure API exists
+      const response = await companyAPI.getCompanies(); 
       return response.data;
     } catch (error) {
       return rejectWithValue("Failed to fetch companies");
@@ -65,6 +65,20 @@ export const fetchCompanies = createAsyncThunk(
   }
 );
 // ===================== REGISTER COMPANY =====================
+const getErrorMessage = (errors) => {
+  if (!errors) return "Registration failed";
+
+  if (typeof errors === "string") return errors;
+
+  if (errors.detail) return errors.detail;
+
+  const firstKey = Object.keys(errors)[0];
+  const firstValue = errors[firstKey];
+
+  if (Array.isArray(firstValue)) return firstValue[0];
+
+  return firstValue || "Registration failed";
+};
 export const registerCompany = createAsyncThunk(
   "auth/registerCompany",
   async (data, { rejectWithValue }) => {
@@ -79,11 +93,7 @@ export const registerCompany = createAsyncThunk(
       return { user };
     } catch (error) {
       const errors = error.response?.data;
-      if (errors && typeof errors === "object") {
-        const firstError = Object.values(errors)[0];
-        return rejectWithValue(Array.isArray(firstError) ? firstError[0] : firstError);
-      }
-      return rejectWithValue("Registration failed");
+      return rejectWithValue(getErrorMessage(errors));
     }
   }
 );
@@ -153,7 +163,9 @@ export const logout = createAsyncThunk("auth/logout", async () => {
   try {
     await authAPI.logout();
   } finally {
-    localStorage.clear();
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
   }
 });
 
@@ -201,6 +213,10 @@ const authSlice = createSlice({
     logoutLocal: (state) => {
       state.user = null;
       state.isAuthenticated = false;
+
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("user");      
     },
     clearCurrentInvitation: (state) => {
       state.currentInvitation = null;
