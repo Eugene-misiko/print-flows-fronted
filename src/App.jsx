@@ -72,7 +72,7 @@ useEffect(() => {
         {/* PUBLIC ROUTES */}
         <Route path="/login" element={<Login />} />
         <Route path="/register-company" element={<Register />} />
-        <Route path="/register" element={<UserRegisterRegister />} />
+        <Route path="/register" element={<UserRegister />} />
         <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
