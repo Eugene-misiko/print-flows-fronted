@@ -1,21 +1,18 @@
-import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-const ProtectedRoute = ({ children, allowedRoles = [] }) => {
-  const location = useLocation();
-
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { user, isLoading } = useSelector((state) => state.auth);
 
   const token = localStorage.getItem("access_token");
 
-  //Not logged in
-  if (!token || !isAuthenticated || !user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
+  if (isLoading) return <div>Loading...</div>;
 
-  //  Role restriction (if provided)
-  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role) && !user.is_platform_admin) {
+  if (!token) return <Navigate to="/login" replace />;
+
+  if (!user) return <div>Loading session...</div>;
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/dashboard" replace />;
   }
 
