@@ -35,6 +35,7 @@ const Login = () => {
     if (login.fulfilled.match(result)) {
       toast.success("Welcome back!");
       setForm({ email: "", password: "" });
+
       navigate("/dashboard");
     } else {
       toast.error(result.payload || "Login failed");
@@ -124,14 +125,14 @@ const Login = () => {
               ) : "Sign In"}
             </button>
           </form>
-<div className="text-right">
-  <Link
-    to="/forgot-password"
-    className="text-sm text-orange-600 hover:text-orange-700"
-  >
-    Forgot password?
-  </Link>
-</div>
+      <div className="text-right">
+        <Link
+          to="/forgot-password"
+          className="text-sm text-orange-600 hover:text-orange-700"
+        >
+          Forgot password?
+        </Link>
+      </div>
           {/* Footer Links */}
           <div className="mt-6 text-center">
             <p className="text-gray-600">

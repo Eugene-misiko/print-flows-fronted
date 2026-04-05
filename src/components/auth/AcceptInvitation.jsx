@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   registerWithInvitation,
+  clearError,
 } from "../../store/slices/authSlice";
 import {
   fetchInvitationByToken,
@@ -23,16 +24,17 @@ const AcceptInvitation = () => {
   const navigate = useNavigate();
   const { token } = useParams();
 
+  // Auth state
+  const { user, isLoading: authLoading, error: authError } = useSelector(
+    (state) => state.auth
+  );
+
+  // Invitation state
   const {
     currentInvitation,
     isLoading: invitationLoading,
     error: invitationError,
   } = useSelector((state) => state.users);
-
-  const {
-    isLoading: authLoading,
-    error: authError,
-  } = useSelector((state) => state.auth);
 
   const [form, setForm] = useState({
     first_name: "",
@@ -45,7 +47,14 @@ const AcceptInvitation = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  // Fetch invitation on load
+  //REDIRECT IF ALREADY LOGGED IN 
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
+
+  //FETCH INVITATION
   useEffect(() => {
     if (token) {
       dispatch(fetchInvitationByToken(token));
@@ -56,7 +65,7 @@ const AcceptInvitation = () => {
     };
   }, [dispatch, token]);
 
-  // Autofill email
+  // AUTO FILL EMAIL
   useEffect(() => {
     if (currentInvitation?.email) {
       setForm((prev) => ({
@@ -66,12 +75,14 @@ const AcceptInvitation = () => {
     }
   }, [currentInvitation]);
 
-  // Handle input
+  //HANDLE INPUT
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+
+    if (authError) dispatch(clearError());
   };
 
-  // Submit
+  // SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -113,8 +124,19 @@ const AcceptInvitation = () => {
       })
     );
 
+    // AFTER SUCCESS 
     if (registerWithInvitation.fulfilled.match(result)) {
       toast.success("Account created successfully!");
+
+      setForm({
+        first_name: "",
+        last_name: "",
+        email: "",
+        password: "",
+        password_confirm: "",
+        phone: "",
+      });
+
       navigate("/dashboard");
     } else {
       toast.error(result.payload || "Registration failed");
@@ -123,8 +145,8 @@ const AcceptInvitation = () => {
 
   const isLoading = invitationLoading || authLoading;
 
-  // Loading state
-  if (!currentInvitation && !invitationError) {
+  //LOADING 
+  if (invitationLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -135,7 +157,7 @@ const AcceptInvitation = () => {
     );
   }
 
-  // Invalid token state
+  // INVALID
   if (invitationError && !currentInvitation) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
@@ -224,12 +246,14 @@ const AcceptInvitation = () => {
                 required
               />
             </div>
+
             <input
               name="phone"
               placeholder="Phone"
               value={form.phone}
               onChange={handleChange}
-              className="border px-3 py-2 rounded w-full"/>
+              className="border px-3 py-2 rounded w-full"
+            />
 
             {/* Password */}
             <div className="relative">
@@ -246,7 +270,8 @@ const AcceptInvitation = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2.5 text-gray-400">
+                className="absolute right-3 top-2.5 text-gray-400"
+              >
                 {showPassword ? <EyeOff /> : <Eye />}
               </button>
             </div>
@@ -258,10 +283,13 @@ const AcceptInvitation = () => {
               value={form.password_confirm}
               onChange={handleChange}
               className="border px-3 py-2 rounded w-full"
-              required/>
+              required
+            />
+
             <button
               disabled={isLoading || !isValid}
-              className="w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600 disabled:opacity-50">
+              className="w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600 disabled:opacity-50"
+            >
               {isLoading ? "Creating..." : "Accept & Join"}
             </button>
           </form>
