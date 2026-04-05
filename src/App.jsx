@@ -31,6 +31,7 @@ import SettingsPage from "./pages/SettingsPage";
 import MessagesPage from "./pages/MessagesPage";
 import NotificationsList from "./pages/NotificationsList";
 import MobileSidebar from "./components/layout/MobileSidebar";
+import UserRegister from "./components/auth/userRegister";
 // DASHBOARD ROUTER 
 const DashboardRouter = () => {
   const { user } = useSelector((state) => state.auth);
@@ -71,7 +72,7 @@ useEffect(() => {
         {/* PUBLIC ROUTES */}
         <Route path="/login" element={<Login />} />
         <Route path="/register-company" element={<Register />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/register" element={<UserRegisterRegister />} />
         <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
