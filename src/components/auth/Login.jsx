@@ -34,6 +34,7 @@ const Login = () => {
     
     if (login.fulfilled.match(result)) {
       toast.success("Welcome back!");
+      setForm({ email: "", password: "" });
       navigate("/dashboard");
     } else {
       toast.error(result.payload || "Login failed");
@@ -136,10 +137,10 @@ const Login = () => {
             <p className="text-gray-600">
               Don't have an account?{" "}
               <Link
-                to="/user-register"
+                to="/register"
                 className="text-orange-600 hover:text-orange-700 font-medium"
               >
-                Register your company
+                Register here
               </Link>
             </p>
           </div>

@@ -193,11 +193,12 @@ const getStoredUser = () => {
   }
 };
 
+
 const initialState = {
   user: getStoredUser(),
   currentInvitation: null,
   companies: [],
-  isAuthenticated: !!localStorage.getItem("access_token"),
+  isAuthenticated: !!localStorage.getItem("access_token")&& !! getStoredUser(),
   isLoading: false,
   error: null,
   successMessage: null,
