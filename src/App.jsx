@@ -1,19 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Provider, useSelector } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { Toaster } from "react-hot-toast";
-import store from "./store/store.js";
+import store from "./store/store";
+import { fetchProfile } from "./store/slices/authSlice";
 import Layout from "./components/layout/Layout";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+// AUTH
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import AcceptInvitation from "./components/auth/AcceptInvitation";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import ResetPassword from "./components/auth/ResetPassword";
+// DASHBOARDS
 import AdminDashboard from "./pages/admin/Dashboard";
 import DesignerDashboard from "./pages/designer/Dashboard";
 import PrinterDashboard from "./pages/printer/Dashboard";
 import ClientDashboard from "./pages/client/Dashboard";
+import PlatformDashboard from "./pages/platform/PlatformDashboard";
+// PAGES
 import OrdersList from "./pages/OrdersList";
 import OrderDetail from "./pages/OrderDetail";
 import CreateOrder from "./pages/CreateOrder";
@@ -26,65 +31,90 @@ import SettingsPage from "./pages/SettingsPage";
 import MessagesPage from "./pages/MessagesPage";
 import NotificationsList from "./pages/NotificationsList";
 import MobileSidebar from "./components/layout/MobileSidebar";
-import UserRegister from "./components/auth/userRegister.jsx";
-// Dashboard router based on user role
-// Roles are LOWERCASE: 'admin', 'designer', 'printer', 'client', 'platform_admin'
+// DASHBOARD ROUTER 
 const DashboardRouter = () => {
-  const user = useSelector((state) => state.auth.user);
+  const { user } = useSelector((state) => state.auth);
 
-  if (!user) return null;
-  
+  if (!user) return <div>Loading...</div>;
+
   switch (user.role) {
-    case "admin":
     case "platform_admin":
+      return <PlatformDashboard />;
+    case "admin":
       return <AdminDashboard />;
     case "designer":
       return <DesignerDashboard />;
     case "printer":
       return <PrinterDashboard />;
-    case "client":
     default:
       return <ClientDashboard />;
   }
 };
 
+// APP CONTENT
+const AppContent = () => {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+
+useEffect(() => {
+  const token = localStorage.getItem("access_token");
+
+  if (token) {
+    dispatch(fetchProfile());
+  }
+}, [dispatch]);
+
+  return (
+    <>
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+      <Routes>
+        {/* PUBLIC ROUTES */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register-company" element={<Register />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/mobile" element={<MobileSidebar />} />
+        {/* PROTECTED ROUTES */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<DashboardRouter />} />
+          <Route path="orders" element={<OrdersList />} />
+          <Route path="orders/new" element={<CreateOrder />} />
+          <Route path="orders/:id" element={<OrderDetail />} />
+          <Route
+            path="users"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "platform_admin"]}>
+                <UsersList />
+              </ProtectedRoute>} />
+
+          <Route path="products" element={<ProductsList />} />
+          <Route path="payments" element={<PaymentsPage />} />
+          <Route path="invoices" element={<InvoicesPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="messages" element={<MessagesPage />} />
+          <Route path="notifications" element={<NotificationsList />} />
+        </Route>
+        {/* FALLBACK */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </>
+  );
+};
+// MAIN APP
 function App() {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} /> 
-          <Route path="/register-company" element={<Register />} />
-          <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
-          <Route path="/register" element={<UserRegister />} />
-          
-          <Route path="/mobile" element={<MobileSidebar/>}/>
-          {/* Protected Routes */}
-          <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<DashboardRouter />} />
-            <Route path="orders" element={<OrdersList />} />          
-            <Route path="orders/new" element={<CreateOrder />} />
-            <Route path="/orders/:id" element={<OrderDetail />} />
-            <Route path="users" element={ 
-              <ProtectedRoute allowedRoles={["admin"]}> 
-              <UsersList />
-            </ProtectedRoute>}/>
-            <Route path="products" element={<ProductsList />} />
-            <Route path="payments" element={<PaymentsPage />} />
-            <Route path="invoices" element={<InvoicesPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="settings" element={<SettingsPage />} />
-            <Route path="messages" element={<MessagesPage />} />
-            <Route path="notifications" element={<NotificationsList />} />
-          </Route>
-          {/* Catch all */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
+        <AppContent />
       </BrowserRouter>
     </Provider>
   );
