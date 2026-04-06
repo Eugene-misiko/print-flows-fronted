@@ -5,7 +5,7 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 });
-api.defaults.headers.common["Content-Type"] = "application/json";
+//api.defaults.headers.common["Content-Type"] = "application/json";
 
 //TOKEN HELPERS
 const getAccessToken = () => localStorage.getItem("access_token");
@@ -186,7 +186,7 @@ export const productsAPI = {
   getFeatured: () => api.get("/products/featured/"),
   getById: (id) => api.get(`/products/${id}/`),
   create: (data) => api.post("/products/create/", data),
-  update: (id, data) => api.patch(`/products/${id}/update/`, data, {headers: { "Content-Type": "multipart/form-data" }}),
+  update: (id, data) => api.put(`/products/${id}/`, data),
   delete: (id) => api.delete(`/products/${id}/delete/`),
   getPublic: (params) => api.get("/public/products/", { params }),
   getPublicCategories: (params) => api.get("/public/categories/", { params }),
