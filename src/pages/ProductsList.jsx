@@ -41,25 +41,21 @@ const ProductsList = () => {
     if (!productForm.name.trim()) return toast.error("Product name is required");
     if (!productForm.price) return toast.error("Price is required");
     
-    let payload;
-    let config = {}; 
-    
-    if (productForm.image) {
-      payload = new FormData();
+      const payload = new FormData();
+
       payload.append("name", productForm.name);
       payload.append("price", parseFloat(productForm.price));
-      payload.append("category", productForm.category || "");
+
+      if (productForm.category) {
+        payload.append("category", Number(productForm.category));
+      }
+
       payload.append("description", productForm.description || "");
-      payload.append("image", productForm.image);
-    } else {
-      payload = {
-        name: productForm.name,
-        price: parseFloat(productForm.price),
-        category: productForm.category || null,
-        description: productForm.description || "",
-      };
-      config.headers = { "Content-Type": "application/json" }; 
-    }
+
+      // only append image if it exists
+      if (productForm.image instanceof File) {
+        payload.append("image", productForm.image);
+      }
 
     try {
       let result;
@@ -91,6 +87,11 @@ const ProductsList = () => {
     }
   };
 
+  //filter the products by category
+ const handleFilterByCategory = (categoryId) => {
+  dispatch(fetchProducts({ category: categoryId }));
+}; 
+
   // Delete product
   const handleDeleteProduct = async (id) => {
     if (!confirm("Delete this product?")) return;
@@ -119,7 +120,7 @@ const ProductsList = () => {
     setEditingProduct(product);
     setProductForm({
       name: product.name,
-      category: product.category || "",
+      category: product.category_id || "",
       price: product.price,
       description: product.description || "",
       image: null,
@@ -165,11 +166,15 @@ const ProductsList = () => {
           {categories?.length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400 text-sm">No categories yet</p>
           ) : (
-            categories.map((cat) => (
-              <span key={cat.id} className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
-                {cat.name}
-              </span>
-            ))
+          categories.map((cat) => (
+            <span
+              key={cat.id}
+              onClick={() => handleFilterByCategory(cat.id)} 
+              className="cursor-pointer px-3 py-1.5 bg-gray-100 dark:bg-gray-700 rounded-full text-sm"
+            >
+              {cat.name}
+            </span>
+          ))
           )}
         </div>
       </div>
@@ -199,6 +204,7 @@ const ProductsList = () => {
                 className="w-full h-full object-cover"
               />
 
+
               {/* CATEGORY BADGE */}
               <span className="absolute top-3 right-3 text-xs px-3 py-1 rounded-full bg-white/90 dark:bg-gray-900/80 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
                 {product.category_name || "General"}
@@ -214,6 +220,11 @@ const ProductsList = () => {
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 flex-1">
                 {product.description || "No description available"}
               </p>
+              {product.fields?.length > 0 && (
+              <div className="mt-2 text-xs text-gray-500">
+                Fields: {product.fields.map(f => f.name).join(", ")}
+                </div>
+              )}
               <div className="flex items-center justify-between mt-4">
                 <span className="text-lg font-bold text-green-600 dark:text-green-400">
                   KES {(product.price || 0).toLocaleString()}
@@ -254,6 +265,7 @@ const ProductsList = () => {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700 p-6 transition-colors">
             <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-4">{editingProduct ? "Edit Product" : "Add Product"}</h3>
             <form onSubmit={handleSubmitProduct} className="space-y-4" encType="multipart/form-data">
+            
               <input 
                 type="text" 
                 placeholder="Product name" 
@@ -296,7 +308,11 @@ const ProductsList = () => {
               <input 
                 type="file" 
                 accept="image/*" 
-                onChange={(e) => setProductForm({ ...productForm, image: e.target.files[0] })} 
+                onChange={(e) => {const file = e.target.files[0];
+                  if (file) {
+                    setProductForm({ ...productForm, image: file });
+                  }
+                }}
                 className="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-orange-50 dark:file:bg-orange-900/30 file:text-orange-700 dark:file:text-orange-400 hover:file:bg-orange-100 dark:hover:file:bg-orange-900/50 cursor-pointer" 
               />
               <div className="flex gap-3 pt-2">
