@@ -219,7 +219,7 @@ const productsSlice = createSlice({
       .addCase(createProduct.pending, (state) => { state.isLoading = true; })
       .addCase(createProduct.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.products.push(action.payload);
+        //state.products.push(action.payload);
         state.successMessage = "Product created";
       })
       .addCase(createProduct.rejected, (state, action) => {
