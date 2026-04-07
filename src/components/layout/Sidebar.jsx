@@ -1,23 +1,22 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
-import {
-  LayoutDashboard,
-  ShoppingBag,
-  Users,
-  Package,
-  CreditCard,
-  FileText,
-  Settings,
-  MessageSquare,
-  Printer,
-  PlusCircle,
-} from "lucide-react";
+import { useDispatch } from "react-redux";
+import { NavLink, useNavigate } from "react-router-dom";
+import { logout } from "../../store/slices/authSlice";
+import {LayoutDashboard,ShoppingBag,Users,Package,CreditCard,FileText,Settings,MessageSquare,Printer,PlusCircle,LogOut,} from "lucide-react";
 
 const Sidebar = ({ user }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const isAdmin = user?.role === "admin" || user?.role === "platform_admin";
   const isDesigner = user?.role === "designer";
   const isPrinter = user?.role === "printer";
   const isClient = user?.role === "client";
+
+  const handleLogout = async () => {
+    await dispatch(logout());
+    navigate("/login");
+  };
 
   const linkClass = ({ isActive }) =>
     `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
@@ -103,8 +102,7 @@ const Sidebar = ({ user }) => {
         )}
       </nav>
 
-      {/* User Role Badge */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-800">
+      <div className="p-4 border-t border-gray-200 dark:border-gray-800 space-y-3">
         <div className="border border-gray-200 dark:border-sky-500/30 rounded-lg p-4 bg-gray-50 dark:bg-gray-900 transition-all duration-300 ease-in-out dark:shadow-[0_0_10px_2px_rgba(56,189,248,0.15)]">
           <p className="text-xs text-gray-500 dark:text-gray-500 mb-1">
             Logged in as
@@ -113,6 +111,14 @@ const Sidebar = ({ user }) => {
             {user?.role?.replace("_", " ") || "User"}
           </p>
         </div>
+
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+          Logout
+        </button>
       </div>
     </aside>
   );

@@ -1,30 +1,14 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { logout } from "../../store/slices/authSlice";
 import { setMobileSidebarOpen } from "../../store/slices/uiSlice";
 import { Link } from "react-router-dom";
-import {
-  Bell,
-  LogOut,
-  User,
-  Shield,
-  Palette,
-  Printer as PrinterIcon,
-  Menu,
-} from "lucide-react";
+import {Bell,User,Shield,Palette,Printer as PrinterIcon,Menu,} from "lucide-react";
 import ThemeToggle from "../ThemeToggle";
 
 const Header = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const { unreadCount } = useSelector((state) => state.notifications);
-
-  const handleLogout = async () => {
-    await dispatch(logout());
-    navigate("/login");
-  };
 
   const openMobileSidebar = () => {
     dispatch(setMobileSidebarOpen(true));
@@ -101,13 +85,11 @@ const Header = () => {
               <Bell className="w-5 h-5" />
             </Link>
             {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                {unreadCount > 9 ? "9+" : unreadCount}
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold leading-none px-1">
+                {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}
           </button>
-
-          {/* User Info */}
           <div className="flex items-center gap-3 pl-2 md:pl-4 border-l border-gray-200 dark:border-gray-700">
             <Link to="/profile">
               <div className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white font-semibold shadow-sm">
@@ -130,15 +112,6 @@ const Header = () => {
               </span>
             </div>
           </div>
-
-          {/* Logout */}
-          <button
-            onClick={handleLogout}
-            className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-600 dark:hover:text-red-500 rounded-lg transition-colors"
-            title="Logout"
-          >
-            <LogOut className="w-5 h-5" />
-          </button>
         </div>
       </div>
     </header>
