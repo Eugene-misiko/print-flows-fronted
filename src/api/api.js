@@ -1,13 +1,13 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 // BASE AXIOS INSTANCE
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 });
-//api.defaults.headers.common["Content-Type"] = "application/json";
 
-//TOKEN HELPERS
+// TOKEN HELPERS
 const getAccessToken = () => localStorage.getItem("access_token");
 const getRefreshToken = () => localStorage.getItem("refresh_token");
 
@@ -19,22 +19,21 @@ const clearAuth = () => {
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
   localStorage.removeItem("user");
-  window.location.href = "/login";
+  window.location.replace("/login");
 };
 
-//REQUEST INTERCEPTOR
-api.interceptors.request.use((config) => {
-  const token = getAccessToken();
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// CHECK TOKEN EXPIRY
+const isTokenExpired = (token) => {
+  if (!token) return true;
+  try {
+    const decoded = jwtDecode(token);
+    return decoded.exp * 1000 < Date.now();
+  } catch {
+    return true;
   }
+};
 
-  return config;
-});
-
- //Prevents multiple refresh calls
- 
+// REFRESH STATE
 let isRefreshing = false;
 let refreshSubscribers = [];
 
@@ -47,18 +46,66 @@ const onRefreshed = (token) => {
   refreshSubscribers = [];
 };
 
- // RESPONSE INTERCEPTOR
+//  REQUEST INTERCEPTOR (ONLY ONE)
+
+api.interceptors.request.use(async (config) => {
+  let token = getAccessToken();
+
+  if (token && isTokenExpired(token)) {
+    const refreshToken = getRefreshToken();
+
+    if (!refreshToken) {
+      clearAuth();
+      return config;
+    }
+
+    if (!isRefreshing) {
+      isRefreshing = true;
+
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_BASE_URL}/auth/refresh/`,
+          { refresh: refreshToken }
+        );
+
+        token = response.data.access;
+        setAccessToken(token);
+
+        onRefreshed(token);
+      } catch (err) {
+        clearAuth();
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    return new Promise((resolve) => {
+      subscribeTokenRefresh((newToken) => {
+        config.headers.Authorization = `Bearer ${newToken}`;
+        resolve(config);
+      });
+    });
+  }
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+// RESPONSE INTERCEPTOR (RETRY ON 401)
 
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    const isUnauthorized = error.response?.status === 401;
-
-    const isRefreshRequest = originalRequest.url?.includes("/auth/refresh/");
-     //HANDLE 401 ERRORS
-    if (isUnauthorized && !originalRequest._retry && !isRefreshRequest) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url.includes("/auth/refresh/")
+    ) {
       originalRequest._retry = true;
 
       const refreshToken = getRefreshToken();
@@ -68,45 +115,22 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
 
-       //If refresh already running → queue request
-      if (isRefreshing) {
-        return new Promise((resolve) => {
-          subscribeTokenRefresh((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            resolve(api(originalRequest));
-          });
-        });
-      }
-
-      isRefreshing = true;
-
       try {
-         //REFRESH TOKEN REQUEST
-        const response = await api.post("/auth/refresh/", {
-          refresh: refreshToken,
-        });
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_BASE_URL}/auth/refresh/`,
+          { refresh: refreshToken }
+        );
 
-        const { access } = response.data;
+        const newAccess = response.data.access;
 
-        setAccessToken(access);
-        //  Update default header for future requests
-        api.defaults.headers.common.Authorization = `Bearer ${access}`;
-        //Retry all queued requests
-        onRefreshed(access);
+        setAccessToken(newAccess);
 
-        //Retry original request
-        originalRequest.headers = {
-          ...originalRequest.headers,
-          Authorization: `Bearer ${access}`,
-        };
+        originalRequest.headers.Authorization = `Bearer ${newAccess}`;
 
         return api(originalRequest);
-      } catch (refreshError) {
-    //Refresh failed → logout user
+      } catch (err) {
         clearAuth();
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
+        return Promise.reject(err);
       }
     }
 

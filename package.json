@@ -24,6 +24,7 @@
     "framer-motion": "^12.35.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.0",
+    "jwt-decode": "^4.0.0",
     "lucide-react": "^0.575.0",
     "radix-ui": "^1.4.3",
     "react": "^19.2.0",
