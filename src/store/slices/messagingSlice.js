@@ -183,10 +183,11 @@ const messagingSlice = createSlice({
       .addCase(deleteConversation.fulfilled, (state, action) => {
         state.conversations = state.conversations.filter(c => c.id !== action.payload);
       })
-      .addCase(startConversation.fulfilled, (state, action) => {
-        state.conversations.unshift(action.payload);
-        state.currentConversation = action.payload;
-      })
+    .addCase(startConversation.fulfilled, (state, action) => {
+      state.conversations.unshift(action.payload.conversation);
+      state.currentConversation = action.payload.conversation;
+      state.messages.push(action.payload.message);
+    })
       .addCase(fetchMessages.fulfilled, (state, action) => {
         state.messages = action.payload.results || action.payload;
       })
