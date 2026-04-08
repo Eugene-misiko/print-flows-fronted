@@ -75,7 +75,7 @@ useEffect(() => {
         <Route path="/register" element={<UserRegister />} />
         <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/mobile" element={<MobileSidebar />} />
         {/* PROTECTED ROUTES */}
         <Route

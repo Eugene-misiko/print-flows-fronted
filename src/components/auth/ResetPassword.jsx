@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate,useParams } from "react-router-dom";
 import { authAPI } from "../../api/api";
 import toast from "react-hot-toast";
 import { Lock, Eye, EyeOff, Printer } from "lucide-react";
@@ -8,8 +8,9 @@ const ResetPassword = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
 
-  const token= params.get("token");
-
+  const { token }= useParams();
+ console.log("TOKEN:", token);
+ console.log("PARAMS TOKEN:", token);
   const [form, setForm] = useState({
     password: "",
     password_confirm: "",
@@ -23,41 +24,40 @@ const ResetPassword = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!form.password || form.password.length < 8) {
-      toast.error("Password must be at least 8 characters");
-      return;
-    }
+  if (!form.password || form.password.length < 8) {
+    toast.error("Password must be at least 8 characters");
+    return;
+  }
 
-    if (form.password !== form.password_confirm) {
-      toast.error("Passwords do not match");
-      return;
-    }
+  if (form.password !== form.password_confirm) {
+    toast.error("Passwords do not match");
+    return;
+  }
 
-    try {
-      setIsLoading(true);
+  try {
+    setIsLoading(true);
 
-      await authAPI.confirmPasswordReset({
-        token,
-        password: form.password,
-        password_confirm: form.password_confirm,
-      });
+    await authAPI.confirmPasswordReset({
+      token,
+      new_password: form.password,
+      new_password_confirm: form.password_confirm,
+    });
 
-      toast.success("Password reset successful");
-      navigate("/login");
+    toast.success("Password reset successful");
+    navigate("/login");
 
-    } catch (error) {
-      toast.error(
-        error.response?.data?.error ||
-        error.response?.data?.detail ||
-        "Failed to reset password"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  } catch (error) {
+    toast.error(
+      error.response?.data?.error ||
+      error.response?.data?.detail ||
+      "Failed to reset password"
+    );
+  } finally {
+    setIsLoading(false);
+  }
+};
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
