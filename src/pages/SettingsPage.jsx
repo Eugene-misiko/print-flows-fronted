@@ -44,6 +44,13 @@ const SettingsPage = () => {
         phone: company.phone || "",
         address: company.address || "",
         city: company.city || "",
+        country: company.country || "",
+        website: company.website || "",
+        currency: company.currency || "KES",
+        currency_symbol: company.currency_symbol || "KSh",
+        deposit_percentage: company.deposit_percentage || 70,
+        subdomain: company.subdomain || "",
+        custom_domain: company.custom_domain || "",
       });
     }
   }, [company]);
