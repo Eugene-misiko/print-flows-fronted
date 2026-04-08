@@ -1,28 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  registerWithInvitation,
-  clearError,
-} from "../../store/slices/authSlice";
-import {
-  fetchInvitationByToken,
-  clearCurrentInvitation,
-} from "../../store/slices/usersSlice";
+import {registerWithInvitation,clearError,} from "../../store/slices/authSlice";
+import {fetchInvitationByToken,clearCurrentInvitation,} from "../../store/slices/usersSlice";
 import toast from "react-hot-toast";
-import {
-  Printer,
-  Lock,
-  Eye,
-  EyeOff,
-  CheckCircle,
-  AlertCircle,
-} from "lucide-react";
+import {Printer,Lock,Eye,EyeOff,CheckCircle,AlertCircle,} from "lucide-react";
 
 const AcceptInvitation = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { token } = useParams();
+  const { token: invitationToken } = useParams();
 
   // Auth state
   const { user, isLoading: authLoading, error: authError } = useSelector(
@@ -47,24 +34,16 @@ const AcceptInvitation = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  //REDIRECT IF ALREADY LOGGED IN 
-  useEffect(() => {
-    if (user) {
-      navigate("/dashboard");
-    }
-  }, [user, navigate]);
-
   //FETCH INVITATION
   useEffect(() => {
-    if (token) {
-      dispatch(fetchInvitationByToken(token));
+    if (invitationToken) {
+      dispatch(fetchInvitationByToken(invitationToken));
     }
 
     return () => {
       dispatch(clearCurrentInvitation());
     };
-  }, [dispatch, token]);
-
+  }, [dispatch, invitationToken]);
   // AUTO FILL EMAIL
   useEffect(() => {
     if (currentInvitation?.email) {
@@ -74,24 +53,19 @@ const AcceptInvitation = () => {
       }));
     }
   }, [currentInvitation]);
-
   //HANDLE INPUT
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-
     if (authError) dispatch(clearError());
   };
-
   // SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!currentInvitation) {
       return toast.error("Invitation not found");
     }
 
-    const isValid =
-      currentInvitation?.is_valid && !currentInvitation?.is_expired;
+   const isValid = currentInvitation?.is_valid;
 
     if (!isValid) {
       return toast.error("Invalid or expired invitation");
@@ -114,7 +88,7 @@ const AcceptInvitation = () => {
 
     const result = await dispatch(
       registerWithInvitation({
-        invitation_token: token,
+        invitation_token: invitationToken,
         email: form.email,
         first_name: form.first_name,
         last_name: form.last_name,
@@ -137,7 +111,7 @@ const AcceptInvitation = () => {
         phone: "",
       });
 
-      navigate("/dashboard");
+      navigate("/login");
     } else {
       toast.error(result.payload || "Registration failed");
     }
