@@ -6,7 +6,9 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   // withCredentials: true,
 });
-
+const publicAPI = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+});
 // TOKEN HELPERS
 const getAccessToken = () => localStorage.getItem("access_token");
 const getRefreshToken = () => localStorage.getItem("refresh_token");
@@ -192,7 +194,7 @@ export const companyInvitationsAPI = {
   // Platform admin sends invite
   create: (data) => api.post("/company/invitations/", data),
   // Validate company invite token
-  getByToken: (token) => api.get(`/company-invitations/${token}/`),
+  getByToken: (token) => publicAPI.get(`/invitations/${token}/`)
 };
 
 // ===================== CATEGORIES =====================
