@@ -15,6 +15,13 @@ const SettingsPage = () => {
     phone: "",
     address: "",
     city: "",
+    country: "",
+    website: "",
+    currency: "",
+    currency_symbol: "",
+    deposit_percentage: 70,
+    subdomain: "",
+    custom_domain: "",
   });
 
   const [settingsForm, setSettingsForm] = useState({
