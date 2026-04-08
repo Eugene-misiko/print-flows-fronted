@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {fetchUsers,deactivateUser,changeUserRole,fetchInvitations,createInvitation,cancelInvitation,} from "@/store/slices/usersSlice";
+import {fetchUsers,deactivateUser,changeUserRole,fetchInvitations,createInvitation,cancelInvitation,resendInvitation} from "@/store/slices/usersSlice";
 import toast from "react-hot-toast";
 import {UserPlus,Mail,Shield,Palette,Printer,User,Search,X,ChevronDown,AlertTriangle,Users, Send, Clock,Sparkles,Loader2,} from "lucide-react";
 
@@ -166,7 +166,15 @@ const UsersList = () => {
       toast.error(result.payload || "Failed to send invitation");
     }
   };
-
+//resend invitations
+const handleResendInvitation = async (token) => {
+  const result = await dispatch(resendInvitation(token));
+  toast[resendInvitation.fulfilled.match(result) ? "success" : "error"](
+    resendInvitation.fulfilled.match(result)
+      ? "Invitation resent"
+      : "Failed to resend"
+  );
+};
   const handleDeactivate = async (id) => {
     setDeactivatingId(id);
     const result = await dispatch(deactivateUser(id));
@@ -378,8 +386,15 @@ const UsersList = () => {
                       </p>
                     </div>
                   </div>
-                  <button onClick={() => handleCancelInvitation(inv.id)} className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 border border-transparent hover:border-red-200 dark:hover:border-red-800 transition-all">
+                  <button onClick={() => handleCancelInvitation(inv.token)} className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 border border-transparent hover:border-red-200 dark:hover:border-red-800 transition-all">
                     <X className="w-3 h-3" /> Cancel
+                  </button>
+
+                    <button
+                    onClick={() => handleResendInvitation(inv.token)}
+                    className="text-xs px-3 py-1.5 rounded-lg text-blue-500 hover:bg-blue-50"
+                  >
+                    Resend
                   </button>
                 </div>
               ))}
