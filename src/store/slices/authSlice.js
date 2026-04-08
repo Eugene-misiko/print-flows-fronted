@@ -106,9 +106,9 @@ export const registerWithInvitation = createAsyncThunk(
       const response = await authAPI.register(data);
       const { user, tokens } = response.data;
 
-      localStorage.setItem("access_token", tokens.access);
-      localStorage.setItem("refresh_token", tokens.refresh);
-      localStorage.setItem("user", JSON.stringify(user));
+      // localStorage.setItem("access_token", tokens.access);
+      // localStorage.setItem("refresh_token", tokens.refresh);
+      // localStorage.setItem("user", JSON.stringify(user));
 
       return { user };
     } catch (error) {
@@ -264,7 +264,12 @@ const authSlice = createSlice({
 
       // REGISTER INVITATION
       .addCase(registerWithInvitation.pending, (state) => { state.isLoading = true; state.error = null; })
-      .addCase(registerWithInvitation.fulfilled, (state, action) => { state.isLoading = false; state.user = action.payload.user; state.isAuthenticated = true; })
+      .addCase(registerWithInvitation.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.user = null;
+      state.isAuthenticated = false;
+      state.successMessage = "Account created. Please login.";
+       })
       .addCase(registerWithInvitation.rejected, (state, action) => { state.isLoading = false; state.error = action.payload; })
 
       // FETCH INVITATION
