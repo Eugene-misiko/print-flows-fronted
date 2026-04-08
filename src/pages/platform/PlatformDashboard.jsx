@@ -317,7 +317,7 @@ const PlatformDashboard = () => {
                       <p className="text-xs text-gray-400 dark:text-gray-500">Sent {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : "recently"}</p>
                     </div>
                   </div>
-                  <button onClick={() => handleCancelInvitation(inv.id)} className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 border border-transparent hover:border-red-200 dark:hover:border-red-800 transition-all">
+                  <button onClick={() => handleCancelInvitation(inv.token)} className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 border border-transparent hover:border-red-200 dark:hover:border-red-800 transition-all">
                     <X className="w-3 h-3" /> Cancel
                   </button>
                 </div>
