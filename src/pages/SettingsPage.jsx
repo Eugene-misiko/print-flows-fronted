@@ -85,7 +85,9 @@ const SettingsPage = () => {
   };
 
   // Common input classes for consistency
-  const inputClass = `w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-colors disabled:bg-gray-100 dark:disabled:bg-gray-700/50 disabled:cursor-not-allowed`;
+  const inputClass = `w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white 
+  placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-colors
+   disabled:bg-gray-100 dark:disabled:bg-gray-700/50 disabled:cursor-not-allowed`;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -152,6 +154,50 @@ const SettingsPage = () => {
                 onChange={(e) => setCompanyForm({ ...companyForm, address: e.target.value })}
                 disabled={!isAdmin}
                 rows="2"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Subdomain
+              </label>
+              <input
+                type="text"
+                value={companyForm.subdomain}
+                onChange={(e) =>
+                  setCompanyForm({ ...companyForm, subdomain: e.target.value })
+                }
+                disabled={!isAdmin}
+                className={inputClass}
+                placeholder="e.g. zenith"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Custom Domain
+              </label>
+              <input
+                type="text"
+                value={companyForm.custom_domain}
+                onChange={(e) =>
+                  setCompanyForm({ ...companyForm, custom_domain: e.target.value })
+                }
+                disabled={!isAdmin}
+                className={inputClass}
+                placeholder="e.g. zenith.com"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Currency Symbol
+              </label>
+              <input
+                type="text"
+                value={companyForm.currency_symbol}
+                onChange={(e) =>
+                  setCompanyForm({ ...companyForm, currency_symbol: e.target.value })
+                }
+                disabled={!isAdmin}
                 className={inputClass}
               />
             </div>
