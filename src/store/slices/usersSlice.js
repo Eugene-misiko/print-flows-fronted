@@ -256,7 +256,21 @@ const usersSlice = createSlice({
           state.isLoading = false;
           state.error = action.payload;
         })
-
+        // FETCH INVITATION BY TOKEN
+        .addCase(fetchInvitationByToken.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+          state.currentInvitation = null;
+        })
+        .addCase(fetchInvitationByToken.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.currentInvitation = action.payload;
+        })
+        .addCase(fetchInvitationByToken.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+          state.currentInvitation = null;
+        })
         // CREATE INVITATION 
         .addCase(createInvitation.pending, (state) => {
           state.isLoading = true;
