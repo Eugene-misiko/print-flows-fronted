@@ -194,7 +194,7 @@ export const companyInvitationsAPI = {
   // Platform admin sends invite
   create: (data) => api.post("/company/invitations/", data),
   // Validate company invite token
-  getByToken: (token) => publicAPI.get(`/invitations/${token}/`)
+  getByToken: (token) => publicAPI.get(`/company-invitations/${token}/`)
 };
 
 // ===================== CATEGORIES =====================
@@ -214,10 +214,10 @@ export const productsAPI = {
   create: (data) => api.post("/products/create/", data),
   update: (id, data) => api.put(`/products/${id}/`, data),
   delete: (id) => api.delete(`/products/${id}/delete/`),
-  getPublic: (params) => api.get("/public/products/", { params }),
-  getPublicCategories: (params) => api.get("/public/categories/", { params }),
-  getPublicById: (id, params) => api.get(`/public/products/${id}/`, { params }),
-  getPublicCategoryById: (id, params) => api.get(`/public/categories/${id}/`, { params }),
+  getPublic: () => api.get("/public/products/"),
+  getPublicCategories: () => api.get("/public/categories/"),
+  getPublicById: (id) => api.get(`/public/products/${id}/`),
+  getPublicCategoryById: (id) => api.get(`/public/categories/${id}/`),
 };
 
 // ===================== ORDERS =====================

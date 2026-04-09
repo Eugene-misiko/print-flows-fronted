@@ -8,22 +8,17 @@ import {Building2,User,Lock,Eye,EyeOff,Printer,Mail,Phone,ChevronDown,ArrowRight
 const UserRegister = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading, error, companies } = useSelector((state) => state.auth);
+  const { isLoading, error} = useSelector((state) => state.auth);
   const [form, setForm] = useState({
     first_name: "",
     last_name: "",
     email: "",
     phone: "",
     password: "",
-    company_id: "",
     role: "client",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
-  // Company search state
-  const [companySearch, setCompanySearch] = useState("");
-  const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState(null);
   const companyRef = useRef(null);
   const dropdownRef = useRef(null);
 
@@ -49,38 +44,22 @@ const UserRegister = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
     if (error) dispatch(clearError());
   };
-  const handleCompanySelect = (company) => {
-    setSelectedCompany(company);
-    setCompanySearch(company.name);
-    setForm({ ...form, company_id: company.id });
-    setShowCompanyDropdown(false);
-  };
-  const handleCompanyClear = () => {
-    setSelectedCompany(null);
-    setCompanySearch("");
-    setForm({ ...form, company_id: "" });
-  };
-  const handleCompanyInputChange = (e) => {
-    const value = e.target.value;
-    setCompanySearch(value);
-    setSelectedCompany(null);
-    setForm({ ...form, company_id: "" });
-    if (!showCompanyDropdown) setShowCompanyDropdown(true);
-  };
-  const filteredCompanies = companies
-    ? companies.filter((c) =>
-        c.name.toLowerCase().includes(companySearch.toLowerCase())
-      )
-    : [];
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.company_id) return toast.error("Please select a company");
     if (!form.first_name.trim()) return toast.error("First name is required");
     if (!form.last_name.trim()) return toast.error("Last name is required");
     if (!form.email.trim()) return toast.error("Email is required");
     if (!form.password) return toast.error("Password is required");
     if (form.password.length < 8)
       return toast.error("Password must be at least 8 characters");
+    const payload = {
+      first_name: form.first_name,
+      last_name: form.last_name,
+      email: form.email,
+      phone: form.phone,
+      password: form.password,
+     };
+
     const result = await dispatch(registerUser(form));
 
     if (registerUser.fulfilled.match(result)) {
@@ -90,7 +69,7 @@ const UserRegister = () => {
       toast.error(result.payload || "Registration failed");
     }
   };
-
+ 
   const handleFocus = (e, fieldName) => {
     setFocusedField(fieldName);
     if (e.target.hasAttribute("readonly")) {
@@ -132,88 +111,7 @@ const UserRegister = () => {
                 {error}
               </div>
             )}
-            {/* COMPANY SEARCH */}
             <div>
-              <label className="block text-[12px] font-semibold text-[#6b6560] uppercase tracking-wider mb-2">
-                Company
-              </label>
-              <div className="relative" ref={companyRef}>
-                <div className="relative">
-                  {selectedCompany ? (
-                    <Check className="absolute left-3.5 top-1/2 -translate-y-1/2 text-green-500 w-[18px] h-[18px] pointer-events-none" />
-                  ) : (
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#b5afa8] w-[18px] h-[18px] pointer-events-none" />
-                  )}
-                  <input
-                    type="text"
-                    value={companySearch}
-                    onChange={handleCompanyInputChange}
-                    onFocus={() => {
-                      if (!selectedCompany) setShowCompanyDropdown(true);
-                    }}
-                    placeholder="Search company by name..."
-                    autoComplete="off"
-                    className={`w-full bg-[#faf8f6] border ${
-                      selectedCompany
-                        ? "border-green-300 ring-1 ring-green-500/10"
-                        : showCompanyDropdown
-                        ? "border-orange-400 ring-2 ring-orange-500/10"
-                        : "border-[#e8e4df] hover:border-[#d5d0ca]"
-                    } rounded-xl pl-11 pr-10 py-3.5 text-[#2d2a26] placeholder-[#b5afa8] outline-none transition-all duration-200 text-[15px]`}/>
-                  {companySearch && (
-                    <button
-                      type="button"
-                      onClick={handleCompanyClear}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#b5afa8] hover:text-[#6b6560] transition-colors p-0.5"
-                      tabIndex={-1}>
-                      <X className="w-[16px] h-[16px]" />
-                    </button>
-                  )}
-                </div>
-
-                {/* Dropdown */}
-                {showCompanyDropdown && !selectedCompany && (
-                  <div
-                    ref={dropdownRef}
-                    className="absolute top-full left-0 right-0 mt-1.5 bg-[#fffcf9] border border-[#ece7e1] rounded-xl shadow-xl shadow-[#e8e4df]/50 overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                    <div className="max-h-[220px] overflow-y-auto overscroll-contain">
-                      {companySearch.trim() === "" ? (
-                        <div className="px-4 py-8 text-center text-[13px] text-[#b5afa8]">
-                          <Search className="w-5 h-5 mx-auto mb-2 opacity-50" />
-                          Type to search for your company
-                        </div>
-                      ) : filteredCompanies.length === 0 ? (
-                        <div className="px-4 py-8 text-center text-[13px] text-[#b5afa8]">
-                          <Building2 className="w-5 h-5 mx-auto mb-2 opacity-50" />
-                          No company found for &ldquo;{companySearch}&rdquo;
-                        </div>
-                      ) : (
-                        <>
-                          <div className="px-4 py-2 text-[11px] font-semibold text-[#b5afa8] uppercase tracking-wider border-b border-[#ece7e1] bg-[#faf8f6]">
-                            {filteredCompanies.length} result
-                            {filteredCompanies.length > 1 ? "s" : ""} found
-                          </div>
-                          {filteredCompanies.map((company) => (
-                            <button
-                              key={company.id}
-                              type="button"
-                              onClick={() => handleCompanySelect(company)}
-                              className="w-full text-left px-4 py-3 hover:bg-orange-50 transition-colors duration-100 flex items-center gap-3 border-b border-[#f0ece7] last:border-0 group"
-                            >
-                              <div className="w-8 h-8 rounded-lg bg-[#f0ece7] group-hover:bg-orange-100 flex items-center justify-center shrink-0 transition-colors">
-                                <Building2 className="w-4 h-4 text-[#8a8279] group-hover:text-orange-600 transition-colors" />
-                              </div>
-                              <span className="text-[14px] text-[#2d2a26] font-medium truncate">
-                                {company.name}
-                              </span>
-                            </button>
-                          ))}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="h-px bg-[#ece7e1] flex-1" />

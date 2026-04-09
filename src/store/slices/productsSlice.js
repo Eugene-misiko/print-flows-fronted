@@ -90,9 +90,9 @@ export const fetchProducts = createAsyncThunk(
 // Fetch public product by ID
 export const fetchPublicProduct = createAsyncThunk(
   "products/fetchPublicProduct",
-  async ({ id, companySlug }, { rejectWithValue }) => {
+  async ({ id}, { rejectWithValue }) => {
     try {
-      const response = await productsAPI.getPublicById(id, { company: companySlug });
+      const response = await productsAPI.getPublicById(id);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || "Failed to fetch public product");
@@ -107,6 +107,30 @@ export const fetchFeaturedProducts = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || "Failed to fetch featured products");
+    }
+  }
+);
+
+export const fetchPublicProducts = createAsyncThunk(
+  "products/fetchPublicProducts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await productsAPI.getPublic();
+      return response.data;
+    } catch (error) {
+      return rejectWithValue("Failed to fetch public products");
+    }
+  }
+);
+
+export const fetchPublicCategories = createAsyncThunk(
+  "products/fetchPublicCategories",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await productsAPI.getPublicCategories();
+      return response.data;
+    } catch (error) {
+      return rejectWithValue("Failed to fetch public categories");
     }
   }
 );
@@ -246,7 +270,12 @@ const productsSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-
+      .addCase(fetchPublicProducts.fulfilled, (state, action) => {
+        state.products = action.payload.results || action.payload;
+      })
+      .addCase(fetchPublicCategories.fulfilled, (state, action) => {
+        state.categories = action.payload.results || action.payload;
+      })
       // Public category
       .addCase(fetchPublicCategory.pending, (state) => { state.isLoading = true; state.error = null; })
       .addCase(fetchPublicCategory.fulfilled, (state, action) => {

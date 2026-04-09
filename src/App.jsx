@@ -59,8 +59,10 @@ const AppContent = () => {
 
 useEffect(() => {
   const token = localStorage.getItem("access_token");
+  //  DO NOT fetch profile on invitation registration page
+  const isRegisterPage = window.location.pathname.includes("register-company");
 
-  if (token) {
+  if (token && !isRegisterPage) {
     dispatch(fetchProfile());
   }
 }, [dispatch]);
@@ -71,7 +73,7 @@ useEffect(() => {
       <Routes>
         {/* PUBLIC ROUTES */}
         <Route path="/login" element={<Login />} />
-        <Route path="/register-company/:token" element={<Register />} />
+        <Route path="/platform/register-company/" element={<Register />} />
         <Route path="/register" element={<UserRegister />} />
         <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

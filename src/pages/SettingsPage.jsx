@@ -16,12 +16,11 @@ const SettingsPage = () => {
     address: "",
     city: "",
     country: "",
+    slug: "",
     website: "",
     currency: "",
     currency_symbol: "",
     deposit_percentage: 70,
-    subdomain: "",
-    custom_domain: "",
   });
 
   const [settingsForm, setSettingsForm] = useState({
@@ -29,7 +28,8 @@ const SettingsPage = () => {
     currency: "KES",
   });
 
-  const isAdmin = user?.role === "admin" || user?.role === "platform_admin";
+  const isPlatformAdmin = user?.role === "platform_admin";
+  const isCompanyAdmin = user?.role === "admin";
 
   useEffect(() => {
     dispatch(fetchCompany());
@@ -41,6 +41,7 @@ const SettingsPage = () => {
       setCompanyForm({
         name: company.name || "",
         email: company.email || "",
+        slug: company.slug || "",
         phone: company.phone || "",
         address: company.address || "",
         city: company.city || "",
@@ -111,7 +112,7 @@ const SettingsPage = () => {
                 type="text"
                 value={companyForm.name}
                 onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })}
-                disabled={!isAdmin}
+                disabled={!isCompanyAdmin}
                 className={inputClass}
               />
             </div>
@@ -121,10 +122,22 @@ const SettingsPage = () => {
                 type="email"
                 value={companyForm.email}
                 onChange={(e) => setCompanyForm({ ...companyForm, email: e.target.value })}
-                disabled={!isAdmin}
+                disabled={!isCompanyAdmin}
                 className={inputClass}
               />
             </div>
+            <div>
+              <label>Company Slug</label>
+              <input
+                type="text"
+                value={companyForm.slug}
+                onChange={(e) =>
+                  setCompanyForm({ ...companyForm, slug: e.target.value })
+                }
+                disabled={!isCompanyAdmin}
+                className={inputClass}
+              />
+            </div>            
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
@@ -132,7 +145,7 @@ const SettingsPage = () => {
                   type="tel"
                   value={companyForm.phone}
                   onChange={(e) => setCompanyForm({ ...companyForm, phone: e.target.value })}
-                  disabled={!isAdmin}
+                  disabled={!isCompanyAdmin}
                   className={inputClass}
                 />
               </div>
@@ -142,7 +155,7 @@ const SettingsPage = () => {
                   type="text"
                   value={companyForm.city}
                   onChange={(e) => setCompanyForm({ ...companyForm, city: e.target.value })}
-                  disabled={!isAdmin}
+                  disabled={!isCompanyAdmin}
                   className={inputClass}
                 />
               </div>
@@ -152,39 +165,9 @@ const SettingsPage = () => {
               <textarea
                 value={companyForm.address}
                 onChange={(e) => setCompanyForm({ ...companyForm, address: e.target.value })}
-                disabled={!isAdmin}
+                disabled={!isCompanyAdmin}
                 rows="2"
                 className={inputClass}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Subdomain
-              </label>
-              <input
-                type="text"
-                value={companyForm.subdomain}
-                onChange={(e) =>
-                  setCompanyForm({ ...companyForm, subdomain: e.target.value })
-                }
-                disabled={!isAdmin}
-                className={inputClass}
-                placeholder="e.g. zenith"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Custom Domain
-              </label>
-              <input
-                type="text"
-                value={companyForm.custom_domain}
-                onChange={(e) =>
-                  setCompanyForm({ ...companyForm, custom_domain: e.target.value })
-                }
-                disabled={!isAdmin}
-                className={inputClass}
-                placeholder="e.g. zenith.com"
               />
             </div>
             <div>
@@ -197,11 +180,11 @@ const SettingsPage = () => {
                 onChange={(e) =>
                   setCompanyForm({ ...companyForm, currency_symbol: e.target.value })
                 }
-                disabled={!isAdmin}
+                disabled={!isPlatformAdmin}
                 className={inputClass}
               />
             </div>
-            {isAdmin && (
+            {isCompanyAdmin && (
               <button
                 type="submit"
                 disabled={isLoading}
@@ -229,7 +212,7 @@ const SettingsPage = () => {
                 max="100"
                 value={settingsForm.deposit_percentage}
                 onChange={(e) => setSettingsForm({ ...settingsForm, deposit_percentage: parseInt(e.target.value) })}
-                disabled={!isAdmin}
+                disabled={!isCompanyAdmin}
                 className={inputClass}
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Default deposit required before work begins</p>
@@ -239,19 +222,17 @@ const SettingsPage = () => {
               <select
                 value={settingsForm.currency}
                 onChange={(e) => setSettingsForm({ ...settingsForm, currency: e.target.value })}
-                disabled={!isAdmin}
-                className={inputClass}
-              >
+                disabled={!isCompanyAdmin}
+                className={inputClass}>
                 <option value="KES">KES - Kenyan Shilling</option>
                 <option value="USD">USD - US Dollar</option>
               </select>
             </div>
-            {isAdmin && (
+            {isCompanyAdmin && (
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white px-4 py-2.5 rounded-lg shadow-sm transition-all duration-200 disabled:opacity-50 w-full sm:w-auto"
-              >
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white px-4 py-2.5 rounded-lg shadow-sm transition-all duration-200 disabled:opacity-50 w-full sm:w-auto">
                 <Save className="w-4 h-4" />
                 {isLoading ? "Saving..." : "Save Settings"}
               </button>
@@ -264,3 +245,4 @@ const SettingsPage = () => {
 };
 
 export default SettingsPage;
+

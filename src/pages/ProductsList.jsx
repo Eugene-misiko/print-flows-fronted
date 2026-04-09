@@ -231,7 +231,9 @@ const ProductsList = () => {
       {/* Products Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
-          <div className="col-span-full text-center py-12"><div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full mx-auto" /></div>
+          <div className="col-span-full text-center py-12">
+            <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full mx-auto" />
+            </div>
         ) : products?.length === 0 ? (
           <div className="col-span-full text-center py-12"><Package className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-2" /><p className="text-gray-500">No products yet</p></div>
         ) : products.map((product) => {
@@ -256,7 +258,7 @@ const ProductsList = () => {
                 <div className="flex items-center justify-between mt-4">
                   <span className="text-lg font-bold text-green-600 dark:text-green-400">KES {(product.price || 0).toLocaleString()}</span>
                   <button onClick={() => openAddModal(product)} className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${inCart ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border border-orange-300 dark:border-orange-700" : "bg-green-600 hover:bg-green-700 text-white"}`}>
-                    {inCart ? <span className="flex items-center gap-1"><ShoppingCart className="w-4 h-4" /> In Cart</span> : "Add to Order"}
+                    {inCart ? <span className="flex items-center gap-1"><ShoppingCart className="w-4 h-4" /> In Cart</span> : "Select a Design"}
                   </button>
                 </div>
                 {isAdmin && (
@@ -281,7 +283,8 @@ const ProductsList = () => {
             <div className="p-6 pb-0">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Add to Order</h3>
-                <button onClick={() => setShowAddModal(false)} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"><X className="w-5 h-5 text-gray-500" /></button>
+                <button onClick={() => setShowAddModal(false)} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                  <X className="w-5 h-5 text-gray-500" /></button>
               </div>
               <div className="flex gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg mb-4">
                 <img src={selectedProduct.image || "https://via.placeholder.com/80"} alt="" className="w-16 h-16 object-cover rounded-lg" />
@@ -350,7 +353,7 @@ const ProductsList = () => {
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
                 <button type="button" onClick={handleAddToCart} className="flex-1 px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-medium shadow-sm">
-                  <span className="flex items-center justify-center gap-2"><ShoppingCart className="w-4 h-4" /> Add to Order</span>
+                  <span className="flex items-center justify-center gap-2"><ShoppingCart className="w-4 h-4" /> Select Design</span>
                 </button>
               </div>
             </div>

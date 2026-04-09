@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {fetchUsers,deactivateUser,fetchInvitations,createInvitation,cancelInvitation,} from "@/store/slices/usersSlice";
 import toast from "react-hot-toast";
+import { companyInvitationsAPI } from "@/api/api";
 import {Users,Mail,Shield,Search,X,Send,Clock,Loader2,AlertTriangle,Crown,Building2,} from "lucide-react";
 
 //Role Config 
@@ -101,27 +102,29 @@ const PlatformDashboard = () => {
   }, [admins, search]);
 
   //Handlers
-  const handleInvite = async (e) => {
-    e.preventDefault();
-    if (!inviteEmail) return toast.error("Email is required");
+ const handleInvite = async (e) => {
+  e.preventDefault();
 
-    const result = await dispatch(
-      createInvitation({
-        email: inviteEmail,
-        role: "admin", // AUTO-LOCKED TO ADMIN
-        message: inviteMessage,
-      })
-    );
+  if (!inviteEmail) {
+    return toast.error("Email is required");
+  }
 
-    if (createInvitation.fulfilled.match(result)) {
-      toast.success("Company Admin invitation sent");
-      setShowInviteForm(false);
-      setInviteEmail("");
-      setInviteMessage("");
-    } else {
-      toast.error(result.payload || "Failed to send invitation");
-    }
-  };
+  try {
+    await companyInvitationsAPI.create({
+      email: inviteEmail,
+      company_name: "New Company", // or input field if you want
+      message: inviteMessage,
+    });
+
+    toast.success("Company Admin invitation sent");
+
+    setShowInviteForm(false);
+    setInviteEmail("");
+    setInviteMessage("");
+  } catch (error) {
+    toast.error(error.response?.data?.error || "Failed to send invitation");
+  }
+};
 
   const handleDeactivate = async (id) => {
     setDeactivatingId(id);
@@ -317,7 +320,7 @@ const PlatformDashboard = () => {
                       <p className="text-xs text-gray-400 dark:text-gray-500">Sent {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : "recently"}</p>
                     </div>
                   </div>
-                  <button onClick={() => handleCancelInvitation(inv.token)} className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 border border-transparent hover:border-red-200 dark:hover:border-red-800 transition-all">
+                  <button onClick={() => handleCancelInvitation(inv.id)} className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 border border-transparent hover:border-red-200 dark:hover:border-red-800 transition-all">
                     <X className="w-3 h-3" /> Cancel
                   </button>
                 </div>

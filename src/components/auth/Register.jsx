@@ -3,13 +3,18 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { registerCompany, clearError } from "../../store/slices/authSlice";
 import toast from "react-hot-toast";
+import { useLocation } from "react-router-dom";
+
 import { Building2, User, Lock, Eye, EyeOff, Printer } from "lucide-react";
 
 const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error } = useSelector((state) => state.auth);
+  const location = useLocation();
 
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get("token");
   const [form, setForm] = useState({
     company_name: "",
     company_email: "",
@@ -54,13 +59,14 @@ const Register = () => {
       ...form,
       company_slug,
       company_country: "Kenya",
+      token, 
     };
 
     const result = await dispatch(registerCompany(payload));
 
     if (registerCompany.fulfilled.match(result)) {
       toast.success("Company registered successfully!");
-      navigate("/dashboard");
+      window.location.href = `http://${company_slug}.localhost:5173/dashboard`;
     } else {
       toast.error(result.payload || "Registration failed");
     }
