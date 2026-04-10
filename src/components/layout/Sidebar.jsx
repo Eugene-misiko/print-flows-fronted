@@ -46,56 +46,56 @@ const Sidebar = ({ user }) => {
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        <NavLink to="/dashboard" className={linkClass}>
+        <NavLink to="/app/dashboard" className={linkClass}>
           <LayoutDashboard className="w-5 h-5" />
           <span>Dashboard</span>
         </NavLink>
 
-        <NavLink to="/orders" className={linkClass}>
+        <NavLink to="/app/orders" className={linkClass}>
           <ShoppingBag className="w-5 h-5" />
           <span>Orders</span>
         </NavLink>
 
         {(isAdmin || isClient) && (
-          <NavLink to="/orders/new" className={linkClass}>
+          <NavLink to="/app/orders/new" className={linkClass}>
             <PlusCircle className="w-5 h-5" />
             <span>New Order</span>
           </NavLink>
         )}
 
         {isAdmin && (
-          <NavLink to="/users" className={linkClass}>
+          <NavLink to="/app/users" className={linkClass}>
             <Users className="w-5 h-5" />
             <span>Team</span>
           </NavLink>
         )}
 
         {(isAdmin || isClient) && (
-          <NavLink to="/products" className={linkClass}>
+          <NavLink to="/app/products" className={linkClass}>
             <Package className="w-5 h-5" />
             <span>Products</span>
           </NavLink>
         )}
 
         {(isAdmin || isDesigner || isPrinter) && (
-          <NavLink to="/invoices" className={linkClass}>
+          <NavLink to="/app/invoices" className={linkClass}>
             <FileText className="w-5 h-5" />
             <span>Invoices</span>
           </NavLink>
         )}
 
-        <NavLink to="/payments" className={linkClass}>
+        <NavLink to="/app/payments" className={linkClass}>
           <CreditCard className="w-5 h-5" />
           <span>Payments</span>
         </NavLink>
 
-        <NavLink to="/messages" className={linkClass}>
+        <NavLink to="/app/messages" className={linkClass}>
           <MessageSquare className="w-5 h-5" />
           <span>Messages</span>
         </NavLink>
 
         {isAdmin && (
-          <NavLink to="/settings" className={linkClass}>
+          <NavLink to="/app/settings" className={linkClass}>
             <Settings className="w-5 h-5" />
             <span>Settings</span>
           </NavLink>
