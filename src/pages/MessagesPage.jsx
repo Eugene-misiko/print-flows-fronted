@@ -1,12 +1,26 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {fetchConversations,fetchMessages,sendMessage,startConversation,} from "@/store/slices/messagingSlice";
+import {
+  fetchConversations,
+  fetchMessages,
+  sendMessage,
+  startConversation,
+} from "@/store/slices/messagingSlice";
 import { fetchUsers } from "@/store/slices/usersSlice";
 import { fetchOrders } from "@/store/slices/ordersSlice";
 import toast from "react-hot-toast";
-import {MessageSquare,Send,Plus,Search,X,Package,FileText,ChevronDown,} from "lucide-react";
+import {
+  MessageSquare,
+  Send,
+  Plus,
+  Search,
+  X,
+  Package,
+  FileText,
+  ChevronDown,
+} from "lucide-react";
 
-//Utilities
+// Utilities
 const fmtCurr = (a) => `KES ${(a || 0).toLocaleString()}`;
 const fmtTime = (d) =>
   new Date(d).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -60,7 +74,7 @@ const groupByDate = (msgs) => {
 const inputCls =
   "w-full px-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all text-sm";
 
-//Reusable Avatar 
+// Reusable Avatar
 const Avatar = ({ name, size = "md" }) => {
   const initials =
     name
@@ -82,7 +96,7 @@ const Avatar = ({ name, size = "md" }) => {
   );
 };
 
-// Message Bubble 
+// Message Bubble
 const MessageBubble = ({ msg, isMine, isLast }) => {
   const [expanded, setExpanded] = useState(false);
   const contentRef = useRef(null);
@@ -171,7 +185,7 @@ const MessageBubble = ({ msg, isMine, isLast }) => {
   );
 };
 
-//Main Component 
+// Main Component
 const MessagesPage = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
@@ -214,13 +228,16 @@ const MessagesPage = () => {
   }, [messages]);
 
   const selectedConv = conversations?.find((c) => c.id === selectedId);
-  const otherUser = selectedConv?.participants?.find((p) => p.id !== user?.id);
+  const otherUser = selectedConv?.participants?.find(
+    (p) => p.id !== user?.id
+  );
   const linkedOrder = selectedConv?.order
     ? orders?.find((o) => o.id === selectedConv.order)
     : null;
 
   const filteredUsers = users?.filter(
-    (u) => u.id !== user?.id && u.is_active !== false && u.role !== "platform_admin"
+    (u) =>
+      u.id !== user?.id && u.is_active !== false && u.role !== "platform_admin"
   );
   const filteredRecips = filteredUsers?.filter((u) => {
     if (!recipSearch) return true;
@@ -235,7 +252,8 @@ const MessagesPage = () => {
     if (!orderSearch) return true;
     const q = orderSearch.toLowerCase();
     return (
-      o.order_number?.toLowerCase().includes(q) || o.id?.toString().includes(q)
+      o.order_number?.toLowerCase().includes(q) ||
+      o.id?.toString().includes(q)
     );
   });
   const selectedRecipient = filteredUsers?.find(
@@ -266,7 +284,10 @@ const MessagesPage = () => {
     e.preventDefault();
     if (!recipientId) return toast.error("Select a recipient");
     if (!firstMessage.trim()) return toast.error("Type a message");
-    const data = { recipient_id: parseInt(recipientId), message: firstMessage };
+    const data = {
+      recipient_id: parseInt(recipientId),
+      message: firstMessage,
+    };
     if (linkOrder && orderId) data.order_id = parseInt(orderId);
     const r = await dispatch(startConversation(data));
     if (startConversation.fulfilled.match(r)) {
@@ -277,7 +298,8 @@ const MessagesPage = () => {
     }
   };
 
-  // Shared renderers (used by both mobile & desktop) 
+  // ─── Shared renderers ──────────────────────────────────────
+
   const renderMsgList = () => {
     if (!messages?.length)
       return (
@@ -286,7 +308,9 @@ const MessagesPage = () => {
             <MessageSquare className="w-10 h-10 opacity-40" />
           </div>
           <p className="text-sm font-medium">No messages yet</p>
-          <p className="text-xs text-gray-400 mt-1">Send a message to get started</p>
+          <p className="text-xs text-gray-400 mt-1">
+            Send a message to get started
+          </p>
         </div>
       );
     return groupByDate(messages).map((g, gi) => (
@@ -384,7 +408,10 @@ const MessagesPage = () => {
             style={{ minHeight: "44px", maxHeight: "120px", height: "auto" }}
             onInput={(e) => {
               e.target.style.height = "auto";
-              e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
+              e.target.style.height = `${Math.min(
+                e.target.scrollHeight,
+                120
+              )}px`;
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -400,7 +427,9 @@ const MessagesPage = () => {
           className={`${
             mobile ? "p-2.5" : "p-3"
           } bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl ${
-            mobile ? "" : "shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30"
+            mobile
+              ? ""
+              : "shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30"
           } transition-all shrink-0`}
         >
           <Send className="w-5 h-5" />
@@ -412,13 +441,18 @@ const MessagesPage = () => {
   const renderChatArea = (mobile) => (
     <div
       className={`flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-950 ${
-        mobile ? "" : "hidden lg:flex"
+        // FIX 1: mobile version gets lg:hidden so it never overlaps the desktop version
+        mobile ? "lg:hidden" : "hidden lg:flex"
       }`}
     >
       {selectedId && selectedConv ? (
         <>
           {renderChatHeader(mobile)}
-          <div className={`flex-1 overflow-y-auto ${mobile ? "px-4" : "px-5"} py-4 space-y-1`}>
+          <div
+            className={`flex-1 overflow-y-auto ${
+              mobile ? "px-4" : "px-5"
+            } py-4 space-y-1`}
+          >
             {isLoading ? (
               <div className="flex justify-center py-16">
                 <div className="w-6 h-6 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
@@ -431,15 +465,18 @@ const MessagesPage = () => {
           {renderChatInput(mobile)}
         </>
       ) : (
+        // FIX 2: replaced dynamic Tailwind classes with full static class names
         <div className="flex-1 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 p-8">
           <div
-            className={`rounded-${
-              mobile ? "2xl" : "3xl"
-            } bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-${
-              mobile ? "3" : "5"
-            } ${mobile ? "w-16 h-16" : "w-24 h-24"}`}
+            className={`flex items-center justify-center bg-gray-100 dark:bg-gray-800 ${
+              mobile
+                ? "w-16 h-16 rounded-2xl mb-3"
+                : "w-24 h-24 rounded-3xl mb-5"
+            }`}
           >
-            <MessageSquare className={`${mobile ? "w-8 h-8" : "w-12 h-12"} opacity-30`} />
+            <MessageSquare
+              className={`${mobile ? "w-8 h-8" : "w-12 h-12"} opacity-30`}
+            />
           </div>
           <p
             className={`${
@@ -459,7 +496,6 @@ const MessagesPage = () => {
     </div>
   );
 
-  
   return (
     <div className="h-[calc(100vh-140px)] flex bg-gray-50 dark:bg-gray-950 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm">
       {/* Conversation List */}
@@ -494,7 +530,9 @@ const MessagesPage = () => {
             </div>
           ) : (
             conversations.map((conv) => {
-              const other = conv.participants?.find((p) => p.id !== user?.id);
+              const other = conv.participants?.find(
+                (p) => p.id !== user?.id
+              );
               const convOrder = conv.order
                 ? orders?.find((o) => o.id === conv.order)
                 : null;
@@ -541,12 +579,13 @@ const MessagesPage = () => {
         </div>
       </div>
 
-      {/* Desktop Chat */}
+      {/* Desktop Chat Area (visible lg+) */}
       {renderChatArea(false)}
-      {/* Mobile Chat (only when a conversation is selected) */}
+
+      {/* Mobile Chat Area (visible below lg, only when a conversation is selected) */}
       {selectedId && selectedConv && renderChatArea(true)}
 
-      {/*New Conversation Modal*/}
+      {/* New Conversation Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="w-full max-w-lg bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col max-h-[90vh]">
