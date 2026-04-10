@@ -20,6 +20,7 @@ import ClientDashboard from "./pages/client/Dashboard";
 import PlatformDashboard from "./pages/platform/PlatformDashboard";
 // PAGES
 import OrdersList from "./pages/OrdersList";
+import LandingPage from "./pages/LandingPage";
 import OrderDetail from "./pages/OrderDetail";
 import CreateOrder from "./pages/CreateOrder";
 import UsersList from "./pages/UsersList";
@@ -78,6 +79,7 @@ useEffect(() => {
       <Routes>
         {/* PUBLIC ROUTES */}
         <Route path="/store/:companySlug" element={<StoreHome />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/store/:companySlug/product/:id" element={<ProductDetail />} />
         <Route path="/store/:companySlug/category/:id" element={<CategoryPage />} />
         <Route path="/store/:companySlug/login" element={<Login />} />

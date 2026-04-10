@@ -21,7 +21,7 @@ const ProductDetail = () => {
 
   const handleOrder = () => {
     if (!user) {
-      navigate(`/login?redirect=/store/${companySlug}/product/${id}`);
+      navigate(`/store/${companySlug}/login/${id}`);
     } else {
       navigate("/app/orders/new", {
         state: {
