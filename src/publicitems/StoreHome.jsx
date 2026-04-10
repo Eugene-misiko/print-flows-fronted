@@ -269,7 +269,7 @@ const StoreHome = () => {
           </p>
           <div className="flex items-center gap-1.5 text-[11px] text-slate-300">
             <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] animate-pulse"></div>
-            Storefront powered by PrintHub
+            Storefront powered by PrintHub 
           </div>
         </div>
       </footer>

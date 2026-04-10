@@ -127,7 +127,7 @@ const Login = () => {
           </form>
       <div className="text-right">
         <Link
-          to="/forgot-password"
+          to="/store/:companySlug/forgot-password"
           className="text-sm text-orange-600 hover:text-orange-700"
         >
           Forgot password?
