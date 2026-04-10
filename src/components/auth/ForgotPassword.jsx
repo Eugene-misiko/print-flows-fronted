@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { authAPI} from "../../api/api"
 import toast from "react-hot-toast";
 import { Mail, Printer } from "lucide-react";
@@ -7,7 +7,7 @@ import { Mail, Printer } from "lucide-react";
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+ const { companySlug } = useParams();
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -87,9 +87,12 @@ const ForgotPassword = () => {
           {/* Back to login */}
           <p className="text-center mt-6 text-gray-600">
             Remember your password?{" "}
-            <Link to="/login" className="text-orange-600 hover:text-orange-700 font-medium">
-              Sign In
-            </Link>
+        <Link
+          to={`/store/${companySlug}/login`}
+          className="text-[#c93d1a] font-semibold hover:text-[#a83215] hover:underline underline-offset-2 transition-colors"
+        >
+          Sign in
+        </Link>
           </p>
         </div>
       </div>

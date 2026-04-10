@@ -86,6 +86,8 @@ const ProductsList = () => {
     const fd = new FormData();
     fd.append("name", productForm.name);
     fd.append("price", parseFloat(productForm.price));
+    fd.append("is_active", true);
+    fd.append("price", parseFloat(productForm.price));
     if (productForm.category) fd.append("category", Number(productForm.category));
     fd.append("description", productForm.description || "");
     if (productForm.image instanceof File) fd.append("image", productForm.image);
@@ -168,7 +170,7 @@ const ProductsList = () => {
         </div>
         <div className="flex gap-2">
           {cart.length > 0 && (
-            <button onClick={() => navigate("/orders/new")} className="relative flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm transition-colors">
+            <button onClick={() => navigate("/app/orders/new")} className="relative flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm transition-colors">
               <ShoppingCart className="w-4 h-4" /> Cart ({cart.reduce((s, i) => s + i.quantity, 0)})
               <span className="absolute -top-2 -right-2 w-5 h-5 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center">
                 {(cartTotal / 1000).toFixed(0)}k

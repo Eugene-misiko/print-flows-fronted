@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { login, clearError } from "../../store/slices/authSlice";
 import toast from "react-hot-toast";
@@ -9,7 +9,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error } = useSelector((state) => state.auth);
-
+ const { companySlug } = useParams();
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
 
@@ -36,7 +36,7 @@ const Login = () => {
       toast.success("Welcome back!");
       setForm({ email: "", password: "" });
 
-      navigate("/dashboard");
+      navigate("/app/dashboard");
     } else {
       toast.error(result.payload || "Login failed");
     }
@@ -137,12 +137,10 @@ const Login = () => {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               Don't have an account?{" "}
-              <Link
-                to="/register"
-                className="text-orange-600 hover:text-orange-700 font-medium"
-              >
-                Register here
-              </Link>
+              
+          <Link to={`/store/${companySlug}/register`}>
+            Register here
+          </Link>
             </p>
           </div>
         </div>

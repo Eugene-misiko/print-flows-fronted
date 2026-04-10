@@ -32,6 +32,10 @@ import MessagesPage from "./pages/MessagesPage";
 import NotificationsList from "./pages/NotificationsList";
 import MobileSidebar from "./components/layout/MobileSidebar";
 import UserRegister from "./components/auth/userRegister";
+import StoreHome from "./publicitems/StoreHome";
+import ProductDetail from "./publicitems/ProductDetail";
+import CategoryPage from "./publicitems/CategoryPage";
+import Header from "./components/layout/Header";
 // DASHBOARD ROUTER 
 const DashboardRouter = () => {
   const { user } = useSelector((state) => state.auth);
@@ -69,34 +73,43 @@ useEffect(() => {
 
   return (
     <>
+   
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       <Routes>
         {/* PUBLIC ROUTES */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/store/:companySlug" element={<StoreHome />} />
+        <Route path="/store/:companySlug/product/:id" element={<ProductDetail />} />
+        <Route path="/store/:companySlug/category/:id" element={<CategoryPage />} />
+        <Route path="/store/:companySlug/login" element={<Login />} />
         <Route path="/platform/register-company/" element={<Register />} />
-        <Route path="/register" element={<UserRegister />} />
+        <Route path="/store/:companySlug/register" element={<UserRegister />} />
         <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/mobile" element={<MobileSidebar />} />
         {/* PROTECTED ROUTES */}
         <Route
-          path="/"
+          path="/app"
           element={
             <ProtectedRoute>
               <Layout />
-            </ProtectedRoute>}>
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<DashboardRouter />} />
           <Route path="orders" element={<OrdersList />} />
           <Route path="orders/new" element={<CreateOrder />} />
           <Route path="orders/:id" element={<OrderDetail />} />
+
           <Route
             path="users"
             element={
               <ProtectedRoute allowedRoles={["admin", "platform_admin"]}>
                 <UsersList />
-              </ProtectedRoute>} />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="products" element={<ProductsList />} />
           <Route path="payments" element={<PaymentsPage />} />
@@ -107,7 +120,7 @@ useEffect(() => {
           <Route path="notifications" element={<NotificationsList />} />
         </Route>
         {/* FALLBACK */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

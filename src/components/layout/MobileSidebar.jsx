@@ -18,9 +18,9 @@ const MobileSidebar = () => {
 
   const getRoleBasedMenu = () => {
     const commonItems = [
-      { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-      { path: "/orders", icon: ShoppingCart, label: "Orders" },
-      { path: "/messages", icon: MessageSquare, label: "Messages" },
+      { path: "/app/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+      { path: "/app/orders", icon: ShoppingCart, label: "Orders" },
+      { path: "/app/messages", icon: MessageSquare, label: "Messages" },
     ];
 
     switch (user?.role) {
@@ -28,33 +28,33 @@ const MobileSidebar = () => {
       case "platform_admin":
         return [
           ...commonItems,
-          { path: "/orders/new", icon: PlusCircle, label: "New Order" },
-          { path: "/products", icon: Package, label: "Products" },
-          { path: "/users", icon: Users, label: "Team" },
-          { path: "/payments", icon: CreditCard, label: "Payments" },
-          { path: "/invoices", icon: Settings, label: "Invoices" },
-          { path: "/settings", icon: Settings, label: "Settings" },
+          { path: "/app/orders/new", icon: PlusCircle, label: "New Order" },
+          { path: "/app/products", icon: Package, label: "Products" },
+          { path: "/app/users", icon: Users, label: "Team" },
+          { path: "/app/payments", icon: CreditCard, label: "Payments" },
+          { path: "/app/invoices", icon: Settings, label: "Invoices" },
+          { path: "/app/settings", icon: Settings, label: "Settings" },
         ];
       case "designer":
         return [
           ...commonItems,
-          { path: "/orders", icon: ShoppingCart, label: "Orders" },
-          { path: "/invoices", icon: CreditCard, label: "Invoices" },
-          { path: "/payments", icon: CreditCard, label: "Payments" },
+          { path: "/app/orders", icon: ShoppingCart, label: "Orders" },
+          { path: "/app/invoices", icon: CreditCard, label: "Invoices" },
+          { path: "/app/payments", icon: CreditCard, label: "Payments" },
         ];
       case "printer":
         return [
           ...commonItems,
-          { path: "/orders", icon: ShoppingCart, label: "Orders" },
-          { path: "/invoices", icon: CreditCard, label: "Invoices" },
-          { path: "/payments", icon: CreditCard, label: "Payments" },
+          { path: "/app/orders", icon: ShoppingCart, label: "Orders" },
+          { path: "/app/invoices", icon: CreditCard, label: "Invoices" },
+          { path: "/app/payments", icon: CreditCard, label: "Payments" },
         ];
       case "client":
         return [
           ...commonItems,
-          { path: "/orders/new", icon: PlusCircle, label: "New Order" },
-          { path: "/products", icon: Package, label: "Products" },
-          { path: "/payments", icon: CreditCard, label: "Payments" },
+          { path: "/app/orders/new", icon: PlusCircle, label: "New Order" },
+          { path: "/app/products", icon: Package, label: "Products" },
+          { path: "/app/payments", icon: CreditCard, label: "Payments" },
         ];
       default:
         return commonItems;
@@ -84,7 +84,7 @@ const MobileSidebar = () => {
         
         {/* Header */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
-          <Link to="/dashboard" className="flex items-center gap-2" onClick={handleClose}>
+          <Link to="/app/dashboard" className="flex items-center gap-2" onClick={handleClose}>
             <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow">
               <Printer className="h-5 w-5 text-white" />
             </div>

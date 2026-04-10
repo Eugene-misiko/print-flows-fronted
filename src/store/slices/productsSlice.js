@@ -14,6 +14,7 @@ export const fetchCategories = createAsyncThunk(
     }
   }
 );
+
 // Fetch public category by ID
 export const fetchPublicCategory = createAsyncThunk(
   "products/fetchPublicCategory",
@@ -90,12 +91,14 @@ export const fetchProducts = createAsyncThunk(
 // Fetch public product by ID
 export const fetchPublicProduct = createAsyncThunk(
   "products/fetchPublicProduct",
-  async ({ id}, { rejectWithValue }) => {
+  async ({ id, companySlug }, { rejectWithValue }) => {
     try {
-      const response = await productsAPI.getPublicById(id);
+      const response = await productsAPI.getPublicById(id, {
+        company: companySlug,
+      });
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.error || "Failed to fetch public product");
+      return rejectWithValue("Failed to fetch public product");
     }
   }
 );

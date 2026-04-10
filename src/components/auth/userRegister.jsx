@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import { registerUser, fetchCompanies, clearError } from "../../store/slices/authSlice";
 import toast from "react-hot-toast";
 import {Building2,User,Lock,Eye,EyeOff,Printer,Mail,Phone,ChevronDown,ArrowRight,Loader2,Search,X,Check,} from "lucide-react";
@@ -8,6 +9,9 @@ import {Building2,User,Lock,Eye,EyeOff,Printer,Mail,Phone,ChevronDown,ArrowRight
 const UserRegister = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { companySlug } = useParams();
+  const companies = useSelector(state => state.auth.companies)
+  const company = companies.find(c => c.slug === companySlug);;
   const { isLoading, error} = useSelector((state) => state.auth);
   const [form, setForm] = useState({
     first_name: "",
@@ -21,7 +25,7 @@ const UserRegister = () => {
   const [focusedField, setFocusedField] = useState(null);
   const companyRef = useRef(null);
   const dropdownRef = useRef(null);
-
+ ;
   useEffect(() => {
     dispatch(fetchCompanies());
   }, [dispatch]);
@@ -53,18 +57,20 @@ const UserRegister = () => {
     if (form.password.length < 8)
       return toast.error("Password must be at least 8 characters");
     const payload = {
+      company_id: company?.id,
+      company_slug: companySlug, 
       first_name: form.first_name,
       last_name: form.last_name,
       email: form.email,
       phone: form.phone,
       password: form.password,
-     };
+    };
 
-    const result = await dispatch(registerUser(form));
+    const result = await dispatch(registerUser(payload));
 
     if (registerUser.fulfilled.match(result)) {
-      toast.success("Account created successfully!");
-      navigate("/dashboard");
+      toast.success("Account created successfully! Please login");
+      navigate(`/store/${companySlug}/login`);
     } else {
       toast.error(result.payload || "Registration failed");
     }
@@ -96,21 +102,15 @@ const UserRegister = () => {
             <Printer className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-[28px] font-bold text-[#1a1714] tracking-tight">
-            Create your account
+            Create your account 
           </h1>
-          <p className="text-[#8a8279] mt-2 text-[15px]">
-            Get started with PrintFlow today
-          </p>
+        <h2 className="text-sm text-gray-500 mb-2">
+          Registering for<span className="font-semibold"> {companySlug}</span>
+        </h2>
         </div>
         {/* Card */}
         <div className="bg-[#fffcf9] rounded-2xl shadow-xl shadow-[#e8e4df]/60 border border-[#ece7e1] p-8">
           <form onSubmit={handleSubmit} autoComplete="off" className="space-y-5">
-            {error && (
-              <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
-                <div className="w-2 h-2 bg-red-500 rounded-full shrink-0" />
-                {error}
-              </div>
-            )}
             <div>
             </div>
             <div className="flex items-center gap-3">
@@ -230,11 +230,12 @@ const UserRegister = () => {
           {/* Footer */}
           <p className="text-center mt-7 text-[14px] text-[#8a8279]">
             Already have an account?{" "}
-            <Link
-              to="/login"
-              className="text-[#c93d1a] font-semibold hover:text-[#a83215] hover:underline underline-offset-2 transition-colors">
-              Sign in
-            </Link>
+        <Link
+          to={`/store/${companySlug}/login`}
+          className="text-[#c93d1a] font-semibold hover:text-[#a83215] hover:underline underline-offset-2 transition-colors"
+        >
+          Sign in
+        </Link>
           </p>
         </div>
       </div>
