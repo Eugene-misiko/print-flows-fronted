@@ -2,7 +2,19 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../../store/slices/authSlice";
-import {LayoutDashboard,ShoppingBag,Users,Package,CreditCard,FileText,Settings,MessageSquare,Printer,PlusCircle,LogOut,} from "lucide-react";
+import {
+  LayoutDashboard,
+  ShoppingBag,
+  Users,
+  Package,
+  CreditCard,
+  FileText,
+  Settings,
+  MessageSquare,
+  Printer,
+  PlusCircle,
+  LogOut,
+} from "lucide-react";
 
 const Sidebar = ({ user }) => {
   const dispatch = useDispatch();
@@ -19,102 +31,105 @@ const Sidebar = ({ user }) => {
   };
 
   const linkClass = ({ isActive }) =>
-    `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+    `flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 ${
       isActive
-        ? "bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 font-medium"
-        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+        ? "bg-[#fff7ed] text-[#c2410c] dark:bg-[#c2410c]/15 dark:text-[#ea580c] font-semibold shadow-sm"
+        : "text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800/70 hover:text-stone-800 dark:hover:text-stone-200"
     }`;
 
   return (
-    <aside className="fixed left-0 top-0 w-64 h-screen border-r border-gray-200 dark:border-gray-800 flex flex-col bg-white dark:bg-gradient-to-b dark:from-gray-950 dark:to-gray-900 transition-colors duration-200 z-30">
-      {/* Logo */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-800">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow">
+    <aside className="fixed left-0 top-0 w-64 h-screen border-r border-stone-200/70 dark:border-stone-800 flex flex-col bg-white dark:bg-stone-950 transition-colors duration-300 z-30">
+      {/* Logo / Brand */}
+      <div className="p-5 border-b border-stone-100 dark:border-stone-800">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-[#c2410c] to-[#ea580c] rounded-xl flex items-center justify-center shadow-lg shadow-orange-600/20">
             <Printer className="w-5 h-5 text-white" />
           </div>
           <div>
-            <span className="font-bold text-lg text-gray-900 dark:text-white">
+            <span className="font-bold text-lg text-stone-900 dark:text-stone-100 tracking-tight">
               PrintFlow
             </span>
-            <p className="text-xs text-gray-500 dark:text-gray-500">
+            <p className="text-[11px] text-stone-400 dark:text-stone-500 font-medium">
               Printing Management
             </p>
           </div>
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+      {/* Navigation Links */}
+      <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
         <NavLink to="/app/dashboard" className={linkClass}>
-          <LayoutDashboard className="w-5 h-5" />
-          <span>Dashboard</span>
+          <LayoutDashboard className="w-[18px] h-[18px]" />
+          <span className="text-sm">Dashboard</span>
         </NavLink>
 
         <NavLink to="/app/orders" className={linkClass}>
-          <ShoppingBag className="w-5 h-5" />
-          <span>Orders</span>
+          <ShoppingBag className="w-[18px] h-[18px]" />
+          <span className="text-sm">Orders</span>
         </NavLink>
 
         {(isAdmin || isClient) && (
           <NavLink to="/app/orders/new" className={linkClass}>
-            <PlusCircle className="w-5 h-5" />
-            <span>New Order</span>
+            <PlusCircle className="w-[18px] h-[18px]" />
+            <span className="text-sm">New Order</span>
           </NavLink>
         )}
 
         {isAdmin && (
           <NavLink to="/app/users" className={linkClass}>
-            <Users className="w-5 h-5" />
-            <span>Team</span>
+            <Users className="w-[18px] h-[18px]" />
+            <span className="text-sm">Team</span>
           </NavLink>
         )}
 
         {(isAdmin || isClient) && (
           <NavLink to="/app/products" className={linkClass}>
-            <Package className="w-5 h-5" />
-            <span>Products</span>
+            <Package className="w-[18px] h-[18px]" />
+            <span className="text-sm">Products</span>
           </NavLink>
         )}
 
         {(isAdmin || isDesigner || isPrinter) && (
           <NavLink to="/app/invoices" className={linkClass}>
-            <FileText className="w-5 h-5" />
-            <span>Invoices</span>
+            <FileText className="w-[18px] h-[18px]" />
+            <span className="text-sm">Invoices</span>
           </NavLink>
         )}
 
         <NavLink to="/app/payments" className={linkClass}>
-          <CreditCard className="w-5 h-5" />
-          <span>Payments</span>
+          <CreditCard className="w-[18px] h-[18px]" />
+          <span className="text-sm">Payments</span>
         </NavLink>
 
         <NavLink to="/app/messages" className={linkClass}>
-          <MessageSquare className="w-5 h-5" />
-          <span>Messages</span>
+          <MessageSquare className="w-[18px] h-[18px]" />
+          <span className="text-sm">Messages</span>
         </NavLink>
 
         {isAdmin && (
           <NavLink to="/app/settings" className={linkClass}>
-            <Settings className="w-5 h-5" />
-            <span>Settings</span>
+            <Settings className="w-[18px] h-[18px]" />
+            <span className="text-sm">Settings</span>
           </NavLink>
         )}
       </nav>
 
-      <div className="p-4 border-t border-gray-200 dark:border-gray-800 space-y-3">
-        <div className="border border-gray-200 dark:border-sky-500/30 rounded-lg p-4 bg-gray-50 dark:bg-gray-900 transition-all duration-300 ease-in-out dark:shadow-[0_0_10px_2px_rgba(56,189,248,0.15)]">
-          <p className="text-xs text-gray-500 dark:text-gray-500 mb-1">
+      {/* Bottom User Info / Logout */}
+      <div className="p-4 border-t border-stone-100 dark:border-stone-800 space-y-3">
+        {/* User Role Card */}
+        <div className="border border-stone-200/70 dark:border-[#c2410c]/20 rounded-xl p-4 bg-stone-50/50 dark:bg-[#c2410c]/5 transition-all duration-300">
+          <p className="text-[11px] text-stone-400 dark:text-stone-500 mb-1 font-medium">
             Logged in as
           </p>
-          <p className="text-sm font-medium text-gray-900 dark:text-sky-400 capitalize">
+          <p className="text-sm font-bold text-stone-800 dark:text-[#ea580c] capitalize">
             {user?.role?.replace("_", " ") || "User"}
           </p>
         </div>
 
+        {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 border border-red-200/70 dark:border-red-800/30 rounded-xl transition-all active:scale-[.98]"
         >
           <LogOut className="w-4 h-4" />
           Logout

@@ -26,14 +26,15 @@ const NotificationsList = () => {
     return new Date(dateString).toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
+  // Colors updated to fit the warm palette while keeping visual distinction
   const getIcon = (type) => {
     const map = {
-      order: <Package className="h-5 w-5 text-blue-600 dark:text-blue-400" />,
-      payment: <CreditCard className="h-5 w-5 text-green-600 dark:text-green-400" />,
-      design: <Info className="h-5 w-5 text-purple-600 dark:text-purple-400" />,
-      printing: <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />,
-      delivery: <CheckCircle className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />,
-      system: <Info className="h-5 w-5 text-gray-600 dark:text-gray-400" />,
+      order: <Package className="h-5 w-5 text-[#c2410c] dark:text-[#ea580c]" />,
+      payment: <CreditCard className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />,
+      design: <Info className="h-5 w-5 text-amber-600 dark:text-amber-400" />,
+      printing: <AlertCircle className="h-5 w-5 text-stone-600 dark:text-stone-400" />,
+      delivery: <CheckCircle className="h-5 w-5 text-sky-600 dark:text-sky-400" />,
+      system: <Info className="h-5 w-5 text-stone-500 dark:text-stone-500" />,
     };
     return map[type] || map.system;
   };
@@ -51,47 +52,117 @@ const NotificationsList = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Notifications</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">{unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}</p>
+          <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">Notifications</h1>
+          <p className="text-sm text-stone-500 dark:text-stone-400 mt-1 font-medium">
+            {unreadCount > 0 ? (
+              <span className="text-[#c2410c] dark:text-[#ea580c] font-bold">{unreadCount} unread</span>
+            ) : (
+              "All caught up"
+            )}
+          </p>
         </div>
         {unreadCount > 0 && (
-          <button onClick={async () => { try { await dispatch(markAllAsRead()).unwrap(); toast.success("All marked as read"); } catch { toast.error("Failed"); } }} className="inline-flex items-center px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"><Check className="h-4 w-4 mr-2" />Mark all as read</button>
+          <button 
+            onClick={async () => { 
+              try { 
+                await dispatch(markAllAsRead()).unwrap(); 
+                toast.success("All marked as read"); 
+              } catch { 
+                toast.error("Failed to mark as read"); 
+              } 
+            }} 
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-sm font-semibold text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 active:scale-[.98] transition-all shadow-sm"
+          >
+            <Check className="h-4 w-4 text-[#c2410c]" />
+            Mark all as read
+          </button>
         )}
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700 overflow-hidden">
+      {/* List Container */}
+      <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/70 dark:border-stone-800 divide-y divide-stone-100 dark:divide-stone-800 overflow-hidden shadow-sm shadow-stone-200/30 dark:shadow-black/10 transition-colors duration-300">
+        
+        {/* Loading Skeletons */}
         {isLoading ? (
-          <div className="p-8 space-y-4">{[1, 2, 3, 4].map((i) => <div key={i} className="animate-pulse flex gap-4"><div className="h-10 w-10 bg-gray-200 dark:bg-gray-700 rounded-full" /><div className="flex-1 space-y-2"><div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" /><div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" /></div></div>)}</div>
+          <div className="p-6 space-y-5">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="animate-pulse flex gap-4">
+                <div className="h-10 w-10 bg-stone-200 dark:bg-stone-700 rounded-xl" />
+                <div className="flex-1 space-y-2.5">
+                  <div className="h-4 bg-stone-200 dark:bg-stone-700 rounded-lg w-3/4" />
+                  <div className="h-3 bg-stone-100 dark:bg-stone-800 rounded-lg w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : notifications?.length > 0 ? (
           notifications.map((notif) => (
-            <div key={notif.id} onClick={() => handleClick(notif)} className={`p-4 transition-colors cursor-pointer ${!notif.is_read ? "bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}>
+            <div 
+              key={notif.id} 
+              onClick={() => handleClick(notif)} 
+              className={`p-4 sm:p-5 transition-colors cursor-pointer group ${
+                !notif.is_read 
+                  ? "bg-[#fff7ed] dark:bg-[#c2410c]/5 hover:bg-orange-50 dark:hover:bg-[#c2410c]/10" 
+                  : "hover:bg-stone-50 dark:hover:bg-stone-800/50"
+              }`}
+            >
               <div className="flex gap-4">
-                <div className="flex-shrink-0 mt-1">{getIcon(notif.notification_type)}</div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className={`font-medium ${!notif.is_read ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"}`}>{notif.title}</p>
-                    {!notif.is_read && <span className="w-2 h-2 bg-orange-500 rounded-full flex-shrink-0 mt-1.5" />}
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{notif.message}</p>
-                  <p className="text-xs text-gray-400 mt-2">{timeAgo(notif.created_at)}</p>
+                {/* Icon */}
+                <div className="flex-shrink-0 mt-0.5 w-10 h-10 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-100 dark:border-stone-700 flex items-center justify-center">
+                  {getIcon(notif.notification_type)}
                 </div>
+                
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className={`text-sm font-semibold leading-snug ${
+                      !notif.is_read 
+                        ? "text-stone-900 dark:text-stone-100" 
+                        : "text-stone-600 dark:text-stone-400"
+                    }`}>
+                      {notif.title}
+                    </p>
+                    {/* Unread Dot */}
+                    {!notif.is_read && (
+                      <span className="w-2.5 h-2.5 bg-[#c2410c] rounded-full flex-shrink-0 mt-1.5 shadow-sm shadow-[#c2410c]/30" />
+                    )}
+                  </div>
+                  <p className="text-sm text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
+                    {notif.message}
+                  </p>
+                  <p className="text-xs text-stone-400 dark:text-stone-600 mt-2.5 font-medium tabular-nums">
+                    {timeAgo(notif.created_at)}
+                  </p>
+                </div>
+
+                {/* Mark as Read Button */}
                 {!notif.is_read && (
-                  <button onClick={(e) => { e.stopPropagation(); dispatch(markAsRead(notif.id)); }} 
-                  className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600
-                   dark:hover:text-gray-300 hover:bg-white dark:hover:bg-gray-600 
-                   rounded-full" title="Mark as read">
+                  <button 
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      dispatch(markAsRead(notif.id)); 
+                    }} 
+                    className="flex-shrink-0 p-2 text-stone-400 dark:text-stone-600 hover:text-[#c2410c] dark:hover:text-[#ea580c] hover:bg-white dark:hover:bg-stone-800 rounded-xl transition-colors opacity-0 group-hover:opacity-100" 
+                    title="Mark as read"
+                  >
                     <Check className="h-4 w-4" />
-                    </button>
+                  </button>
                 )}
               </div>
             </div>
           ))
         ) : (
-          <div className="p-8 text-center text-gray-500">
-            <Bell className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-          <p>No notifications</p></div>
+          /* Empty State */
+          <div className="p-12 text-center">
+            <div className="w-20 h-20 rounded-3xl bg-stone-50 dark:bg-stone-800 border border-stone-100 dark:border-stone-700 flex items-center justify-center mx-auto mb-5">
+              <Bell className="h-9 w-9 text-stone-300 dark:text-stone-600" />
+            </div>
+            <p className="font-semibold text-stone-600 dark:text-stone-400">No notifications</p>
+            <p className="text-sm text-stone-400 dark:text-stone-600 mt-1">You're all caught up!</p>
+          </div>
         )}
       </div>
     </div>

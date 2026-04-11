@@ -59,7 +59,7 @@ const InvoicesPage = () => {
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-700/50"><tr>{["Invoice", "Order", "Client", "Total", "Deposit", "Paid", "Balance", "Status", "Actions"].map((h) => <th key={h} className="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase">{h}</th>)}</tr></thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {loading ? <tr><td colSpan="9" className="px-5 py-8 text-center text-gray-500">Loading...</td></tr> : filtered?.length === 0 ? <tr><td colSpan="9" className="px-5 py-8 text-center text-gray-500"><FileText className="w-10 h-10 text-gray-300 mx-auto mb-2" />No invoices</td></tr> : filtered.map((inv) => (
+              {loading ? <tr><td colSpan="9" className="px-5 py-8 text-center text-gray-500">Loading...</td></tr> : filtered?.length === 0 ? <tr><td colSpan="9" className="px-5 py-8 text-center text-gray-500"><FileText className="w-10 h-10 text-gray-300 mx-auto mb-2" />COMING SOON</td></tr> : filtered.map((inv) => (
                 <tr key={inv.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                   <td className="px-5 py-4 font-medium text-sm">{inv.invoice_number}</td>
                   <td className="px-5 py-4 text-sm">{inv.order_number}</td>

@@ -97,7 +97,7 @@ const OrdersList = () => {
                   <td className="px-6 py-4 whitespace-nowrap"><span className={`px-2.5 py-1 text-xs rounded-full font-medium ${STATUS_BADGES[order.status] || STATUS_BADGES.pending}`}>{fmt(order.status)}</span></td>
                   <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900 dark:text-white">KES {order.total_price?.toLocaleString() || 0}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.created_at ? new Date(order.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "N/A"}</td>
-                  <td className="px-6 py-4 whitespace-nowrap"><Link to={`/orders/${order.id}`} className="text-orange-600 dark:text-orange-400 hover:text-orange-700 text-sm font-medium">View</Link></td>
+                  <td className="px-6 py-4 whitespace-nowrap"><Link to={`/app/orders/${order.id}`} className="text-orange-600 dark:text-orange-400 hover:text-orange-700 text-sm font-medium">View</Link></td>
                 </tr>
               ))}
             </tbody>
