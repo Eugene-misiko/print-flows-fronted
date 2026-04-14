@@ -13,17 +13,17 @@ export const fetchNotifications = createAsyncThunk(
   }
 );
 
-export const fetchNotification = createAsyncThunk(
-  "notifications/fetchNotification",
-  async (id, { rejectWithValue }) => {
-    try {
-      const response = await notificationsAPI.getById(id);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.error || "Failed to fetch notification");
-    }
-  }
-);
+// export const fetchNotification = createAsyncThunk(
+//   "notifications/fetchNotification",
+//   async (id, { rejectWithValue }) => {
+//     try {
+//       const response = await notificationsAPI.getById(id);
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(error.response?.data?.error || "Failed to fetch notification");
+//     }
+//   }
+// );
 
 export const markAsRead = createAsyncThunk(
   "notifications/markAsRead",
@@ -81,19 +81,19 @@ const notificationsSlice = createSlice({
   },
 extraReducers: (builder) => {
   builder
+    .addCase(fetchNotifications.fulfilled, (state, action) => {
+      state.currentNotification = action.payload;
+    })  
     .addCase(fetchNotifications.pending, (state) => {
       state.isLoading = true;
     })
-    .addCase(fetchNotifications.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.notifications = action.payload.results || action.payload;
-    })
+    // .addCase(fetchNotifications.fulfilled, (state, action) => {
+    //   state.isLoading = false;
+    //   state.notifications = action.payload.results || action.payload;
+    // })
     .addCase(fetchNotifications.rejected, (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
-    })
-    .addCase(fetchNotification.fulfilled, (state, action) => {
-      state.currentNotification = action.payload;
     })
     .addCase(markAsRead.fulfilled, (state, action) => {
       const idx = state.notifications.findIndex(n => n.id === action.payload.id);
