@@ -36,7 +36,7 @@ import UserRegister from "./components/auth/userRegister";
 import StoreHome from "./publicitems/StoreHome";
 import ProductDetail from "./publicitems/ProductDetail";
 import CategoryPage from "./publicitems/CategoryPage";
-import Header from "./components/layout/Header";
+
 // DASHBOARD ROUTER 
 const DashboardRouter = () => {
   const { user } = useSelector((state) => state.auth);
@@ -78,15 +78,15 @@ useEffect(() => {
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       <Routes>
         {/* PUBLIC ROUTES */}
-        <Route path="/store/:companySlug" element={<StoreHome />} />
+        <Route path="/companySlug" element={<StoreHome />} />
         <Route path="/" element={<LandingPage />} />
-        <Route path="/store/:companySlug/product/:id" element={<ProductDetail />} />
-        <Route path="/store/:companySlug/category/:id" element={<CategoryPage />} />
-        <Route path="/store/:companySlug/login" element={<Login />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/category/:id" element={<CategoryPage />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/platform/register-company/" element={<Register />} />
         <Route path="/store/:companySlug/register" element={<UserRegister />} />
-        <Route path="/store/:companySlug/accept-invitation/:token"  element={<AcceptInvitation />} />
-        <Route path="/store/:companySlug/forgot-password" element={<ForgotPassword />} />
+        <Route path="accept-invitation/:token"  element={<AcceptInvitation />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/mobile" element={<MobileSidebar />} />
         {/* PROTECTED ROUTES */}
