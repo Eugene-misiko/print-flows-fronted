@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchPublicProduct } from "@/store/slices/productsSlice";
 import { useParams } from "react-router-dom";
 import { Package, ArrowRight, ArrowLeft, ShoppingCart, Clock, Layers, CheckCircle, Info, ZoomIn } from "lucide-react";
-
+import ThemeToggle from "@/components/ThemeToggle";
 const injectStyles = () => {
   const id = "product-detail-styles";
   if (document.getElementById(id)) return;
