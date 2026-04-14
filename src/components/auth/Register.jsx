@@ -66,7 +66,7 @@ const Register = () => {
 
     if (registerCompany.fulfilled.match(result)) {
       toast.success("Company registered successfully!");
-      window.location.href = `http://${company_slug}.localhost:5173/dashboard`;
+      window.location.href = `http://${company_slug}.localhost:5173/app/dashboard`;
     } else {
       toast.error(result.payload || "Registration failed");
     }
