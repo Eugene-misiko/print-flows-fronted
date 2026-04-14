@@ -9,7 +9,6 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error } = useSelector((state) => state.auth);
- const { companySlug } = useParams();
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
 
@@ -127,7 +126,7 @@ const Login = () => {
           </form>
       <div className="text-right">
         <Link
-          to="/store/:companySlug/forgot-password"
+          to={`/store/${companySlug}/forgot-password`}
           className="text-sm text-orange-600 hover:text-orange-700"
         >
           Forgot password?
@@ -138,7 +137,7 @@ const Login = () => {
             <p className="text-gray-600">
               Don't have an account?{" "}
               
-          <Link to={`/store/${companySlug}/register`}>
+          <Link to={`/register`}>
             Register here
           </Link>
             </p>
