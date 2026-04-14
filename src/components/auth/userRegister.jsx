@@ -9,7 +9,6 @@ import {Building2,User,Lock,Eye,EyeOff,Printer,Mail,Phone,ChevronDown,ArrowRight
 const UserRegister = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { companySlug } = useParams();
   const companies = useSelector(state => state.auth.companies)
   const company = companies.find(c => c.slug === companySlug);;
   const { isLoading, error} = useSelector((state) => state.auth);
@@ -231,7 +230,7 @@ const UserRegister = () => {
           <p className="text-center mt-7 text-[14px] text-[#8a8279]">
             Already have an account?{" "}
         <Link
-          to={`/store/${companySlug}/login`}
+          to={`/login`}
           className="text-[#c93d1a] font-semibold hover:text-[#a83215] hover:underline underline-offset-2 transition-colors"
         >
           Sign in
