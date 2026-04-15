@@ -78,15 +78,15 @@ useEffect(() => {
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       <Routes>
         {/* PUBLIC ROUTES */}
-        <Route path="/companySlug" element={<StoreHome />} />
+        <Route path="/store/:companySlug" element={<StoreHome />} />
         <Route path="/" element={<LandingPage />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/category/:id" element={<CategoryPage />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/store/:companySlug/product/:id" element={<ProductDetail />} />
+        <Route path="/store/:companySlug/category/:id" element={<CategoryPage />} />
+        <Route path="/store/:companySlug/login" element={<Login />} />
         <Route path="/platform/register-company/" element={<Register />} />
         <Route path="/store/:companySlug/register" element={<UserRegister />} />
         <Route path="accept-invitation/:token"  element={<AcceptInvitation />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/store/:companySlug/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/mobile" element={<MobileSidebar />} />
         {/* PROTECTED ROUTES */}

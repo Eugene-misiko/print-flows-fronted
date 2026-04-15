@@ -132,7 +132,7 @@ const CreateOrder = () => {
     };
 
     const r = await dispatch(createOrder(data));
-    if (createOrder.fulfilled.match(r)) { toast.success("Order created! An invoice has been generated."); clearCart(); navigate(`/orders/${r.payload.id}`); }
+    if (createOrder.fulfilled.match(r)) { toast.success("Order created! An invoice has been generated."); clearCart(); navigate(`/app/orders/${r.payload.id}`); }
     else toast.error(r.payload || "Failed to create order");
   };
 
@@ -140,7 +140,7 @@ const CreateOrder = () => {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link to="/orders" className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 flex items-center justify-center transition-colors active:scale-95"><ArrowLeft className="w-5 h-5 text-stone-600 dark:text-stone-300" /></Link>
+        <Link to="/app/orders" className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 flex items-center justify-center transition-colors active:scale-95"><ArrowLeft className="w-5 h-5 text-stone-600 dark:text-stone-300" /></Link>
         <div>
           <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">Create New Order</h1>
           <p className="text-sm text-stone-500 dark:text-stone-400 mt-1">Add products, upload your design or request one</p>

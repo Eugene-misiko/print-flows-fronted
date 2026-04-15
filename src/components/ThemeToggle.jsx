@@ -10,45 +10,24 @@ export default function ThemeToggle() {
       (!("theme" in localStorage) &&
         window.matchMedia("(prefers-color-scheme: dark)").matches);
 
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-
+    document.documentElement.classList.toggle("dark", isDark);
     setDark(isDark);
   }, []);
 
   const toggleTheme = () => {
-    const newTheme = !dark;
-
-    if (newTheme) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-
-    setDark(newTheme);
+    const next = !dark;
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+    setDark(next);
   };
 
   return (
     <button
       onClick={toggleTheme}
-      className="
-      flex items-center justify-center
-      w-9 h-9
-      rounded-[50%]
-      bg-zinc-800
-      dark:bg-zinc-200
-      text-white
-      dark:text-black
-      hover:scale-105
-      transition cursor-pointer
-      ">
-     {dark ? <Sun size={20} /> : <Moon size={20} />}
+      className="w-9 h-9 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 flex items-center justify-center text-stone-600 dark:text-stone-300 transition-all duration-200 active:scale-95 cursor-pointer"
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+    >
+      {dark ? <Sun size={18} /> : <Moon size={18} />}
     </button>
   );
 }
-

@@ -91,15 +91,9 @@ export const fetchProducts = createAsyncThunk(
 // Fetch public product by ID
 export const fetchPublicProduct = createAsyncThunk(
   "products/fetchPublicProduct",
-  async ({ id, companySlug }, { rejectWithValue }) => {
-    try {
-      const response = await productsAPI.getPublicById(id, {
-        company: companySlug,
-      });
-      return response.data;
-    } catch (error) {
-      return rejectWithValue("Failed to fetch public product");
-    }
+  async (id) => {
+    const res = await productsAPI.getPublicById(id);
+    return res.data;
   }
 );
 export const fetchFeaturedProducts = createAsyncThunk(

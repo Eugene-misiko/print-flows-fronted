@@ -4,11 +4,12 @@ import { jwtDecode } from "jwt-decode";
 // BASE AXIOS INSTANCE
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  // withCredentials: true,
 });
+
 const publicAPI = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
 });
+
 // TOKEN HELPERS
 const getAccessToken = () => localStorage.getItem("access_token");
 const getRefreshToken = () => localStorage.getItem("refresh_token");
@@ -48,11 +49,25 @@ const onRefreshed = (token) => {
   refreshSubscribers = [];
 };
 
-//  REQUEST INTERCEPTOR (ONLY ONE)
+// GET COMPANY SLUG FROM URL
+const getCompanySlugFromURL = () => {
+  const path = window.location.pathname;
+  const match = path.match(/\/store\/([^/]+)/);
+  return match ? match[1] : null;
+};
 
+// REQUEST INTERCEPTOR
 api.interceptors.request.use(async (config) => {
   let token = getAccessToken();
 
+  //INJECT COMPANY SLUG INTO HEADERS 
+//   const companySlug = getCompanySlugFromURL();
+//   if (companySlug) {
+//     config.headers["X-Company-Slug"] = companySlug;
+//   }
+// console.log("RAW PATH:", window.location.pathname);
+// console.log("EXTRACTED SLUG:", companySlug);
+  // TOKEN REFRESH LOGIC
   if (token && isTokenExpired(token)) {
     const refreshToken = getRefreshToken();
 
@@ -89,6 +104,7 @@ api.interceptors.request.use(async (config) => {
     });
   }
 
+  // ATTACH TOKEN
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -97,7 +113,6 @@ api.interceptors.request.use(async (config) => {
 });
 
 // RESPONSE INTERCEPTOR (RETRY ON 401)
-
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -124,7 +139,6 @@ api.interceptors.response.use(
         );
 
         const newAccess = response.data.access;
-
         setAccessToken(newAccess);
 
         originalRequest.headers.Authorization = `Bearer ${newAccess}`;
@@ -139,7 +153,7 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
+export { publicAPI };
 export default api;
 
 // ===================== AUTH =====================
@@ -178,6 +192,7 @@ export const invitationsAPI = {
 
 // ===================== COMPANY =====================
 export const companyAPI = {
+  getBySlug: (slug) => api.get(`/companies/by-slug/${slug}/`),
   get: () => api.get("/company/"),
   getCompanies: () => api.get("/companies/"),
   update: (data) => api.patch("/company/update/", data),
@@ -214,10 +229,10 @@ export const productsAPI = {
   create: (data) => api.post("/products/create/", data),
   update: (id, data) => api.put(`/products/${id}/`, data),
   delete: (id) => api.delete(`/products/${id}/delete/`),
-  getPublic: (params) => api.get("/public/products/", { params }),
-  getPublicCategories: (params) => api.get("/public/categories/", { params }),
-  getPublicById: (id, params) => api.get(`/public/products/${id}/`, { params }),
-  getPublicCategoryById: (id, params) => api.get(`/public/categories/${id}/`, { params }),
+  getPublic: () => api.get("/public/products/"),
+  getPublicCategories: () => api.get("/public/categories/"),
+  getPublicById: (id) => api.get(`/public/products/${id}/`),
+  getPublicCategoryById: (id) => api.get(`/public/categories/${id}/`),
   };
 
 // ===================== ORDERS =====================
