@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  fetchOrder, rejectDesign, startPrintJob, submitDesign,
-  completePrintJob, approveDesign, moveToPolishing, assignDesigner,
-  assignPrinter, startDesign, cancelOrder,
-} from "@/store/slices/ordersSlice";
+import {fetchOrder, rejectDesign, startPrintJob, submitDesign,completePrintJob, approveDesign, moveToPolishing, assignDesigner,assignPrinter, startDesign, cancelOrder,} from "@/store/slices/ordersSlice";
 import { fetchUsers } from "@/store/slices/usersSlice"; 
 import { initiateMpesaPayment } from "@/store/slices/paymentsSlice";
 import toast from "react-hot-toast";
@@ -204,7 +200,7 @@ const OrderDetail = () => {
   const canStartPrinting = user?.role === "printer" && (order.status === "approved_for_printing" || order.status === "printing_queued");
   const canPolish = user?.role === "printer" && order.status === "printing";
   const canComplete = user?.role === "printer" && order.status === "polishing";
-  const canCancel = (isAdmin || user?.role === "client") && ["pending", "assigned_to_designer"].includes(order.status);
+  const canCancel = (isAdmin || user?.role === "client") && !["completed", "cancelled"].includes(order.status);
   const needsPayment = user?.role === "client" && order.invoice && order.invoice.status !== "paid";
 
   return (
@@ -219,16 +215,36 @@ const OrderDetail = () => {
           </div>
         </div>
         <div className="flex flex-wrap gap-2.5">
-          {canAssignDesigner && <button onClick={() => setShowAssignDesigner(true)} className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-sm text-sm font-semibold active:scale-[.98] transition-all"><UserPlus className="h-4 w-4 mr-1.5 inline" />Assign Designer</button>}
-          {(canAssignPrinter || canAssignPrinterNoDesign) && <button onClick={() => setShowAssignPrinter(true)} className="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl shadow-sm text-sm font-semibold active:scale-[.98] transition-all"><UserPlus className="h-4 w-4 mr-1.5 inline" />Assign Printer</button>}
-          {canStartDesign && <button onClick={() => action(startDesign, id, "Design started")} disabled={processing} className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm text-sm font-semibold disabled:opacity-50 active:scale-[.98] transition-all"><Play className="h-4 w-4 mr-1.5 inline" />Start Design</button>}
-          {canSubmitDesign && <button onClick={() => setShowSubmit(true)} className="px-4 py-2.5 bg-gradient-to-r from-[#c2410c] to-[#ea580c] text-white rounded-xl shadow-lg shadow-orange-600/20 text-sm font-bold active:scale-[.98] transition-all"><Upload className="h-4 w-4 mr-1.5 inline" />Submit Design</button>}
-          {canApproveReject && <><button onClick={() => action(approveDesign, { id, approved: true }, "Design approved!")} disabled={processing} className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-sm text-sm font-semibold disabled:opacity-50 active:scale-[.98] transition-all"><CheckCircle className="h-4 w-4 mr-1.5 inline" />Approve</button><button onClick={() => setShowReject(true)} className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-sm text-sm font-semibold active:scale-[.98] transition-all"><XCircle className="h-4 w-4 mr-1.5 inline" />Reject</button></>}
-          {canStartPrinting && <button onClick={() => action(startPrintJob, id, "Printing started")} disabled={processing} className="px-4 py-2.5 bg-gradient-to-r from-[#c2410c] to-[#ea580c] text-white rounded-xl shadow-lg shadow-orange-600/20 text-sm font-bold disabled:opacity-50 active:scale-[.98] transition-all"><Play className="h-4 w-4 mr-1.5 inline" />Start Printing</button>}
-          {canPolish && <button onClick={() => action(moveToPolishing, id, "Moved to polishing")} disabled={processing} className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl shadow-sm text-sm font-semibold disabled:opacity-50 active:scale-[.98] transition-all"><CheckSquare className="h-4 w-4 mr-1.5 inline" />Complete Printing</button>}
-          {canComplete && <button onClick={() => action(completePrintJob, id, "Order ready for pickup!")} disabled={processing} className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-sm text-sm font-semibold disabled:opacity-50 active:scale-[.98] transition-all"><CheckCircle className="h-4 w-4 mr-1.5 inline" />Mark Ready</button>}
-          {needsPayment && <button onClick={() => setShowPayment(true)} className="px-4 py-2.5 bg-gradient-to-r from-[#c2410c] to-[#ea580c] text-white rounded-xl shadow-lg shadow-orange-600/20 text-sm font-bold active:scale-[.98] transition-all"><CreditCard className="h-4 w-4 mr-1.5 inline" />Pay Invoice</button>}
-          {canCancel && <button onClick={() => setShowCancel(true)} className="px-4 py-2.5 border border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/15 text-sm font-semibold active:scale-[.98] transition-all"><Ban className="h-4 w-4 mr-1.5 inline" />Cancel</button>}
+          {canAssignDesigner && <button onClick={() => setShowAssignDesigner(true)}
+           className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-sm text-sm font-semibold active:scale-[.98] transition-all">
+            <UserPlus className="h-4 w-4 mr-1.5 inline" />Assign Designer</button>}
+          {(canAssignPrinter || canAssignPrinterNoDesign) && <button onClick={() => setShowAssignPrinter(true)}
+           className="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl shadow-sm text-sm font-semibold active:scale-[.98] transition-all">
+            <UserPlus className="h-4 w-4 mr-1.5 inline" />Assign Printer</button>}
+          {canStartDesign && <button onClick={() => action(startDesign, id, "Design started")} disabled={processing} 
+          className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm text-sm font-semibold disabled:opacity-50 active:scale-[.98] transition-all">
+            <Play className="h-4 w-4 mr-1.5 inline" />Start Design</button>}
+          {canSubmitDesign && <button onClick={() => setShowSubmit(true)} 
+          className="px-4 py-2.5 bg-gradient-to-r from-[#c2410c] to-[#ea580c] text-white rounded-xl shadow-lg shadow-orange-600/20 text-sm font-bold active:scale-[.98] transition-all">
+            <Upload className="h-4 w-4 mr-1.5 inline" />Submit Design</button>}
+          {canApproveReject && <><button onClick={() => action(approveDesign, { id, approved: true }, "Design approved!")} disabled={processing} 
+          className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-sm text-sm font-semibold disabled:opacity-50 active:scale-[.98] transition-all">
+            <CheckCircle className="h-4 w-4 mr-1.5 inline" />Approve</button><button onClick={() => setShowReject(true)} className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-sm text-sm font-semibold active:scale-[.98] transition-all">
+              <XCircle className="h-4 w-4 mr-1.5 inline" />Reject</button></>}
+          {canStartPrinting && <button onClick={() => action(startPrintJob, id, "Printing started")} disabled={processing} 
+          className="px-4 py-2.5 bg-gradient-to-r from-[#c2410c] to-[#ea580c] text-white rounded-xl shadow-lg shadow-orange-600/20 text-sm font-bold disabled:opacity-50 active:scale-[.98] transition-all">
+            <Play className="h-4 w-4 mr-1.5 inline" />Start Printing</button>}
+          {canPolish && <button onClick={() => action(moveToPolishing, id, "Moved to polishing")} disabled={processing}
+           className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl shadow-sm text-sm font-semibold disabled:opacity-50 active:scale-[.98] transition-all">
+            <CheckSquare className="h-4 w-4 mr-1.5 inline" />Complete Printing</button>}
+          {canComplete && <button onClick={() => action(completePrintJob, id, "Order ready for pickup!")} disabled={processing} 
+          className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-sm text-sm font-semibold disabled:opacity-50 active:scale-[.98] transition-all">
+            <CheckCircle className="h-4 w-4 mr-1.5 inline" />Mark Ready</button>}
+          {needsPayment && <button onClick={() => setShowPayment(true)}
+           className="px-4 py-2.5 bg-gradient-to-r from-[#c2410c] to-[#ea580c] text-white rounded-xl shadow-lg shadow-orange-600/20 text-sm font-bold active:scale-[.98] transition-all">
+            <CreditCard className="h-4 w-4 mr-1.5 inline" />Pay Invoice</button>}
+          {canCancel && <button onClick={() => setShowCancel(true)} className="px-4 py-2.5 border border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/15 text-sm font-semibold active:scale-[.98] transition-all">
+            <Ban className="h-4 w-4 mr-1.5 inline" />Cancel</button>}
         </div>
       </div>
 
@@ -284,7 +300,8 @@ const OrderDetail = () => {
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-stone-800 dark:text-stone-200">{item.product_name || "Product"}</p>
                     <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">Qty: <span className="font-bold text-stone-700 dark:text-stone-300">{item.quantity}</span> @ {fmtCurrency(item.unit_price)}</p>
-                    {item.field_values?.length > 0 && (<div className="mt-2.5 flex flex-wrap gap-2">{item.field_values.map((fv, j) => (<span key={fv.id || j} className="text-xs bg-white dark:bg-stone-900 px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 font-medium">{fv.field?.name || "Field"}: {fv.value}{fv.file_url && <a href={fv.file_url} target="_blank" rel="noreferrer" className="ml-1 text-[#c2410c]"><Download className="w-3 h-3 inline" /></a>}</span>))}</div>)}
+                    {item.field_values?.length > 0 && (<div className="mt-2.5 flex flex-wrap gap-2">{item.field_values.map((fv, j) => (<span key={fv.id || j} className="text-xs bg-white dark:bg-stone-900 px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 font-medium">{fv.field?.name || "Field"}: {fv.value}{fv.file_url && <a href={fv.file_url} target="_blank" rel="noreferrer" className="ml-1 text-[#c2410c]">
+                      <Download className="w-3 h-3 inline" /></a>}</span>))}</div>)}
                     {item.specifications && Object.keys(item.specifications).length > 0 && (<div className="mt-2.5 flex flex-wrap gap-2">{Object.entries(item.specifications).map(([k, v]) => (<span key={k} className="text-xs bg-[#fff7ed] dark:bg-[#c2410c]/10 px-2.5 py-1 rounded-lg border border-[#c2410c]/15 dark:border-[#c2410c]/20 text-[#c2410c] dark:text-[#ea580c] font-semibold">{k}: {v}</span>))}</div>)}
                     {item.notes && <p className="mt-2 text-sm text-stone-500 dark:text-stone-500 italic">Note: {item.notes}</p>}
                   </div>
@@ -308,7 +325,11 @@ const OrderDetail = () => {
               <div className="mb-5 p-4 bg-sky-50 dark:bg-sky-900/10 border border-sky-200/50 dark:border-sky-800/30 rounded-xl">
                 <p className="text-sm font-semibold text-sky-700 dark:text-sky-300 mb-2">Client Provided:</p>
                 {order.design_description && <p className="text-sm text-sky-600 dark:text-sky-400">{order.design_description}</p>}
-                {order.client_files?.length > 0 && (<div className="mt-2 space-y-1">{order.client_files.map((f, i) => (<p key={i} className="text-sm text-sky-600 dark:text-sky-400 flex items-center gap-1.5"><FileText className="w-3.5 h-3.5" />{f.name || f}</p>))}</div>)}
+                {order.client_files?.length > 0 && (<div className="mt-2 space-y-1">{order.client_files.map((f, i) => (
+                  <a key={i} href={f.url || f} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-sky-600">
+                 <FileText className="w-3.5 h-3.5" />
+                 {f.name || "Download file"}
+                  </a>))}</div>)}
                 {!order.design_description && order.client_files?.length === 0 && <p className="text-sm text-stone-400">Nothing provided</p>}
               </div>
               {order.design_file ? (
@@ -317,8 +338,9 @@ const OrderDetail = () => {
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 bg-white dark:bg-stone-800 rounded-xl flex items-center justify-center border border-emerald-200 dark:border-emerald-800"><FileText className="h-6 w-6 text-emerald-500" /></div>
                     <div className="flex-1"><p className="text-sm font-semibold text-stone-800 dark:text-stone-200">Design uploaded</p><p className="text-xs text-stone-400 mt-0.5">{fmtDate(order.design_completed_at)}</p></div>
-                    <a href={order.design_file} target="_blank" rel="noreferrer" className="px-3.5 py-2 text-sm border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 font-semibold transition-colors active:scale-[.98]"><Download className="w-3.5 h-3.5 mr-1.5 inline" />View</a>
-                  </div>
+                    <a href={order.design_file_url} target="_blank" rel="noreferrer" className="px-3.5 py-2 text-sm border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 font-semibold transition-colors active:scale-[.98]">
+                    <Download className="w-3.5 h-3.5 mr-1.5 inline" />View</a>
+                  </div> 
                   {order.design_notes && <p className="mt-3 text-sm text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-800 p-3 rounded-xl border border-stone-100 dark:border-stone-700">Notes: {order.design_notes}</p>}
                 </div>
               ) : (
@@ -403,7 +425,7 @@ const OrderDetail = () => {
           <p className="text-sm text-stone-500 dark:text-stone-400 mb-4">Select a designer from your team to work on this order.</p>
           {designers.length === 0 ? (
             <div className="p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200/70 dark:border-amber-800/30 rounded-xl text-sm text-amber-700 dark:text-amber-300">
-              No active designers found. <button onClick={() => { setShowAssignDesigner(false); navigate("/users"); }} className="underline font-bold ml-1">Invite one →</button>
+              No active designers found. <button onClick={() => { setShowAssignDesigner(false); navigate("/app/users"); }} className="underline font-bold ml-1">Invite one →</button>
             </div>
           ) : (
             <UserSelect users={designers} value={designerId} onChange={(id) => setDesignerId(id)} placeholder="Select a designer..." label="Designer" />
@@ -420,7 +442,7 @@ const OrderDetail = () => {
           <p className="text-sm text-stone-500 dark:text-stone-400 mb-4">Select a printer from your team to handle this order.</p>
           {printers.length === 0 ? (
             <div className="p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200/70 dark:border-amber-800/30 rounded-xl text-sm text-amber-700 dark:text-amber-300">
-              No active printers found. <button onClick={() => { setShowAssignPrinter(false); navigate("/users"); }} className="underline font-bold ml-1">Invite one →</button>
+              No active printers found. <button onClick={() => { setShowAssignPrinter(false); navigate("/app/users"); }} className="underline font-bold ml-1">Invite one →</button>
             </div>
           ) : (
             <UserSelect users={printers} value={printerId} onChange={(id) => setPrinterId(id)} placeholder="Select a printer..." label="Printer" />

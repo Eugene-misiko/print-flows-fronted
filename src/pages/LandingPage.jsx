@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {ArrowRight, Sparkles,Store,Layers,Zap,Menu, X,ChevronDown, Search,User,Package,ShoppingCart,Star,CheckCircle2,TrendingUp,Users,Printer,} from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -137,12 +137,13 @@ const navLinks = [
       { label: "Categories", href: "/explore/categories" },
     ],
   },
-  { label: "Products", href: "/store" },
+  { label: "Products", navigate: (id) => `/store/${companySlug}/products/${id}` },
   { label: "Pricing", href: "/pricing" },
   { label: "About", href: "/about" },
 ];
 
 const LandingPage = () => {
+  const  { companySlug } = useParams();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [scrolled, setScrolled] = useState(false);
@@ -263,11 +264,11 @@ const LandingPage = () => {
               <button onClick={() => handleNavClick("/search")} className="p-2 text-stone-500 dark:text-stone-400 hover:text-[#1c1917] dark:hover:text-stone-100 hover:bg-stone-100/70 dark:hover:bg-stone-800/70 rounded-lg transition-all duration-200" aria-label="Search">
                 <Search className="w-[18px] h-[18px]" />
               </button>
-              <button onClick={() => handleNavClick("/login")} className="flex items-center gap-2 px-4 py-2 text-[13.5px] font-semibold text-stone-600 dark:text-stone-300 hover:text-[#1c1917] dark:hover:text-stone-100 rounded-lg hover:bg-stone-100/70 dark:hover:bg-stone-800/70 transition-all duration-200">
+              <button onClick={() => handleNavClick(`/store/${companySlug}/login`)} className="flex items-center gap-2 px-4 py-2 text-[13.5px] font-semibold text-stone-600 dark:text-stone-300 hover:text-[#1c1917] dark:hover:text-stone-100 rounded-lg hover:bg-stone-100/70 dark:hover:bg-stone-800/70 transition-all duration-200">
                 <User className="w-4 h-4" />
                 Sign In
               </button>
-              <button onClick={() => handleNavClick("/register")} className="flex items-center gap-1.5 px-5 py-2.5 text-[13.5px] font-bold text-white bg-gradient-to-r from-[#c2410c] to-[#ea580c] rounded-xl hover:from-[#a3360a] hover:to-[#c2410c] shadow-md shadow-orange-600/20 hover:shadow-lg hover:shadow-orange-600/30 active:scale-[0.97] transition-all duration-200">
+              <button onClick={() => handleNavClick(`/store/${companySlug}/register`)} className="flex items-center gap-1.5 px-5 py-2.5 text-[13.5px] font-bold text-white bg-gradient-to-r from-[#c2410c] to-[#ea580c] rounded-xl hover:from-[#a3360a] hover:to-[#c2410c] shadow-md shadow-orange-600/20 hover:shadow-lg hover:shadow-orange-600/30 active:scale-[0.97] transition-all duration-200">
                 Get Started
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
@@ -311,10 +312,10 @@ const LandingPage = () => {
                 )
               )}
               <div className="pt-3 mt-2 border-t border-stone-200/60 dark:border-stone-800/60 space-y-2">
-                <button onClick={() => handleNavClick("/login")} className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-stone-700 dark:text-stone-200 bg-stone-100/80 dark:bg-stone-800/80 rounded-xl hover:bg-stone-200/80 dark:hover:bg-stone-700/80 transition-colors duration-200">
+                <button onClick={() => handleNavClick(`/store/${companySlug}/login`)} className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-stone-700 dark:text-stone-200 bg-stone-100/80 dark:bg-stone-800/80 rounded-xl hover:bg-stone-200/80 dark:hover:bg-stone-700/80 transition-colors duration-200">
                   <User className="w-4 h-4" /> Sign In
                 </button>
-                <button onClick={() => handleNavClick("/register")} className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-white bg-gradient-to-r from-[#c2410c] to-[#ea580c] rounded-xl shadow-md shadow-orange-600/20 active:scale-[0.98] transition-all duration-200">
+                <button onClick={() => handleNavClick(`/store/${companySlug}/register`)} className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-white bg-gradient-to-r from-[#c2410c] to-[#ea580c] rounded-xl shadow-md shadow-orange-600/20 active:scale-[0.98] transition-all duration-200">
                   Get Started <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -606,11 +607,9 @@ const LandingPage = () => {
                 <span className="lp-pulse absolute inline-flex h-full w-full rounded-full bg-[#c2410c] opacity-50"/>
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#c2410c]"/>
               </span>
-              © 2025 PrintFlow. All rights reserved.
+              © {new Date().getFullYear()} PrintFlow. All rights reserved.
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-stone-400 dark:text-stone-500">
-              Made with <span className="text-[#c2410c]">♥</span> for print lovers
-            </div>
+
           </div>
         </div>
       </footer>

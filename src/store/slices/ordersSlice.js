@@ -67,21 +67,21 @@ export const deleteOrder = createAsyncThunk(
 
 export const assignDesigner = createAsyncThunk(
   "orders/assignDesigner",
-  async ({ orderId, designerId }, { rejectWithValue }) => {
+  async ({ id, designer_id }, { rejectWithValue }) => {
     try {
-      const response = await ordersAPI.assignDesigner(orderId, designerId);
+      const response = await ordersAPI.assignDesigner(id, designer_id);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.error || "Failed to assign designer");
+      return rejectWithValue(error.response?.data?.error);
     }
   }
 );
 
 export const assignPrinter = createAsyncThunk(
   "orders/assignPrinter",
-  async ({ orderId, printerId }, { rejectWithValue }) => {
+  async ({ id, printer_id }, { rejectWithValue }) => {
     try {
-      const response = await ordersAPI.assignPrinter(orderId, printerId);
+      const response = await ordersAPI.assignPrinter(id, printer_id);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || "Failed to assign printer");
@@ -128,12 +128,12 @@ export const submitDesign = createAsyncThunk(
 
 export const approveDesign = createAsyncThunk(
   "orders/approveDesign",
-  async (orderId, { rejectWithValue }) => {
+  async ({ id, approved, rejectionReason }, { rejectWithValue }) => {
     try {
-      const response = await ordersAPI.approveDesign(orderId);
+      const response = await ordersAPI.approveDesign(id, approved, rejectionReason);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.error || "Failed to approve design");
+      return rejectWithValue(error.response?.data?.error);
     }
   }
 );
@@ -328,27 +328,27 @@ const ordersSlice = createSlice({
       })
       // Workflow
       .addCase(assignDesigner.fulfilled, (state, action) => {
-        state.currentOrder = action.payload;
+        state.currentOrder = action.payload.order;
         state.successMessage = "Designer assigned";
       })
       .addCase(assignPrinter.fulfilled, (state, action) => {
-        state.currentOrder = action.payload;
+        state.currentOrder = action.payload.order;
         state.successMessage = "Printer assigned";
       })
       .addCase(startDesign.fulfilled, (state, action) => {
-        state.currentOrder = action.payload;
+        state.currentOrder = action.payload.order;
         state.successMessage = "Design started";
       })
       .addCase(submitDesign.fulfilled, (state, action) => {
-        state.currentOrder = action.payload;
+        state.currentOrder = action.payload.order;
         state.successMessage = "Design submitted";
       })
       .addCase(approveDesign.fulfilled, (state, action) => {
-        state.currentOrder = action.payload;
+        state.currentOrder = action.payload.order;
         state.successMessage = "Design approved";
       })
       .addCase(cancelOrder.fulfilled, (state, action) => {
-        state.currentOrder = action.payload;
+        state.currentOrder = action.payload.order;
         state.successMessage = "Order cancelled";
       })
       // Dashboard

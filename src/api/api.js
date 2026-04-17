@@ -60,13 +60,6 @@ const getCompanySlugFromURL = () => {
 api.interceptors.request.use(async (config) => {
   let token = getAccessToken();
 
-  //INJECT COMPANY SLUG INTO HEADERS 
-//   const companySlug = getCompanySlugFromURL();
-//   if (companySlug) {
-//     config.headers["X-Company-Slug"] = companySlug;
-//   }
-// console.log("RAW PATH:", window.location.pathname);
-// console.log("EXTRACTED SLUG:", companySlug);
   // TOKEN REFRESH LOGIC
   if (token && isTokenExpired(token)) {
     const refreshToken = getRefreshToken();

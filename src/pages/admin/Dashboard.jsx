@@ -77,10 +77,10 @@ const AdminDashboard = () => {
           </p>
         </div>
         <div className="flex gap-2.5">
-          <Link to="/settings" className="flex items-center gap-2 px-4 py-2.5 border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 transition-all active:scale-[.98] text-sm font-medium">
+          <Link to="/app/settings" className="flex items-center gap-2 px-4 py-2.5 border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 transition-all active:scale-[.98] text-sm font-medium">
             <Settings className="w-4 h-4" />Settings
           </Link>
-          <Link to="/users" className="flex items-center gap-2 px-4 py-2.5 border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 transition-all active:scale-[.98] text-sm font-medium">
+          <Link to="/app/users" className="flex items-center gap-2 px-4 py-2.5 border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 transition-all active:scale-[.98] text-sm font-medium">
             <UserCircle className="w-4 h-4" />Users
           </Link>
         </div>
@@ -109,7 +109,7 @@ const AdminDashboard = () => {
         <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-sm shadow-stone-200/30 dark:shadow-black/10 border border-stone-200/70 dark:border-stone-800 overflow-hidden transition-colors duration-300">
           <div className="p-5 border-b border-stone-100 dark:border-stone-800 flex items-center justify-between">
             <h2 className="font-bold text-stone-900 dark:text-stone-100">Recent Orders</h2>
-            <Link to="/orders" className="text-sm font-semibold text-[#c2410c] dark:text-[#ea580c] hover:underline">
+            <Link to="/app/orders" className="text-sm font-semibold text-[#c2410c] dark:text-[#ea580c] hover:underline">
               View all
             </Link>
           </div>
@@ -127,7 +127,7 @@ const AdminDashboard = () => {
               </div>
             ) : (
               orders.slice(0, 5).map((o) => (
-                <Link key={o.id} to={`/orders/${o.id}`} className="p-4 sm:p-5 hover:bg-stone-50/80 dark:hover:bg-stone-800/50 flex items-center justify-between transition-colors group">
+                <Link key={o.id} to={`/app/orders/${o.id}`} className="p-4 sm:p-5 hover:bg-stone-50/80 dark:hover:bg-stone-800/50 flex items-center justify-between transition-colors group">
                   <div>
                     <p className="font-semibold text-stone-800 dark:text-stone-200 group-hover:text-[#c2410c] dark:group-hover:text-[#ea580c] transition-colors">
                       {o.order_number || `Order #${o.id}`}
@@ -150,7 +150,7 @@ const AdminDashboard = () => {
         <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-sm shadow-stone-200/30 dark:shadow-black/10 border border-stone-200/70 dark:border-stone-800 overflow-hidden transition-colors duration-300">
           <div className="p-5 border-b border-stone-100 dark:border-stone-800 flex items-center justify-between">
             <h2 className="font-bold text-stone-900 dark:text-stone-100">Pending Invoices</h2>
-            <Link to="/invoices" className="text-sm font-semibold text-[#c2410c] dark:text-[#ea580c] hover:underline">
+            <Link to="/app/invoices" className="text-sm font-semibold text-[#c2410c] dark:text-[#ea580c] hover:underline">
               View all
             </Link>
           </div>

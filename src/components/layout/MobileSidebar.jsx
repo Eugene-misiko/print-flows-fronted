@@ -1,19 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  LayoutDashboard,
-  Package,
-  Users,
-  Settings,
-  ShoppingCart,
-  CreditCard,
-  MessageSquare,
-  Printer,
-  X,
-  LogOut,
-  PlusCircle,
-} from "lucide-react";
+import {LayoutDashboard,Package,Users,Settings,ShoppingCart,CreditCard,MessageSquare,Printer,X,LogOut,PlusCircle,} from "lucide-react";
 import { setMobileSidebarOpen } from "../../store/slices/uiSlice";
 import { logout } from "@/store/slices/authSlice";
 

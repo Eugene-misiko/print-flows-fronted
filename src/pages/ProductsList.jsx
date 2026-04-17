@@ -7,15 +7,14 @@ import {
 } from "@/store/slices/productsSlice";
 import toast from "react-hot-toast";
 import {
-  Package, Plus, FolderPlus, Folder, Edit, Trash2,
-  ShoppingCart, X, Minus, LayoutGrid,
+  Package, Plus, FolderPlus, Edit, Trash2,
+  ShoppingCart, X, Minus, LayoutGrid, ImageIcon,
 } from "lucide-react";
 
 const CART_KEY = "printing_order_cart";
 const getCart = () => { try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch { return []; } };
 const saveCart = (items) => localStorage.setItem(CART_KEY, JSON.stringify(items));
 
-// ─── Reusable Dynamic Field Input ────────────────────────────────
 const FieldInput = ({ field, value, onChange }) => {
   const cls = "w-full px-3.5 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-800 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:ring-4 focus:ring-[#c2410c]/10 focus:border-[#c2410c]/40 outline-none text-sm transition-all";
   const ph = field.placeholder || field.name;
@@ -52,6 +51,50 @@ const FieldInput = ({ field, value, onChange }) => {
 
 const inputClass = "w-full px-3.5 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-800 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:ring-4 focus:ring-[#c2410c]/10 focus:border-[#c2410c]/40 outline-none transition-all text-sm";
 
+// ─── Product Image Component ───────────────────────────
+const ProductImage = ({ src, alt, className = "" }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [errored, setErrored] = useState(false);
+
+  return (
+    <div className="relative w-full h-48 sm:h-52 overflow-hidden bg-stone-100 dark:bg-stone-800">
+      {!loaded && !errored && (
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-stone-200 via-stone-100 to-stone-200 dark:from-stone-700 dark:via-stone-800 dark:to-stone-700"
+          style={{ backgroundSize: "200% 100%", animation: "shimmer 1.5s infinite" }}
+        />
+      )}
+      {errored && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-stone-50 dark:bg-stone-800">
+          <div className="w-12 h-12 rounded-2xl bg-stone-200/80 dark:bg-stone-700 flex items-center justify-center mb-2">
+            <ImageIcon className="w-6 h-6 text-stone-400 dark:text-stone-500" />
+          </div>
+          <p className="text-[11px] text-stone-400 dark:text-stone-500 font-medium">No image</p>
+        </div>
+      )}
+      {!errored && (
+        <img
+          src={src}
+          alt={alt}
+          onLoad={() => setLoaded(true)}
+          onError={() => setErrored(true)}
+          style={{ objectFit: "cover" }}
+          className={`w-full h-full transition-all duration-700 ${loaded ? "opacity-100 scale-100" : "opacity-0 scale-105"} ${className}`}
+        />
+      )}
+      {!errored && loaded && (
+        <div className="absolute inset-0 bg-gradient-to-t from-black/[0.06] via-transparent to-transparent pointer-events-none" />
+      )}
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+      `}</style>
+    </div>
+  );
+};
+
 // ═══════════════════════════════════════════════════════════
 // Main Component
 // ═══════════════════════════════════════════════════════════
@@ -62,27 +105,18 @@ const ProductsList = () => {
   const { user } = useSelector((s) => s.auth);
   const isAdmin = user?.role === "admin" || user?.role === "platform_admin";
 
-  // Admin CRUD state
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [productForm, setProductForm] = useState({ name: "", category: "", price: "", description: "", image: null });
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [categoryForm, setCategoryForm] = useState({ name: "", description: "" });
-  
-  // Delete Modal State
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingProductId, setDeletingProductId] = useState(null);
-
-  // Add-to-order state
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [itemForm, setItemForm] = useState({ quantity: 1, notes: "", fieldValues: {} });
-
-  // Cart
   const [cart, setCart] = useState(getCart);
   const updateCart = (items) => { setCart(items); saveCart(items); };
-  
-  // Category Filter State
   const [activeCategory, setActiveCategory] = useState(null);
 
   useEffect(() => {
@@ -95,17 +129,11 @@ const ProductsList = () => {
     return () => window.removeEventListener("storage", sync);
   }, []);
 
-  // Category handler
   const handleCategoryFilter = (catId = null) => {
     setActiveCategory(catId);
-    if (catId) {
-      dispatch(fetchProducts({ category: catId }));
-    } else {
-      dispatch(fetchProducts());
-    }
+    dispatch(catId ? fetchProducts({ category: catId }) : fetchProducts());
   };
 
-  // Admin handlers 
   const handleProductSubmit = async (e) => {
     e.preventDefault();
     if (!productForm.name.trim()) return toast.error("Product name is required");
@@ -117,7 +145,6 @@ const ProductsList = () => {
     if (productForm.category) fd.append("category", Number(productForm.category));
     fd.append("description", productForm.description || "");
     if (productForm.image instanceof File) fd.append("image", productForm.image);
-
     try {
       const result = editingProduct
         ? await dispatch(updateProduct({ id: editingProduct.id, data: fd }))
@@ -133,10 +160,7 @@ const ProductsList = () => {
     } catch { toast.error("Something went wrong"); }
   };
 
-  const openDeleteModal = (id) => {
-    setDeletingProductId(id);
-    setShowDeleteModal(true);
-  };
+  const openDeleteModal = (id) => { setDeletingProductId(id); setShowDeleteModal(true); };
 
   const confirmDelete = async () => {
     if (!deletingProductId) return;
@@ -146,9 +170,7 @@ const ProductsList = () => {
       setShowDeleteModal(false);
       setDeletingProductId(null);
       dispatch(fetchProducts());
-    } else {
-      toast.error("Failed to delete product");
-    }
+    } else toast.error("Failed to delete product");
   };
 
   const handleCategorySubmit = async (e) => {
@@ -169,7 +191,6 @@ const ProductsList = () => {
     setShowProductModal(true);
   };
 
-  // Add-to-order handlers 
   const openAddModal = (product) => {
     setSelectedProduct(product);
     const fv = {};
@@ -264,17 +285,15 @@ const ProductsList = () => {
           Categories
         </h2>
         <div className="flex flex-wrap gap-2">
-          <button 
+          <button
             onClick={() => handleCategoryFilter(null)}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
               activeCategory === null
                 ? "bg-[#1c1917] dark:bg-white text-white dark:text-stone-900 shadow-md shadow-stone-900/15 dark:shadow-white/10"
                 : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700"
             }`}
-          >
-            All
-          </button>
-          {categories?.length === 0 ? <p className="text-stone-500 dark:text-stone-500 text-sm">No categories yet</p> : (
+          >All</button>
+          {categories?.length === 0 ? <p className="text-stone-500 text-sm">No categories yet</p> : (
             categories.map((cat) => (
               <button key={cat.id} onClick={() => handleCategoryFilter(cat.id)}
                 className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
@@ -282,9 +301,7 @@ const ProductsList = () => {
                     ? "bg-[#1c1917] dark:bg-white text-white dark:text-stone-900 shadow-md shadow-stone-900/15 dark:shadow-white/10"
                     : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700"
                 }`}
-              >
-                {cat.name}
-              </button>
+              >{cat.name}</button>
             ))
           )}
         </div>
@@ -305,18 +322,32 @@ const ProductsList = () => {
           const inCart = cart.some((c) => c.product === product.id);
           return (
             <div key={product.id} className="bg-white dark:bg-stone-900 rounded-2xl shadow-sm shadow-stone-200/30 dark:shadow-black/10 border border-stone-200/70 dark:border-stone-800 overflow-hidden hover:shadow-xl hover:shadow-stone-200/50 dark:hover:shadow-stone-900/30 transition-all duration-300 flex flex-col group">
-              <div className="relative h-44 w-full overflow-hidden bg-stone-100 dark:bg-stone-800">
-                <img src={product.image || "https://via.placeholder.com/400x300"} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <span className="absolute top-3 right-3 text-xs px-3 py-1 rounded-lg bg-white/90 dark:bg-stone-900/80 backdrop-blur-sm text-stone-700 dark:text-stone-300 border border-stone-100 dark:border-stone-700 font-semibold">{product.category_name || "General"}</span>
-                {product.production_time && <span className="absolute bottom-3 left-3 text-xs px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-sm text-white font-medium">{product.production_time}h</span>}
+              
+              {/* Product Image — fixed height, consistent size */}
+              <div className="relative w-full">
+                <ProductImage
+                  src={product.image}
+                  alt={product.name}
+                  className="group-hover:scale-105"
+                />
+                <span className="absolute top-3 right-3 text-[11px] px-2.5 py-1 rounded-lg bg-white/90 dark:bg-stone-900/80 backdrop-blur-md text-stone-700 dark:text-stone-300 border border-white/50 dark:border-stone-700/50 font-semibold shadow-sm z-10">
+                  {product.category_name || "General"}
+                </span>
+                {product.production_time && (
+                  <span className="absolute bottom-3 left-3 text-[11px] px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-md text-white font-medium shadow-sm flex items-center gap-1 z-10">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    {product.production_time}h
+                  </span>
+                )}
               </div>
+
               <div className="p-4 flex flex-col flex-1">
                 <h3 className="font-bold text-stone-800 dark:text-stone-100 text-lg leading-tight">{product.name}</h3>
                 <p className="text-sm text-stone-500 dark:text-stone-400 mt-1 flex-1 line-clamp-2 leading-relaxed">{product.description || "No description"}</p>
                 {product.fields?.length > 0 && (
                   <div className="mt-2.5 flex flex-wrap gap-1.5">
                     {product.fields.slice(0, 3).map((f) => <span key={f.id} className="text-xs px-2.5 py-0.5 bg-[#fff7ed] dark:bg-[#c2410c]/10 text-[#c2410c] dark:text-[#ea580c] rounded-md font-semibold">{f.name}</span>)}
-                    {product.fields.length > 3 && <span className="text-xs px-2.5 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-500 rounded-md font-medium">+{product.fields.length - 3}</span>}
+                    {product.fields.length > 3 && <span className="text-xs px-2.5 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-500 rounded-md font-medium">+{product.fields.length - 3}</span>}
                   </div>
                 )}
                 <p className="text-xs text-stone-400 dark:text-stone-600 mt-2.5 font-medium">Min: {product.min_quantity || 1} · Max: {product.max_quantity || 10000}</p>
@@ -348,10 +379,13 @@ const ProductsList = () => {
                 <button onClick={() => setShowAddModal(false)} className="w-9 h-9 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 flex items-center justify-center transition-colors active:scale-95"><X className="w-5 h-5 text-stone-500" /></button>
               </div>
               <div className="flex gap-4 p-4 bg-stone-50 dark:bg-stone-800/50 rounded-xl border border-stone-100 dark:border-stone-800">
-                <img src={selectedProduct.image || "https://via.placeholder.com/80"} alt="" className="w-16 h-16 object-cover rounded-xl" />
-                <div>
-                  <p className="font-bold text-stone-800 dark:text-stone-100">{selectedProduct.name}</p>
+                <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0">
+                  <ProductImage src={selectedProduct.image} alt={selectedProduct.name} className="!h-20" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-stone-800 dark:text-stone-100 truncate">{selectedProduct.name}</p>
                   <p className="text-sm text-[#c2410c] dark:text-[#ea580c] font-bold mt-0.5">KES {selectedProduct.price?.toLocaleString()}</p>
+                  {selectedProduct.description && <p className="text-xs text-stone-400 dark:text-stone-500 mt-1 line-clamp-2">{selectedProduct.description}</p>}
                 </div>
               </div>
             </div>
@@ -371,12 +405,11 @@ const ProductsList = () => {
                   <div className="flex gap-1.5">
                     {[10, 50, 100, 500].map((q) => (
                       <button key={q} type="button" onClick={() => setItemForm((p) => ({ ...p, quantity: Math.min(selectedProduct.max_quantity || 10000, q) }))}
-                        className="px-2.5 py-1.5 text-xs bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-lg hover:bg-[#fff7ed] dark:hover:bg-[#c2410c]/10 hover:text-[#c2410c] dark:hover:text-[#ea580c] transition-colors font-semibold">
-                          {q}</button>
+                        className="px-2.5 py-1.5 text-xs bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-lg hover:bg-[#fff7ed] dark:hover:bg-[#c2410c]/10 hover:text-[#c2410c] dark:hover:text-[#ea580c] transition-colors font-semibold">{q}</button>
                     ))}
                   </div>
                 </div>
-                <p className="mt-3 text-sm text-stone-500 dark:text-stone-400">Subtotal: 
+                <p className="mt-3 text-sm text-stone-500 dark:text-stone-400">Subtotal:
                   <span className="font-bold text-stone-900 dark:text-stone-100 ml-1">KES {(selectedProduct.price * itemForm.quantity).toLocaleString()}</span>
                 </p>
               </div>
@@ -424,6 +457,15 @@ const ProductsList = () => {
           <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-2xl w-full max-w-md border border-stone-200 dark:border-stone-800 p-6 transition-colors duration-300">
             <h3 className="font-bold text-lg text-stone-900 dark:text-stone-100 mb-5">{editingProduct ? "Edit Product" : "Add Product"}</h3>
             <form onSubmit={handleProductSubmit} className="space-y-4" encType="multipart/form-data">
+              {(editingProduct?.image || productForm.image) && (
+                <div className="w-full h-40 rounded-xl overflow-hidden border border-stone-200 dark:border-stone-700">
+                  <ProductImage
+                    src={productForm.image instanceof File ? URL.createObjectURL(productForm.image) : editingProduct?.image}
+                    alt="Preview"
+                    className="!h-40"
+                  />
+                </div>
+              )}
               <input type="text" placeholder="Product name" value={productForm.name} onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} className={inputClass} />
               <div className="flex gap-2">
                 <select value={productForm.category} onChange={(e) => setProductForm({ ...productForm, category: e.target.value })} className={`flex-1 ${inputClass}`}>
@@ -466,29 +508,16 @@ const ProductsList = () => {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-[#1c1917]/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-2xl w-full max-w-sm border border-stone-200 dark:border-stone-800 p-6 text-center transition-colors duration-300">
-            {/* Warning Icon */}
             <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 flex items-center justify-center mx-auto mb-5">
               <Trash2 className="w-7 h-7 text-red-500" />
             </div>
-            
             <h3 className="font-bold text-xl text-stone-900 dark:text-stone-100 mb-2">Delete Product</h3>
-            <p className="text-sm text-stone-500 dark:text-stone-400 mb-8 leading-relaxed">
-              Are you sure you want to delete this product? This action cannot be undone.
-            </p>
-            
+            <p className="text-sm text-stone-500 dark:text-stone-400 mb-8 leading-relaxed">Are you sure you want to delete this product? This action cannot be undone.</p>
             <div className="flex gap-3">
-              <button 
-                onClick={() => { setShowDeleteModal(false); setDeletingProductId(null); }}
-                className="flex-1 px-4 py-2.5 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors font-semibold active:scale-[.98]"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={confirmDelete}
-                className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-lg shadow-red-600/20 transition-all font-bold active:scale-[.98]"
-              >
-                Delete
-              </button>
+              <button onClick={() => { setShowDeleteModal(false); setDeletingProductId(null); }}
+                className="flex-1 px-4 py-2.5 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors font-semibold active:scale-[.98]">Cancel</button>
+              <button onClick={confirmDelete}
+                className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-lg shadow-red-600/20 transition-all font-bold active:scale-[.98]">Delete</button>
             </div>
           </div>
         </div>

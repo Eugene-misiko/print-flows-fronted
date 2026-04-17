@@ -1,22 +1,11 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { logout } from "../../store/slices/authSlice";
-import {
-  LayoutDashboard,
-  ShoppingBag,
-  Users,
-  Package,
-  CreditCard,
-  FileText,
-  Settings,
-  MessageSquare,
-  Printer,
-  PlusCircle,
-  LogOut,
-} from "lucide-react";
+import {LayoutDashboard,ShoppingBag,Users,Package,CreditCard,FileText,Settings,MessageSquare,Printer,PlusCircle,LogOut,} from "lucide-react";
 
 const Sidebar = ({ user }) => {
+  const { companySlug } = useParams()
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -27,7 +16,7 @@ const Sidebar = ({ user }) => {
 
   const handleLogout = async () => {
     await dispatch(logout());
-    navigate("/login");
+    navigate(`/store/${companySlug}/login `);
   };
 
   const linkClass = ({ isActive }) =>
