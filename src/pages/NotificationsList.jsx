@@ -43,7 +43,7 @@ const NotificationsList = () => {
     if (notif.link) {
       navigate(notif.link);
     } else if (notif.related_object_type === "order" && notif.related_object_id) {
-      navigate(`/orders/${notif.related_object_id}`);
+      navigate(`/app/orders/${notif.related_object_id}`);
     }
     if (!notif.is_read) dispatch(markAsRead(notif.id));
   };
@@ -55,10 +55,12 @@ const NotificationsList = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">Notifications</h1>
+          <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">
+            Notifications</h1>
           <p className="text-sm text-stone-500 dark:text-stone-400 mt-1 font-medium">
             {unreadCount > 0 ? (
-              <span className="text-[#c2410c] dark:text-[#ea580c] font-bold">{unreadCount} unread</span>
+              <span className="text-[#c2410c] dark:text-[#ea580c] font-bold">
+                {unreadCount} unread</span>
             ) : (
               "All caught up"
             )}

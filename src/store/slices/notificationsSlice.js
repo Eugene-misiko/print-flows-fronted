@@ -81,16 +81,16 @@ const notificationsSlice = createSlice({
   },
 extraReducers: (builder) => {
   builder
-    .addCase(fetchNotifications.fulfilled, (state, action) => {
-      state.currentNotification = action.payload;
-    })  
     .addCase(fetchNotifications.pending, (state) => {
       state.isLoading = true;
     })
-    // .addCase(fetchNotifications.fulfilled, (state, action) => {
-    //   state.isLoading = false;
-    //   state.notifications = action.payload.results || action.payload;
-    // })
+
+    .addCase(fetchNotifications.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.notifications = action.payload.results || action.payload;
+      state.unreadCount = (action.payload.results || action.payload).filter(n => !n.is_read).length;
+    })
+
     .addCase(fetchNotifications.rejected, (state, action) => {
       state.isLoading = false;
       state.error = action.payload;

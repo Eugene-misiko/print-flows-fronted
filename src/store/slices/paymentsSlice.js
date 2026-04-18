@@ -15,7 +15,39 @@ export const fetchInvoices = createAsyncThunk(
     }
   }
 );
+//download invoice
+export const downloadInvoice = createAsyncThunk(
+  "payments/downloadInvoice",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await invoicesAPI.download(id);
 
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `invoice-${id}.pdf`;
+      a.click();
+
+      return true;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+// send invoice
+export const sendInvoice = createAsyncThunk(
+  "payments/sendInvoice",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await invoicesAPI.send(id);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
 // ----- Payments -----
 export const fetchPayments = createAsyncThunk(
   "payments/fetchAll",
@@ -123,5 +155,5 @@ const paymentsSlice = createSlice({
 });
 
 export const initiateMpesaPayment = stkPushPayment;
-export const { clearPayment, clearPayments, clearMpesaResponse ,downloadInvoice,sendInvoice} = paymentsSlice.actions;
+export const { clearPayment, clearPayments, clearMpesaResponse } = paymentsSlice.actions;
 export default paymentsSlice.reducer;

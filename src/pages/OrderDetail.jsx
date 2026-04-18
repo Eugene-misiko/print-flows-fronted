@@ -208,10 +208,13 @@ const OrderDetail = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 flex items-center justify-center transition-colors active:scale-95"><ArrowLeft className="h-5 w-5 text-stone-600 dark:text-stone-300" /></button>
+          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 flex items-center justify-center transition-colors active:scale-95">
+            <ArrowLeft className="h-5 w-5 text-stone-600 dark:text-stone-300" />
+            </button>
           <div>
             <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">Order #{order.order_number}</h1>
-            <p className="text-sm text-stone-500 dark:text-stone-400 mt-1">{fmtDate(order.created_at)} {order.priority !== "normal" && <span className="ml-2 text-xs px-2.5 py-0.5 bg-[#fff7ed] dark:bg-[#c2410c]/15 text-[#c2410c] dark:text-[#ea580c] rounded-lg border border-[#c2410c]/15 dark:border-[#c2410c]/20 uppercase font-bold">{order.priority}</span>}</p>
+            <p className="text-sm text-stone-500 dark:text-stone-400 mt-1">{fmtDate(order.created_at)} {order.priority !== "normal" && <span className="ml-2 text-xs px-2.5 py-0.5 bg-[#fff7ed] dark:bg-[#c2410c]/15 text-[#c2410c] dark:text-[#ea580c] rounded-lg border border-[#c2410c]/15 dark:border-[#c2410c]/20 uppercase font-bold">
+            {order.priority}</span>}</p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2.5">
@@ -224,6 +227,7 @@ const OrderDetail = () => {
           {canStartDesign && <button onClick={() => action(startDesign, id, "Design started")} disabled={processing} 
           className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm text-sm font-semibold disabled:opacity-50 active:scale-[.98] transition-all">
             <Play className="h-4 w-4 mr-1.5 inline" />Start Design</button>}
+            
           {canSubmitDesign && <button onClick={() => setShowSubmit(true)} 
           className="px-4 py-2.5 bg-gradient-to-r from-[#c2410c] to-[#ea580c] text-white rounded-xl shadow-lg shadow-orange-600/20 text-sm font-bold active:scale-[.98] transition-all">
             <Upload className="h-4 w-4 mr-1.5 inline" />Submit Design</button>}
@@ -243,7 +247,8 @@ const OrderDetail = () => {
           {needsPayment && <button onClick={() => setShowPayment(true)}
            className="px-4 py-2.5 bg-gradient-to-r from-[#c2410c] to-[#ea580c] text-white rounded-xl shadow-lg shadow-orange-600/20 text-sm font-bold active:scale-[.98] transition-all">
             <CreditCard className="h-4 w-4 mr-1.5 inline" />Pay Invoice</button>}
-          {canCancel && <button onClick={() => setShowCancel(true)} className="px-4 py-2.5 border border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/15 text-sm font-semibold active:scale-[.98] transition-all">
+          {canCancel && <button onClick={() => setShowCancel(true)}
+           className="px-4 py-2.5 border border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/15 text-sm font-semibold active:scale-[.98] transition-all">
             <Ban className="h-4 w-4 mr-1.5 inline" />Cancel</button>}
         </div>
       </div>
@@ -283,8 +288,12 @@ const OrderDetail = () => {
           )}
         </div>
         <div className="mt-8 flex flex-wrap gap-3">
-          {order.assigned_designer && <div className="flex items-center gap-2 px-3.5 py-2 bg-purple-50 dark:bg-purple-900/15 rounded-xl border border-purple-200/50 dark:border-purple-800/30"><User className="w-4 h-4 text-purple-500" /><span className="text-sm font-medium text-purple-700 dark:text-purple-300">Designer: {order.designer_name || `User #${order.assigned_designer}`}</span></div>}
-          {order.assigned_printer && <div className="flex items-center gap-2 px-3.5 py-2 bg-sky-50 dark:bg-sky-900/15 rounded-xl border border-sky-200/50 dark:border-sky-800/30"><User className="w-4 h-4 text-sky-500" /><span className="text-sm font-medium text-sky-700 dark:text-sky-300">Printer: {order.printer_name || `User #${order.assigned_printer}`}</span></div>}
+          {order.assigned_designer && <div className="flex items-center gap-2 px-3.5 py-2 bg-purple-50 dark:bg-purple-900/15 rounded-xl border border-purple-200/50 dark:border-purple-800/30">
+          <User className="w-4 h-4 text-purple-500" /><span className="text-sm font-medium text-purple-700 dark:text-purple-300">
+          Designer: {order.designer_name || `User #${order.assigned_designer}`}</span></div>}
+          {order.assigned_printer && <div className="flex items-center gap-2 px-3.5 py-2 bg-sky-50 dark:bg-sky-900/15 rounded-xl border border-sky-200/50 dark:border-sky-800/30">
+          <User className="w-4 h-4 text-sky-500" /><span className="text-sm font-medium text-sky-700 dark:text-sky-300">
+            Printer: {order.printer_name || `User #${order.assigned_printer}`}</span></div>}
         </div>
       </div>
 
@@ -334,11 +343,17 @@ const OrderDetail = () => {
               </div>
               {order.design_file ? (
                 <div className="mb-5 p-4 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200/50 dark:border-emerald-800/30 rounded-xl">
-                  <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300 mb-2">Designer's Submission:</p>
+                  <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300 mb-2">
+                    Designer's Submission:</p>
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 bg-white dark:bg-stone-800 rounded-xl flex items-center justify-center border border-emerald-200 dark:border-emerald-800"><FileText className="h-6 w-6 text-emerald-500" /></div>
-                    <div className="flex-1"><p className="text-sm font-semibold text-stone-800 dark:text-stone-200">Design uploaded</p><p className="text-xs text-stone-400 mt-0.5">{fmtDate(order.design_completed_at)}</p></div>
-                    <a href={order.design_file_url} target="_blank" rel="noreferrer" className="px-3.5 py-2 text-sm border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 font-semibold transition-colors active:scale-[.98]">
+                    <div className="w-16 h-16 bg-white dark:bg-stone-800 rounded-xl flex items-center justify-center border border-emerald-200 dark:border-emerald-800">
+                      <FileText className="h-6 w-6 text-emerald-500" />
+                      </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-stone-800 dark:text-stone-200">
+                        Design uploaded</p><p className="text-xs text-stone-400 mt-0.5">
+                          {fmtDate(order.design_completed_at)}</p></div>
+                    <a href={order.design_file_url} target="_blank" rel="noreferrer" className="px-3 py-2 bg-[#c2410c] hover:bg-[#ea580c] text-white rounded-lg text-sm font-semibold flex items-center">
                     <Download className="w-3.5 h-3.5 mr-1.5 inline" />View</a>
                   </div> 
                   {order.design_notes && <p className="mt-3 text-sm text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-800 p-3 rounded-xl border border-stone-100 dark:border-stone-700">Notes: {order.design_notes}</p>}
@@ -356,15 +371,22 @@ const OrderDetail = () => {
           {/* Invoice */}
           {order.invoice && (
             <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-sm shadow-stone-200/30 dark:shadow-black/10 border border-stone-200/70 dark:border-stone-800 p-6 transition-colors duration-300">
-              <h2 className="text-lg font-bold text-stone-900 dark:text-stone-100 mb-5 flex items-center gap-2"><CreditCard className="w-5 h-5 text-emerald-500" /> Invoice</h2>
+              <h2 className="text-lg font-bold text-stone-900 dark:text-stone-100 mb-5 flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-emerald-500" /> Invoice</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div className="p-4 bg-stone-50 dark:bg-stone-800/50 rounded-xl border border-stone-100 dark:border-stone-800"><p className="text-xs text-stone-400 font-medium">Invoice #</p><p className="font-bold text-stone-800 dark:text-stone-200 mt-1">{order.invoice.invoice_number}</p></div>
-                <div className="p-4 bg-stone-50 dark:bg-stone-800/50 rounded-xl border border-stone-100 dark:border-stone-800"><p className="text-xs text-stone-400 font-medium">Total</p><p className="font-bold text-stone-800 dark:text-stone-200 mt-1">{fmtCurrency(order.invoice.total_amount)}</p></div>
+                <div className="p-4 bg-stone-50 dark:bg-stone-800/50 rounded-xl border border-stone-100 dark:border-stone-800"><p className="text-xs text-stone-400 font-medium">Invoice #</p><p className="font-bold text-stone-800 dark:text-stone-200 mt-1">
+                  {order.invoice.invoice_number}</p></div>
+                <div className="p-4 bg-stone-50 dark:bg-stone-800/50 rounded-xl border border-stone-100 dark:border-stone-800">
+                <p className="text-xs text-stone-400 font-medium">Total</p>
+                <p className="font-bold text-stone-800 dark:text-stone-200 mt-1">
+                  {fmtCurrency(order.invoice.total_amount)}</p></div>
                 <div className="p-4 bg-[#fff7ed] dark:bg-[#c2410c]/10 rounded-xl border border-[#c2410c]/15 dark:border-[#c2410c]/20"><p className="text-xs text-stone-400 font-medium">Deposit (70%)</p><p className="font-bold text-[#c2410c] dark:text-[#ea580c] mt-1">{fmtCurrency(order.invoice.deposit_amount)}</p><p className="text-xs text-[#c2410c]/70 mt-0.5">Paid: {fmtCurrency(order.invoice.deposit_paid)}</p></div>
                 <div className="p-4 bg-sky-50 dark:bg-sky-900/10 rounded-xl border border-sky-200/50 dark:border-sky-800/30"><p className="text-xs text-stone-400 font-medium">Balance</p><p className="font-bold text-sky-600 dark:text-sky-400 mt-1">{fmtCurrency(order.invoice.balance_due)}</p></div>
               </div>
               <div className="mt-5 flex items-center justify-between flex-wrap gap-3">
-                <span className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${order.invoice.status === "paid" ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-800/30" : order.invoice.status === "partial" ? "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 border-amber-200/50 dark:border-amber-800/30" : "bg-stone-50 text-stone-600 dark:bg-stone-800 dark:text-stone-400 border-stone-200 dark:border-stone-700"}`}>{order.invoice.status_display || order.invoice.status}</span>
+                <span className={`px-3 py-1.5 rounded-lg text-xs font-bold border 
+                  ${order.invoice.status === "paid" ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-800/30" : order.invoice.status === "partial" ? "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 border-amber-200/50 dark:border-amber-800/30" : "bg-stone-50 text-stone-600 dark:bg-stone-800 dark:text-stone-400 border-stone-200 dark:border-stone-700"}`}>
+                {order.invoice.status_display || order.invoice.status}</span>
                 {!order.invoice.is_deposit_paid && <p className="text-xs text-red-500 font-semibold">⚠ Deposit not paid — work cannot start</p>}
                 {order.invoice.is_deposit_paid && order.invoice.status !== "paid" && <p className="text-xs text-emerald-600 font-semibold">✓ Deposit paid — work can proceed</p>}
               </div>
@@ -378,8 +400,10 @@ const OrderDetail = () => {
               <div className="space-y-0">
                 {order.status_history.map((h, i) => (
                   <div key={i} className="flex gap-4">
-                    <div className="flex flex-col items-center"><div className={`w-3 h-3 rounded-full border-2 ${i === 0 ? "bg-[#c2410c] border-[#c2410c]" : "bg-white dark:bg-stone-800 border-stone-300 dark:border-stone-600"}`} />{i < order.status_history.length - 1 && <div className="w-0.5 h-full bg-stone-200 dark:bg-stone-700 mt-1" />}</div>
-                    <div className="flex-1 pb-6"><p className="font-semibold text-stone-800 dark:text-stone-200">{fmt(h.new_status)} {h.changed_by_name && <span className="text-sm text-stone-400 dark:text-stone-500 font-normal">by {h.changed_by_name}</span>}</p><p className="text-sm text-stone-500 dark:text-stone-500 mt-0.5">{fmtDate(h.created_at)}</p>{h.note && <p className="text-sm text-stone-600 dark:text-stone-400 mt-2 bg-stone-50 dark:bg-stone-800 p-3 rounded-xl border border-stone-100 dark:border-stone-800">{h.note}</p>}</div>
+                    <div className="flex flex-col items-center">
+                      <div className={`w-3 h-3 rounded-full border-2 ${i === 0 ? "bg-[#c2410c] border-[#c2410c]" : "bg-white dark:bg-stone-800 border-stone-300 dark:border-stone-600"}`} />{i < order.status_history.length - 1 && <div className="w-0.5 h-full bg-stone-200 dark:bg-stone-700 mt-1" />}</div>
+                    <div className="flex-1 pb-6"><p className="font-semibold text-stone-800 dark:text-stone-200">{fmt(h.new_status)} {h.changed_by_name && <span className="text-sm text-stone-400 dark:text-stone-500 font-normal">by {h.changed_by_name}</span>}</p><p className="text-sm text-stone-500 dark:text-stone-500 mt-0.5">
+                      {fmtDate(h.created_at)}</p>{h.note && <p className="text-sm text-stone-600 dark:text-stone-400 mt-2 bg-stone-50 dark:bg-stone-800 p-3 rounded-xl border border-stone-100 dark:border-stone-800">{h.note}</p>}</div>
                   </div>
                 ))}
               </div>
@@ -392,7 +416,8 @@ const OrderDetail = () => {
           <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-sm shadow-stone-200/30 dark:shadow-black/10 border border-stone-200/70 dark:border-stone-800 p-6 transition-colors duration-300">
             <h2 className="font-bold text-stone-900 dark:text-stone-100 mb-5">Client</h2>
             <div className="space-y-4">
-              <div className="flex items-center gap-3"><div className="w-11 h-11 bg-[#fff7ed] dark:bg-[#c2410c]/15 rounded-full flex items-center justify-center border border-[#c2410c]/15 dark:border-[#c2410c]/20"><User className="h-5 w-5 text-[#c2410c]" /></div><p className="font-bold text-stone-800 dark:text-stone-200">{order.user_name || "Unknown"}</p></div>
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 bg-[#fff7ed] dark:bg-[#c2410c]/15 rounded-full flex items-center justify-center border border-[#c2410c]/15 dark:border-[#c2410c]/20"><User className="h-5 w-5 text-[#c2410c]" /></div><p className="font-bold text-stone-800 dark:text-stone-200">{order.user_name || "Unknown"}</p></div>
               <div className="flex items-center gap-2.5 text-sm text-stone-500 dark:text-stone-400"><Mail className="h-4 w-4" /><span>{order.user?.email || "N/A"}</span></div>
               <div className="flex items-center gap-2.5 text-sm text-stone-500 dark:text-stone-400"><Phone className="h-4 w-4" /><span>{order.user?.phone || "N/A"}</span></div>
             </div>
@@ -408,11 +433,14 @@ const OrderDetail = () => {
           </div>
           {order.transportation && (
             <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-sm shadow-stone-200/30 dark:shadow-black/10 border border-stone-200/70 dark:border-stone-800 p-6 transition-colors duration-300">
-              <h2 className="font-bold text-stone-900 dark:text-stone-100 mb-5 flex items-center gap-2"><Truck className="w-5 h-5 text-[#c2410c]" />Delivery</h2>
+              <h2 className="font-bold text-stone-900 dark:text-stone-100 mb-5 flex items-center gap-2">
+                <Truck className="w-5 h-5 text-[#c2410c]" />Delivery</h2>
               <div className="space-y-3.5 text-sm">
                 <div className="flex justify-between"><span className="text-stone-500 dark:text-stone-500">Type</span><span className="capitalize font-medium text-stone-700 dark:text-stone-300">{order.transportation.transport_type?.replace("_", " ")}</span></div>
-                {order.transportation.delivery_address && <div className="flex items-start gap-2.5"><MapPin className="w-4 h-4 text-stone-400 mt-0.5 flex-shrink-0" /><span className="text-stone-600 dark:text-stone-400">{order.transportation.delivery_address}</span></div>}
-                {order.transportation.tracking_number && <div className="flex justify-between"><span className="text-stone-500 dark:text-stone-500">Tracking</span><span className="text-[#c2410c] dark:text-[#ea580c] font-bold">{order.transportation.tracking_number}</span></div>}
+                {order.transportation.delivery_address && <div className="flex items-start gap-2.5"><MapPin className="w-4 h-4 text-stone-400 mt-0.5 flex-shrink-0" />
+                <span className="text-stone-600 dark:text-stone-400">{order.transportation.delivery_address}</span></div>}
+                {order.transportation.tracking_number && <div className="flex justify-between"><span className="text-stone-500 dark:text-stone-500">Tracking</span>
+                <span className="text-[#c2410c] dark:text-[#ea580c] font-bold">{order.transportation.tracking_number}</span></div>}
               </div>
             </div>
           )}
@@ -432,7 +460,8 @@ const OrderDetail = () => {
           )}
           <div className="flex gap-3 mt-6">
             <button onClick={() => setShowAssignDesigner(false)} className="flex-1 px-4 py-2.5 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-600 dark:text-stone-300 font-semibold hover:bg-stone-50 dark:hover:bg-stone-800 active:scale-[.98] transition-all">Cancel</button>
-            <button onClick={() => { if (!designerId) return toast.error("Select a designer"); action(assignDesigner, { id, designer_id: parseInt(designerId) }, "Designer assigned", setShowAssignDesigner, () => setDesignerId("")); }} disabled={processing || !designerId} className="flex-1 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold disabled:opacity-50 active:scale-[.98] transition-all shadow-sm">{processing ? "..." : "Assign"}</button>
+            <button onClick={() => { if (!designerId) return toast.error("Select a designer"); 
+              action(assignDesigner, { id, designer_id: parseInt(designerId) }, "Designer assigned", setShowAssignDesigner, () => setDesignerId("")); }} disabled={processing || !designerId} className="flex-1 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold disabled:opacity-50 active:scale-[.98] transition-all shadow-sm">{processing ? "..." : "Assign"}</button>
           </div>
         </Modal>
       )}
@@ -472,7 +501,8 @@ const OrderDetail = () => {
           </div>
           <div className="flex gap-3 mt-6">
             <button onClick={() => setShowSubmit(false)} className="flex-1 px-4 py-2.5 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-600 dark:text-stone-300 font-semibold hover:bg-stone-50 dark:hover:bg-stone-800 active:scale-[.98] transition-all">Cancel</button>
-            <button onClick={() => { if (!designFile) return toast.error("Upload a file"); const fd = new FormData(); fd.append("design_file", designFile); fd.append("design_notes", designNotes); action(submitDesign, { id, data: fd }, "Design submitted for review", setShowSubmit, () => { setDesignFile(null); setDesignNotes(""); }); }} disabled={processing} className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#c2410c] to-[#ea580c] text-white rounded-xl font-bold disabled:opacity-50 active:scale-[.98] transition-all shadow-lg shadow-orange-600/20">{processing ? "..." : "Submit"}</button>
+            <button onClick={() => { if (!designFile) return toast.error("Upload a file"); const fd = new FormData(); fd.append("design_file", designFile); fd.append("design_notes", designNotes);
+               action(submitDesign, { orderId: id, data: fd }, "Design submitted for review", setShowSubmit, () => { setDesignFile(null); setDesignNotes(""); }); }} disabled={processing} className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#c2410c] to-[#ea580c] text-white rounded-xl font-bold disabled:opacity-50 active:scale-[.98] transition-all shadow-lg shadow-orange-600/20">{processing ? "..." : "Submit"}</button>
           </div>
         </Modal>
       )}

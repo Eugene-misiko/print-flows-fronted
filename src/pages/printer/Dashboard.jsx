@@ -66,7 +66,7 @@ const PrinterDashboard = () => {
             </div>
           ) : (
             myPrintJobs.map((job) => (
-              <Link key={job.id} to={`/orders/${job.order}`} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center justify-between transition-colors">
+              <Link key={job.id} to={`/app/orders/${job.order}`} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center justify-between transition-colors">
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">Job #{job.id}</p>
                   <p className="text-sm text-gray-500">{job.order_number || `Order #${job.order}`}</p>

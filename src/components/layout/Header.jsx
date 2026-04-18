@@ -2,6 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setMobileSidebarOpen } from "../../store/slices/uiSlice";
 import { Link } from "react-router-dom";
+
 import {
   Bell,
   User,
@@ -13,6 +14,7 @@ import {
 import ThemeToggle from "../ThemeToggle";
 
 const Header = () => {
+  
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   // This correctly hooks into your Redux slice to show the live badge count
@@ -91,9 +93,13 @@ const Header = () => {
 
           {/* Notifications Bell */}
           <button className="relative p-2.5 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl transition-colors active:scale-95">
-            <Link to="/app/notifications">
-              <Bell className="w-[20px] h-[20px]" />
-            </Link>
+          <Link to="/app/notifications" className="relative">
+            <Bell className="w-[20px] h-[20px]" />
+
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-red-500 animate-pulse" />
+            )}
+          </Link>
             {/* Live Badge from Redux */}
             {unreadCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-[#c2410c] text-white text-[10px] rounded-full flex items-center justify-center font-bold leading-none px-1 shadow-sm shadow-[#c2410c]/30">

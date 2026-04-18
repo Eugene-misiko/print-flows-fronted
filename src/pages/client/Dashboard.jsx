@@ -89,7 +89,7 @@ const ClientDashboard = () => {
           </h2>
           {myOrders?.length > 5 && (
             <Link
-              to="/orders"
+              to="/app/orders"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-[#c2410c] hover:text-[#92400e] transition-colors"
             >
               View all <ArrowRight className="w-3.5 h-3.5" />
