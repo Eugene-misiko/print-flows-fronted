@@ -113,10 +113,9 @@ const paymentsSlice = createSlice({
   name: "payments",
   initialState,
   reducers: {
-    clearPayment: (state) => {
-      state.payment = null;
-      state.error = null;
-    },
+  clearPayment: (state) => {
+    state.error = null;
+  },
     clearPayments: (state) => {
       state.payments = [];
       state.error = null;
@@ -129,13 +128,13 @@ const paymentsSlice = createSlice({
     // ----- Invoices -----
     builder
       .addCase(fetchInvoices.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(fetchInvoices.fulfilled, (state, action) => { state.loading = false; state.invoices = action.payload; })
+      .addCase(fetchInvoices.fulfilled, (state, action) => { state.loading = false; state.invoices = action.payload.results || action.payload || []; })
       .addCase(fetchInvoices.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
 
     // ----- Payments -----
     builder
       .addCase(fetchPayments.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(fetchPayments.fulfilled, (state, action) => { state.loading = false; state.payments = action.payload; })
+      .addCase(fetchPayments.fulfilled, (state, action) => { state.loading = false; state.payments = action.payload.results || action.payload || []; })
       .addCase(fetchPayments.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
 
       .addCase(fetchPaymentStats.pending, (state) => { state.loading = true; state.error = null; })

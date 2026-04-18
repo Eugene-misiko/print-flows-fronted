@@ -30,14 +30,20 @@ const PaymentsPage = () => {
     if (isAdmin) dispatch(fetchOrders());
   }, [dispatch]);
 
-  const filtered = payments?.filter(
-    (p) =>
-      !search ||
-      p.payment_number?.toLowerCase().includes(search.toLowerCase()) ||
-      p.invoice_number?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = payments?.filter((p) => {
+    const term = search.toLowerCase();
 
-  const getInvoice = (invId) => invoices?.find((i) => i.id === invId);
+    return (
+      !search ||
+      p.payment_number?.toLowerCase().includes(term) ||
+      (p.invoice_number || "").toLowerCase().includes(term)
+    );
+  });
+
+  const getInvoice = (invId) => {
+  if (!invoices) return null;
+  return invoices.find((i) => i.id === invId);
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,12 +58,27 @@ const PaymentsPage = () => {
           return toast.error("Phone format: 2547XXXXXXXX");
         }
         const r = await dispatch(initiateMpesaPayment({ invoice_id: parseInt(form.invoice_id), phone_number: phone }));
-        if (initiateMpesaPayment.fulfilled.match(r)) { toast.success("Check your phone for M-Pesa prompt"); setShowModal(false); resetForm(); }
+        if (initiateMpesaPayment.fulfilled.match(r)) {
+          const checkoutId = r.payload.checkout_request_id;
+
+          toast.success("Check your phone for M-Pesa prompt");
+          dispatch(fetchPayments());
+          dispatch(fetchInvoices());
+          setShowModal(false);
+          resetForm();
+        }
         else toast.error(r.payload || "Failed to initiate M-Pesa");
       } else {
         if (!form.amount) { setSubmitting(false); return toast.error("Enter amount"); }
         const r = await dispatch(recordPayment({ invoice_id: parseInt(form.invoice_id), amount: parseFloat(form.amount), payment_type: form.payment_type, payment_method: form.payment_method }));
-        if (recordPayment.fulfilled.match(r)) { toast.success("Payment recorded successfully"); setShowModal(false); resetForm(); }
+        if (recordPayment.fulfilled.match(r)) { toast.success("Payment recorded successfully"); setShowModal(false); resetForm(); 
+                  setTimeout(() => {
+          dispatch(fetchPayments());
+          dispatch(fetchPaymentStats());
+          dispatch(fetchInvoices());
+        }, 5000);
+        }
+        
         else toast.error(r.payload || "Failed to record payment");
       }
     } finally { setSubmitting(false); }
@@ -304,7 +325,7 @@ const PaymentsPage = () => {
                     className={inputCls + " appearance-none cursor-pointer"}
                   >
                     <option value="">Select invoice</option>
-                    {invoices?.filter((i) => i.status !== "paid").map((inv) => (
+                    {invoices?.filter((i) => i.status !== "cancelled").map((inv) => (
                       <option key={inv.id} value={inv.id}>{inv.invoice_number} — Balance: KES {(inv.balance_due || 0).toLocaleString()}</option>
                     ))}
                   </select>
