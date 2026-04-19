@@ -13,18 +13,6 @@ export const fetchNotifications = createAsyncThunk(
   }
 );
 
-// export const fetchNotification = createAsyncThunk(
-//   "notifications/fetchNotification",
-//   async (id, { rejectWithValue }) => {
-//     try {
-//       const response = await notificationsAPI.getById(id);
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(error.response?.data?.error || "Failed to fetch notification");
-//     }
-//   }
-// );
-
 export const markAsRead = createAsyncThunk(
   "notifications/markAsRead",
   async (id, { rejectWithValue }) => {
