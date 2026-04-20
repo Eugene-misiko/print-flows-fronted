@@ -1,8 +1,10 @@
+// ═══════════════════════════════════════════════
+// Header.jsx
+// ═══════════════════════════════════════════════
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setMobileSidebarOpen } from "../../store/slices/uiSlice";
 import { Link } from "react-router-dom";
-
 import {
   Bell,
   User,
@@ -14,10 +16,8 @@ import {
 import ThemeToggle from "../ThemeToggle";
 
 const Header = () => {
-  
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  // This correctly hooks into your Redux slice to show the live badge count
   const { unreadCount } = useSelector((state) => state.notifications);
 
   const openMobileSidebar = () => {
@@ -58,13 +58,13 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#faf9f6]/80 dark:bg-stone-950/80 backdrop-blur-2xl border-b border-stone-200/60 dark:border-stone-800/60 px-4 md:px-6 py-3.5 transition-colors duration-300">
+    <header className="sticky top-0 z-40 bg-[#faf9f6]/80 dark:bg-stone-950/80 backdrop-blur-2xl border-b border-stone-200/60 dark:border-stone-800/60 px-4 md:px-6 py-3 transition-all duration-300">
       <div className="flex items-center justify-between">
-        {/* Left Side: Menu & Welcome */}
+        {/* Left Side */}
         <div className="flex items-center gap-3">
           <button
             onClick={openMobileSidebar}
-            className="lg:hidden p-2 -ml-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl transition-colors active:scale-95"
+            className="lg:hidden p-2 -ml-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl transition-all duration-200 active:scale-95"
             aria-label="Open menu"
           >
             <Menu className="w-5 h-5" />
@@ -74,64 +74,72 @@ const Header = () => {
             <h1 className="text-base md:text-lg font-bold text-stone-900 dark:text-stone-100 tracking-tight">
               Welcome, {user?.first_name || "User"}
             </h1>
-            <p className="text-xs md:text-sm text-stone-500 dark:text-stone-400 hidden sm:block">
+            <p className="text-xs md:text-sm text-stone-400 dark:text-stone-500 hidden sm:block font-medium tabular-nums">
               {new Date().toLocaleDateString("en-US", {
                 weekday: "long",
                 month: "long",
                 day: "numeric",
                 hour: "numeric",
-                minute: "numeric",
+                minute: "2-digit",
               })}
             </p>
           </div>
         </div>
 
-        {/* Right Side: Actions & Profile */}
-        <div className="flex items-center gap-2 md:gap-3">
+        {/* Right Side */}
+        <div className="flex items-center gap-1.5 md:gap-2.5">
           {/* Theme Toggle */}
           <ThemeToggle />
 
-          {/* Notifications Bell */}
-          <button className="relative p-2.5 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl transition-colors active:scale-95">
-          <Link to="/app/notifications" className="relative">
+          {/* Notifications — fixed: no nested interactive elements */}
+          <Link
+            to="/app/notifications"
+            className="relative p-2.5 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl transition-all duration-200 active:scale-95"
+          >
             <Bell className="w-[20px] h-[20px]" />
-
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-red-500 animate-pulse" />
+              <>
+                {/* Pulse ring */}
+                <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-[#c2410c] animate-ping opacity-40" />
+                {/* Dot indicator */}
+                <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-[#c2410c]" />
+                {/* Count badge */}
+                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-gradient-to-br from-[#c2410c] to-[#ea580c] text-white text-[10px] rounded-full flex items-center justify-center font-bold leading-none px-1 shadow-md shadow-[#c2410c]/30">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              </>
             )}
           </Link>
-            {/* Live Badge from Redux */}
-            {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-[#c2410c] text-white text-[10px] rounded-full flex items-center justify-center font-bold leading-none px-1 shadow-sm shadow-[#c2410c]/30">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </span>
-            )}
-          </button>
 
           {/* Divider */}
-          <div className="flex items-center gap-3 pl-2 md:pl-4 border-l border-stone-200/60 dark:border-stone-700/60">
-            <Link to="/app/profile" className="group">
+          <div className="flex items-center gap-3 pl-2 md:pl-3.5 border-l border-stone-200/60 dark:border-stone-700/60">
+            <Link to="/app/profile" className="group flex items-center gap-3">
               {/* Avatar */}
-              <div className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-[#c2410c] to-[#ea580c] rounded-full flex items-center justify-center text-white font-bold shadow-sm shadow-orange-600/20 group-hover:shadow-md group-hover:shadow-orange-600/30 transition-shadow">
-                {user?.first_name?.[0]?.toUpperCase() ||
-                  user?.email?.[0]?.toUpperCase() ||
-                  "U"}
+              <div className="relative">
+                <div className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-[#c2410c] to-[#ea580c] rounded-full flex items-center justify-center text-white font-bold shadow-sm shadow-orange-600/20 group-hover:shadow-lg group-hover:shadow-orange-600/30 transition-all duration-300 group-hover:scale-105">
+                  {user?.first_name?.[0]?.toUpperCase() ||
+                    user?.email?.[0]?.toUpperCase() ||
+                    "U"}
+                </div>
+                {/* Online indicator */}
+                <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-[#faf9f6] dark:border-stone-950 rounded-full" />
+              </div>
+
+              {/* Name & Role */}
+              <div className="hidden sm:block">
+                <p className="text-sm font-semibold text-stone-800 dark:text-stone-200 leading-tight">
+                  {user?.first_name} {user?.last_name}
+                </p>
+                <span
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold mt-0.5 transition-colors duration-200 ${getRoleColor(
+                    user?.role
+                  )}`}
+                >
+                  {getRoleIcon(user?.role)}
+                  {getRoleLabel(user?.role)}
+                </span>
               </div>
             </Link>
-            {/* Name & Role */}
-            <div className="hidden sm:block">
-              <p className="text-sm font-semibold text-stone-800 dark:text-stone-200 leading-tight">
-                {user?.first_name} {user?.last_name}
-              </p>
-              <span
-                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold mt-0.5 ${getRoleColor(
-                  user?.role
-                )}`}
-              >
-                {getRoleIcon(user?.role)}
-                {getRoleLabel(user?.role)}
-              </span>
-            </div>
           </div>
         </div>
       </div>

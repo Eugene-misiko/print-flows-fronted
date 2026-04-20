@@ -1,3 +1,6 @@
+// ═══════════════════════════════════════════════
+// Layout.jsx
+// ═══════════════════════════════════════════════
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -14,7 +17,7 @@ const Layout = () => {
       <div className="hidden lg:block">
         <Sidebar user={user} />
       </div>
-      
+
       {/* Mobile Sidebar Overlay */}
       <MobileSidebar />
 
@@ -22,9 +25,25 @@ const Layout = () => {
       <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
         <Header />
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
-          <Outlet />
+          <div
+            className="max-w-6xl mx-auto"
+            style={{
+              opacity: 0,
+              transform: "translateY(8px)",
+              animation: "layoutFadeIn 0.5s 0.1s cubic-bezier(0.16,1,0.3,1) forwards",
+            }}
+          >
+            <Outlet />
+          </div>
         </main>
       </div>
+
+      <style>{`
+        @keyframes layoutFadeIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };
