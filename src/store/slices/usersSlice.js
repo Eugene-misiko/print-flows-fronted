@@ -113,10 +113,10 @@ export const createInvitation = createAsyncThunk(
 // Cancel invitation
 export const cancelInvitation = createAsyncThunk(
   "users/cancelInvitation",
-  async (id, { rejectWithValue }) => {
+  async (token, { rejectWithValue }) => {
     try {
-      await invitationsAPI.cancel(id);
-      return id;
+      await invitationsAPI.cancel(token);
+      return token;
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || "Failed to cancel invitation");
     }
@@ -289,7 +289,7 @@ const usersSlice = createSlice({
 
         //  CANCEL INVITATION
         .addCase(cancelInvitation.fulfilled, (state, action) => {
-          state.invitations = state.invitations.filter(i => i.id !== action.payload);
+          state.invitations = state.invitations.filter(i => i.token !== action.payload);
           state.successMessage = "Invitation cancelled";
         })
 
