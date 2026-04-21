@@ -353,8 +353,18 @@ const OrderDetail = () => {
                       <p className="text-sm font-semibold text-stone-800 dark:text-stone-200">
                         Design uploaded</p><p className="text-xs text-stone-400 mt-0.5">
                           {fmtDate(order.design_completed_at)}</p></div>
-                    <a href={order.design_file_url} target="_blank" rel="noreferrer" className="px-3 py-2 bg-[#c2410c] hover:bg-[#ea580c] text-white rounded-lg text-sm font-semibold flex items-center">
-                    <Download className="w-3.5 h-3.5 mr-1.5 inline" />View</a>
+                          {order.design_file_url ? (
+                            <a
+                              href={order.design_file_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="px-3 py-2 bg-[#c2410c] hover:bg-[#ea580c] text-white rounded-lg text-sm font-semibold flex items-center">
+                              <Download className="w-3.5 h-3.5 mr-1.5 inline" />
+                              View Design 
+                            </a>
+                          ) : ( 
+                            <span className="text-sm text-red-400">No file available</span>
+                          )}
                   </div> 
                   {order.design_notes && <p className="mt-3 text-sm text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-800 p-3 rounded-xl border border-stone-100 dark:border-stone-700">Notes: {order.design_notes}</p>}
                 </div>
@@ -513,7 +523,7 @@ const OrderDetail = () => {
           <textarea value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} placeholder="Reason for cancellation..." rows={3} className="w-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl p-4 text-sm text-stone-800 dark:text-stone-100 outline-none focus:ring-4 focus:ring-red-500/10 focus:border-red-500/40 transition-all mb-5" />
           <div className="flex gap-3">
             <button onClick={() => setShowCancel(false)} className="flex-1 px-4 py-2.5 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-600 dark:text-stone-300 font-semibold hover:bg-stone-50 dark:hover:bg-stone-800 active:scale-[.98] transition-all">Keep Order</button>
-            <button onClick={() => { action(cancelOrder, { id, reason: cancelReason }, "Order cancelled", setShowCancel, () => setCancelReason("")); }} disabled={processing} className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold disabled:opacity-50 active:scale-[.98] transition-all">{processing ? "..." : "Cancel Order"}</button>
+            <button onClick={() => { action(cancelOrder, { orderId: id, reason: cancelReason }, "Order cancelled", setShowCancel, () => setCancelReason("")); }} disabled={processing} className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold disabled:opacity-50 active:scale-[.98] transition-all">{processing ? "..." : "Cancel Order"}</button>
           </div>
         </Modal>
       )}

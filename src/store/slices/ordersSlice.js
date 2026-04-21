@@ -328,27 +328,27 @@ const ordersSlice = createSlice({
       })
       // Workflow
       .addCase(assignDesigner.fulfilled, (state, action) => {
-        state.currentOrder = action.payload.order;
+        state.currentOrder = action.payload;
         state.successMessage = "Designer assigned";
       })
       .addCase(assignPrinter.fulfilled, (state, action) => {
-        state.currentOrder = action.payload.order;
+        state.currentOrder = action.payload;
         state.successMessage = "Printer assigned";
       })
       .addCase(startDesign.fulfilled, (state, action) => {
-        state.currentOrder = action.payload.order;
+        state.currentOrder = action.payload;
         state.successMessage = "Design started";
       })
       .addCase(submitDesign.fulfilled, (state, action) => {
-        state.currentOrder = action.payload.order;
+        state.currentOrder = action.payload;
         state.successMessage = "Design submitted";
       })
       .addCase(approveDesign.fulfilled, (state, action) => {
-        state.currentOrder = action.payload.order;
+        state.currentOrder = action.payload;
         state.successMessage = "Design approved";
       })
       .addCase(cancelOrder.fulfilled, (state, action) => {
-        state.currentOrder = action.payload.order;
+        state.currentOrder = action.payload;
         state.successMessage = "Order cancelled";
       })
       // Dashboard
