@@ -1,13 +1,33 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {fetchConversations,fetchMessages,sendMessage,startConversation,} from "@/store/slices/messagingSlice";
+import {
+  fetchConversations,
+  fetchMessages,
+  sendMessage,
+  startConversation,
+  deleteConversation,
+  updateConversation,
+  setTyping,
+  updateTyping,
+} from "@/store/slices/messagingSlice";
 import { fetchUsers } from "@/store/slices/usersSlice";
 import { fetchOrders } from "@/store/slices/ordersSlice";
 import toast from "react-hot-toast";
-import { MessageSquare, Send,Plus,Search,X,Package,FileText,ChevronDown,
+import {
+  MessageSquare,
+  Send,
+  Plus,
+  Search,
+  X,
+  Package,
+  FileText,
+  ChevronDown,
   ArrowLeft,
-  Image,
   Paperclip,
+  Trash2,
+  Edit3,
+  MoreVertical,
+  Check,
 } from "lucide-react";
 
 /* ═══════════════════════════════════════════
@@ -121,7 +141,6 @@ const MessageBubble = ({ msg, isMine, showAvatar, showName, senderName }) => {
         isMine ? "msg-mine" : "msg-theirs"
       }`}
     >
-      {/* Spacer for avatar alignment */}
       {!isMine && (
         <div className="w-8 shrink-0 flex flex-col items-center">
           {showAvatar && <Avatar name={senderName} size="xs" />}
@@ -129,7 +148,6 @@ const MessageBubble = ({ msg, isMine, showAvatar, showName, senderName }) => {
       )}
 
       <div className="max-w-[75%] min-w-0">
-        {/* Sender name for group context */}
         {showName && !isMine && (
           <p className="text-[11px] font-semibold text-[#c2410c] dark:text-[#ea580c] mb-1 ml-1">
             {senderName}
@@ -146,9 +164,7 @@ const MessageBubble = ({ msg, isMine, showAvatar, showName, senderName }) => {
           <div
             ref={contentRef}
             className={`text-[13.5px] leading-relaxed whitespace-pre-wrap break-words ${
-              isLong && !expanded
-                ? "max-h-[7.5em] overflow-hidden relative"
-                : ""
+              isLong && !expanded ? "max-h-[7.5em] overflow-hidden relative" : ""
             }`}
           >
             {msg.content}
@@ -181,7 +197,6 @@ const MessageBubble = ({ msg, isMine, showAvatar, showName, senderName }) => {
             </button>
           )}
 
-          {/* Attachments */}
           {msg.attachments?.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
               {msg.attachments.map((url, i) => (
@@ -203,7 +218,6 @@ const MessageBubble = ({ msg, isMine, showAvatar, showName, senderName }) => {
             </div>
           )}
 
-          {/* Time & edited */}
           <div
             className={`flex items-center justify-end gap-1.5 mt-1 ${
               isMine ? "text-orange-200/50" : "text-stone-400 dark:text-stone-500"
@@ -219,8 +233,153 @@ const MessageBubble = ({ msg, isMine, showAvatar, showName, senderName }) => {
         </div>
       </div>
 
-      {/* Spacer for avatar alignment on mine side */}
       {isMine && <div className="w-8 shrink-0" />}
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════
+   DELETE CONFIRM MODAL
+   ═══════════════════════════════════════════ */
+const DeleteConfirmModal = ({ conv, onConfirm, onCancel, isDeleting }) => (
+  <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 overlay-anim">
+    <div
+      className="absolute inset-0 bg-[#1c1917]/60 dark:bg-black/70 backdrop-blur-md"
+      onClick={onCancel}
+    />
+    <div className="relative w-full max-w-sm bg-white dark:bg-stone-900 rounded-2xl shadow-2xl border border-stone-200/60 dark:border-stone-700 p-6 modal-anim">
+      <div className="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-4">
+        <Trash2 className="w-5 h-5 text-red-500" />
+      </div>
+      <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 text-center mb-2">
+        Delete Conversation
+      </h3>
+      <p className="text-sm text-stone-500 dark:text-stone-400 text-center leading-relaxed mb-6">
+        This will permanently delete your conversation. This action cannot be
+        undone.
+      </p>
+      <div className="flex gap-3">
+        <button
+          onClick={onCancel}
+          className="flex-1 px-4 py-2.5 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all active:scale-[0.98]"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={onConfirm}
+          disabled={isDeleting}
+          className="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-60"
+        >
+          {isDeleting ? (
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          ) : (
+            <>
+              <Trash2 className="w-3.5 h-3.5" />
+              Delete
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+/* ═══════════════════════════════════════════
+   EDIT CONVERSATION MODAL
+   ═══════════════════════════════════════════ */
+const EditConversationModal = ({ conv, onSave, onCancel, isSaving }) => {
+  const [title, setTitle] = useState(conv?.title || "");
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 overlay-anim">
+      <div
+        className="absolute inset-0 bg-[#1c1917]/60 dark:bg-black/70 backdrop-blur-md"
+        onClick={onCancel}
+      />
+      <div className="relative w-full max-w-sm bg-white dark:bg-stone-900 rounded-2xl shadow-2xl border border-stone-200/60 dark:border-stone-700 p-6 modal-anim">
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">
+            Edit Conversation
+          </h3>
+          <button
+            onClick={onCancel}
+            className="w-8 h-8 rounded-lg bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 flex items-center justify-center transition-all"
+          >
+            <X className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+          </button>
+        </div>
+        <div className="mb-5">
+          <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider mb-2">
+            Conversation Title
+          </label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter a title (optional)..."
+            className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-800 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 text-sm outline-none focus:border-[#c2410c]/40 focus:ring-4 focus:ring-[#c2410c]/10 transition-all"
+            autoFocus
+          />
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            className="flex-1 px-4 py-2.5 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 font-semibold text-sm transition-all active:scale-[0.98]"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onSave({ title })}
+            disabled={isSaving}
+            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#c2410c] to-[#ea580c] hover:from-[#92400e] hover:to-[#c2410c] text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-60"
+          >
+            {isSaving ? (
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <>
+                <Check className="w-3.5 h-3.5" />
+                Save
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════
+   CONVERSATION CONTEXT MENU
+   ═══════════════════════════════════════════ */
+const ConvContextMenu = ({ onEdit, onDelete, onClose }) => {
+  const ref = useRef(null);
+  useEffect(() => {
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) onClose();
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [onClose]);
+
+  return (
+    <div
+      ref={ref}
+      className="absolute right-2 top-10 z-30 bg-white dark:bg-stone-800 border border-stone-200/70 dark:border-stone-700 rounded-xl shadow-xl shadow-stone-200/50 dark:shadow-black/30 overflow-hidden min-w-[140px] anim-su"
+    >
+      <button
+        onClick={onEdit}
+        className="w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors font-medium"
+      >
+        <Edit3 className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500" />
+        Edit title
+      </button>
+      <div className="h-px bg-stone-100 dark:bg-stone-700 mx-2" />
+      <button
+        onClick={onDelete}
+        className="w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-medium"
+      >
+        <Trash2 className="w-3.5 h-3.5" />
+        Delete
+      </button>
     </div>
   );
 };
@@ -231,16 +390,21 @@ const MessageBubble = ({ msg, isMine, showAvatar, showName, senderName }) => {
 const MessagesPage = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
-  const { conversations, messages, isLoading } = useSelector((s) => s.messaging);
+  const { conversations, messages, isLoading, typingUsers } = useSelector(
+    (s) => s.messaging
+  );
   const { users } = useSelector((s) => s.users);
   const { orders } = useSelector((s) => s.orders);
 
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const textareaRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
 
   const [selectedId, setSelectedId] = useState(null);
   const [newMessage, setNewMessage] = useState("");
+
+  // New conversation modal
   const [showModal, setShowModal] = useState(false);
   const [recipientId, setRecipientId] = useState("");
   const [orderId, setOrderId] = useState("");
@@ -248,8 +412,15 @@ const MessagesPage = () => {
   const [recipSearch, setRecipSearch] = useState("");
   const [orderSearch, setOrderSearch] = useState("");
   const [linkOrder, setLinkOrder] = useState(false);
+
+  // Conversation management state
   const [convSearch, setConvSearch] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [menuOpenId, setMenuOpenId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [editTarget, setEditTarget] = useState(null);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
 
   useEffect(() => {
     dispatch(fetchConversations());
@@ -281,12 +452,20 @@ const MessagesPage = () => {
     }
   }, [messages]);
 
+  // Cleanup typing on unmount or conversation change
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    };
+  }, [selectedId]);
+
   // Derived
   const selectedConv = conversations?.find((c) => c.id === selectedId);
   const otherUser = selectedConv?.participants?.find((p) => p.id !== user?.id);
   const linkedOrder = selectedConv?.order
     ? orders?.find((o) => o.id === selectedConv.order)
     : null;
+
   const filteredUsers = users?.filter(
     (u) =>
       u.id !== user?.id &&
@@ -325,14 +504,33 @@ const MessagesPage = () => {
   );
   const selectedOrder = orders?.find((o) => o.id === parseInt(orderId));
 
-  // Handlers
+  // Typing indicators for current conversation
+  const currentTypingUsers = typingUsers?.[selectedId] || [];
+  const typingParticipants = currentTypingUsers
+    .filter((id) => id !== user?.id)
+    .map((id) => selectedConv?.participants?.find((p) => p.id === id))
+    .filter(Boolean);
+
+  /* ═══════════════════════════════════════════
+     HANDLERS
+     ═══════════════════════════════════════════ */
+
+  // Send message
   const handleSend = async (e) => {
     e?.preventDefault();
     if (!newMessage.trim() || isSending) return;
     setIsSending(true);
-    await dispatch(
+    // Clear typing when sending
+    if (selectedId) {
+      dispatch(setTyping({ conversationId: selectedId, isTyping: false }));
+      dispatch(updateTyping({ conversationId: selectedId, userId: user?.id, isTyping: false }));
+    }
+    const result = await dispatch(
       sendMessage({ conversation_id: selectedId, content: newMessage })
     );
+    if (sendMessage.rejected.match(result)) {
+      toast.error(result.payload || "Failed to send message");
+    }
     setNewMessage("");
     setIsSending(false);
     if (textareaRef.current) {
@@ -340,6 +538,53 @@ const MessagesPage = () => {
     }
   };
 
+  // Typing handler with debounce
+  const handleTyping = (value) => {
+    setNewMessage(value);
+    if (!selectedId) return;
+
+    dispatch(updateTyping({ conversationId: selectedId, userId: user?.id, isTyping: true }));
+    dispatch(setTyping({ conversationId: selectedId, isTyping: true }));
+
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      dispatch(setTyping({ conversationId: selectedId, isTyping: false }));
+      dispatch(updateTyping({ conversationId: selectedId, userId: user?.id, isTyping: false }));
+    }, 2000);
+  };
+
+  // Delete conversation
+  const handleDeleteConversation = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    const result = await dispatch(deleteConversation(deleteTarget.id));
+    if (deleteConversation.fulfilled.match(result)) {
+      toast.success("Conversation deleted");
+      if (selectedId === deleteTarget.id) setSelectedId(null);
+    } else {
+      toast.error(result.payload || "Failed to delete conversation");
+    }
+    setIsDeleting(false);
+    setDeleteTarget(null);
+  };
+
+  // Update / rename conversation
+  const handleUpdateConversation = async (data) => {
+    if (!editTarget) return;
+    setIsSavingEdit(true);
+    const result = await dispatch(
+      updateConversation({ id: editTarget.id, data })
+    );
+    if (updateConversation.fulfilled.match(result)) {
+      toast.success("Conversation updated");
+    } else {
+      toast.error(result.payload || "Failed to update conversation");
+    }
+    setIsSavingEdit(false);
+    setEditTarget(null);
+  };
+
+  // Reset new-conversation modal
   const resetModal = () => {
     setShowModal(false);
     setRecipientId("");
@@ -350,6 +595,7 @@ const MessagesPage = () => {
     setLinkOrder(false);
   };
 
+  // Start conversation
   const handleStart = async (e) => {
     e.preventDefault();
     if (!recipientId) return toast.error("Select a recipient");
@@ -365,16 +611,16 @@ const MessagesPage = () => {
       resetModal();
       setSelectedId(r.payload.conversation.id);
       dispatch(fetchConversations());
+    } else {
+      toast.error(r.payload || "Failed to start conversation");
     }
   };
 
-  const selectConv = useCallback(
-    (id) => {
-      setSelectedId(id);
-      setNewMessage("");
-    },
-    []
-  );
+  const selectConv = useCallback((id) => {
+    setSelectedId(id);
+    setNewMessage("");
+    setMenuOpenId(null);
+  }, []);
 
   /* ═══════════════════════════════════════════
      RENDER: Empty chat
@@ -430,7 +676,6 @@ const MessagesPage = () => {
 
     return groupByDate(messages).map((g, gi) => (
       <React.Fragment key={g.date}>
-        {/* Date separator */}
         {gi > 0 && (
           <div className="flex items-center gap-3 my-6 px-2">
             <div className="flex-1 h-px bg-stone-200/60 dark:bg-stone-700/60" />
@@ -469,6 +714,31 @@ const MessagesPage = () => {
   };
 
   /* ═══════════════════════════════════════════
+     RENDER: Typing indicator
+     ═══════════════════════════════════════════ */
+  const renderTypingIndicator = () => {
+    if (!typingParticipants.length) return null;
+    return (
+      <div className="flex justify-start gap-2 px-6 pb-2 anim-fi">
+        <div className="w-8 shrink-0 flex items-end">
+          <Avatar name={typingParticipants[0]?.name} size="xs" />
+        </div>
+        <div className="bg-white dark:bg-stone-800 border border-stone-200/70 dark:border-stone-700 rounded-2xl rounded-bl-lg px-4 py-3 shadow-sm">
+          <div className="flex items-center gap-1">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="w-1.5 h-1.5 bg-stone-400 dark:bg-stone-500 rounded-full animate-bounce"
+                style={{ animationDelay: `${i * 0.15}s` }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  /* ═══════════════════════════════════════════
      RENDER: Chat header
      ═══════════════════════════════════════════ */
   const renderChatHeader = (mobile) => (
@@ -488,7 +758,7 @@ const MessagesPage = () => {
       <Avatar name={otherUser?.name} size="lg" online />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-bold text-stone-900 dark:text-stone-100 truncate">
-          {otherUser?.name || "User"}
+          {selectedConv?.title || otherUser?.name || "User"}
         </p>
         {linkedOrder ? (
           <div className="flex items-center gap-1.5 mt-0.5">
@@ -510,6 +780,24 @@ const MessagesPage = () => {
           </div>
         )}
       </div>
+
+      {/* Header actions: edit & delete */}
+      <div className="flex items-center gap-1 shrink-0">
+        <button
+          onClick={() => setEditTarget(selectedConv)}
+          className="w-8 h-8 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 flex items-center justify-center transition-all duration-200 active:scale-95"
+          title="Edit conversation"
+        >
+          <Edit3 className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />
+        </button>
+        <button
+          onClick={() => setDeleteTarget(selectedConv)}
+          className="w-8 h-8 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center justify-center transition-all duration-200 active:scale-95 group"
+          title="Delete conversation"
+        >
+          <Trash2 className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400 group-hover:text-red-500 transition-colors" />
+        </button>
+      </div>
     </div>
   );
 
@@ -524,10 +812,9 @@ const MessagesPage = () => {
       }`}
     >
       <div className={`flex ${mobile ? "gap-2" : "gap-3 items-end"}`}>
-        {/* Attachment button (visual only) */}
         <button
           type="button"
-          className={`shrink-0 p-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 hover:border-stone-300 dark:hover:border-stone-600 transition-all duration-200 active:scale-95 hidden sm:flex items-center justify-center`}
+          className="shrink-0 p-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 hover:border-stone-300 dark:hover:border-stone-600 transition-all duration-200 active:scale-95 hidden sm:flex items-center justify-center"
           title="Attach file"
         >
           <Paperclip className="w-[18px] h-[18px]" />
@@ -537,7 +824,7 @@ const MessagesPage = () => {
           <input
             type="text"
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={(e) => handleTyping(e.target.value)}
             placeholder="Type a message..."
             className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-800 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 text-sm outline-none focus:border-[#c2410c]/40 focus:ring-4 focus:ring-[#c2410c]/10 transition-all"
           />
@@ -545,17 +832,14 @@ const MessagesPage = () => {
           <textarea
             ref={textareaRef}
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={(e) => handleTyping(e.target.value)}
             placeholder="Type a message..."
             rows={1}
             className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-stone-800 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 text-sm outline-none focus:border-[#c2410c]/40 focus:ring-4 focus:ring-[#c2410c]/10 transition-all resize-none overflow-hidden"
             style={{ minHeight: "46px", maxHeight: "120px", height: "auto" }}
             onInput={(e) => {
               e.target.style.height = "auto";
-              e.target.style.height = `${Math.min(
-                e.target.scrollHeight,
-                120
-              )}px`;
+              e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -614,6 +898,7 @@ const MessagesPage = () => {
             )}
             <div ref={messagesEndRef} />
           </div>
+          {renderTypingIndicator()}
           {renderChatInput(mobile)}
         </>
       ) : (
@@ -631,56 +916,87 @@ const MessagesPage = () => {
       ? orders?.find((o) => o.id === conv.order)
       : null;
     const isActive = conv.id === selectedId;
+    const isMenuOpen = menuOpenId === conv.id;
 
     return (
-      <button
-        key={conv.id}
-        onClick={() => selectConv(conv.id)}
-        className={`w-full text-left px-4 sm:px-5 py-4 border-b border-stone-50 dark:border-stone-800/50 transition-all duration-200 group ${
-          isActive
-            ? "bg-[#fff7ed] dark:bg-[#c2410c]/10 border-l-[3px] border-l-[#c2410c]"
-            : "border-l-[3px] border-l-transparent hover:bg-stone-50/80 dark:hover:bg-stone-800/50"
-        }`}
-      >
-        <div className="flex items-start gap-3">
-          <Avatar name={other?.name || other?.email} ring={isActive} />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-2">
-              <p
-                className={`text-sm truncate transition-colors ${
-                  isActive
-                    ? "font-bold text-[#c2410c] dark:text-[#ea580c]"
-                    : "font-semibold text-stone-800 dark:text-stone-200"
-                }`}
-              >
-                {other?.name || "User"}
-              </p>
-              {conv.last_message_at && (
+      <div key={conv.id} className="relative group/item">
+        <button
+          onClick={() => selectConv(conv.id)}
+          className={`w-full text-left px-4 sm:px-5 py-4 border-b border-stone-50 dark:border-stone-800/50 transition-all duration-200 ${
+            isActive
+              ? "bg-[#fff7ed] dark:bg-[#c2410c]/10 border-l-[3px] border-l-[#c2410c]"
+              : "border-l-[3px] border-l-transparent hover:bg-stone-50/80 dark:hover:bg-stone-800/50"
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <Avatar name={other?.name || other?.email} ring={isActive} />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2">
                 <p
-                  className={`text-[10px] tabular-nums shrink-0 font-medium ${
+                  className={`text-sm truncate transition-colors ${
                     isActive
-                      ? "text-[#c2410c]/60 dark:text-[#ea580c]/60"
-                      : "text-stone-400 dark:text-stone-500"
+                      ? "font-bold text-[#c2410c] dark:text-[#ea580c]"
+                      : "font-semibold text-stone-800 dark:text-stone-200"
                   }`}
                 >
-                  {fmtConvTime(conv.last_message_at)}
+                  {conv.title || other?.name || "User"}
                 </p>
-              )}
-            </div>
-            <div className="flex items-center gap-2 mt-1">
-              {convOrder && (
-                <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 bg-[#fff7ed] dark:bg-[#c2410c]/10 text-[#c2410c] dark:text-[#ea580c] rounded-md font-bold shrink-0 border border-[#c2410c]/10 dark:border-[#c2410c]/20">
-                  <Package className="w-2.5 h-2.5" />
-                  {convOrder.order_number}
-                </span>
-              )}
-              <p className="text-xs text-stone-400 dark:text-stone-500 truncate flex-1">
-                {conv.last_message || "Start a conversation..."}
-              </p>
+                {conv.last_message_at && (
+                  <p
+                    className={`text-[10px] tabular-nums shrink-0 font-medium ${
+                      isActive
+                        ? "text-[#c2410c]/60 dark:text-[#ea580c]/60"
+                        : "text-stone-400 dark:text-stone-500"
+                    }`}
+                  >
+                    {fmtConvTime(conv.last_message_at)}
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center gap-2 mt-1">
+                {convOrder && (
+                  <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 bg-[#fff7ed] dark:bg-[#c2410c]/10 text-[#c2410c] dark:text-[#ea580c] rounded-md font-bold shrink-0 border border-[#c2410c]/10 dark:border-[#c2410c]/20">
+                    <Package className="w-2.5 h-2.5" />
+                    {convOrder.order_number}
+                  </span>
+                )}
+                <p className="text-xs text-stone-400 dark:text-stone-500 truncate flex-1">
+                  {conv.last_message || "Start a conversation..."}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </button>
+        </button>
+
+        {/* Context menu trigger — shows on hover */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setMenuOpenId(isMenuOpen ? null : conv.id);
+          }}
+          className={`absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-stone-100 dark:bg-stone-700 hover:bg-stone-200 dark:hover:bg-stone-600 flex items-center justify-center transition-all duration-150 ${
+            isMenuOpen
+              ? "opacity-100"
+              : "opacity-0 group-hover/item:opacity-100"
+          }`}
+        >
+          <MoreVertical className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />
+        </button>
+
+        {isMenuOpen && (
+          <ConvContextMenu
+            onEdit={() => {
+              setEditTarget(conv);
+              setMenuOpenId(null);
+            }}
+            onDelete={() => {
+              setDeleteTarget(conv);
+              setMenuOpenId(null);
+            }}
+            onClose={() => setMenuOpenId(null)}
+          />
+        )}
+      </div>
     );
   };
 
@@ -693,16 +1009,13 @@ const MessagesPage = () => {
       style={{
         opacity: 0,
         transform: "translateY(12px)",
-        animation:
-          "pageIn 0.5s 0ms cubic-bezier(0.16,1,0.3,1) forwards",
+        animation: "pageIn 0.5s 0ms cubic-bezier(0.16,1,0.3,1) forwards",
       }}
     >
       {/* ═══ SIDEBAR ═══ */}
       <div
         className={`flex-shrink-0 border-r border-stone-200/70 dark:border-stone-800 flex flex-col bg-[#faf9f6] dark:bg-stone-950 transition-all duration-300 ${
-          selectedId
-            ? "hidden lg:flex lg:w-80 xl:w-[340px]"
-            : "w-full"
+          selectedId ? "hidden lg:flex lg:w-80 xl:w-[340px]" : "w-full"
         }`}
       >
         {/* Sidebar header */}
@@ -728,7 +1041,6 @@ const MessagesPage = () => {
             </button>
           </div>
 
-          {/* Search conversations */}
           {conversations?.length > 3 && (
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 dark:text-stone-500" />
@@ -1027,6 +1339,27 @@ const MessagesPage = () => {
           </div>
         </div>
       )}
+
+      {/* ═══ DELETE CONFIRM MODAL ═══ */}
+      {deleteTarget && (
+        <DeleteConfirmModal
+          conv={deleteTarget}
+          onConfirm={handleDeleteConversation}
+          onCancel={() => setDeleteTarget(null)}
+          isDeleting={isDeleting}
+        />
+      )}
+
+      {/* ═══ EDIT CONVERSATION MODAL ═══ */}
+      {editTarget && (
+        <EditConversationModal
+          conv={editTarget}
+          onSave={handleUpdateConversation}
+          onCancel={() => setEditTarget(null)}
+          isSaving={isSavingEdit}
+        />
+      )}
+
       {/* ═══ STYLES ═══ */}
       <style>{`
         @keyframes pageIn {
