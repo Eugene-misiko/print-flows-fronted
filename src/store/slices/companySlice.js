@@ -12,7 +12,18 @@ export const fetchCompany = createAsyncThunk(
     }
   }
 );
-
+// Fetch company by slug (for public pages)
+export const getCompanyBySlug = createAsyncThunk(
+  "company/getBySlug",
+  async (slug, { rejectWithValue }) => {
+    try {
+      const res = await companyAPI.getBySlug(slug);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue("Failed to fetch company");
+    }
+  }
+);
 export const updateCompany = createAsyncThunk(
   "company/updateCompany",
   async (data, { rejectWithValue }) => {
@@ -84,7 +95,19 @@ export const fetchDashboard = createAsyncThunk(
     }
   }
 );
-
+export const searchCompanies = createAsyncThunk(
+  "company/searchCompanies",
+  async (params, { rejectWithValue }) => {
+    try {
+      const response = await companyAPI.search(params);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error || "Failed to search companies"
+      );
+    }
+  }
+);
 export const fetchStaff = createAsyncThunk(
   "company/fetchStaff",
   async (_, { rejectWithValue }) => {
@@ -111,6 +134,12 @@ export const fetchStaffStats = createAsyncThunk(
 
 const initialState = {
   company: {},
+    companies: [],
+  companiesMeta: {
+    count: 0,
+    next: null,
+    previous: null,
+  },
   settings: {},
   paymentSettings: {},
   dashboard: {},
@@ -160,7 +189,26 @@ const companySlice = createSlice({
           state.isLoading = false;
           state.error = action.payload;
         })
+        .addCase(searchCompanies.pending, (state) => {
+          state.isLoading = true;
+          state.error = null;
+        })
+        .addCase(searchCompanies.fulfilled, (state, action) => {
+          state.isLoading = false;
 
+          // support paginated or non-paginated API
+          state.companies = action.payload.results || action.payload;
+
+          state.companiesMeta = {
+            count: action.payload.count || 0,
+            next: action.payload.next || null,
+            previous: action.payload.previous || null,
+          };
+        })
+        .addCase(searchCompanies.rejected, (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        })
         //FETCH SETTINGS 
         .addCase(fetchSettings.pending, (state) => {
           state.isLoading = true;
