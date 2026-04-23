@@ -196,6 +196,7 @@ export const companyAPI = {
   getDashboard: () => api.get("/company/dashboard/"),
   getStaff: () => api.get("/company/staff/"),
   getStaffStats: () => api.get("/company/staff/stats/"),
+  search: (params) => api.get("/companies/", { params }),
 };
 // ===================== COMPANY INVITATIONS =====================
 export const companyInvitationsAPI = {
@@ -287,7 +288,6 @@ export const paymentsAPI = {
 };
 
 // ===================== MPESA =====================
-// Phone must be format: 2547XXXXXXXX
 export const mpesaAPI = {
   // Required: invoice_id, phone_number
   stkPush: (data) => api.post("/mpesa/stk-push/", data),
