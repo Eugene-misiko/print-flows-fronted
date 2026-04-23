@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { productsAPI } from "@/api/api";
-import { Package, Folder, Search, ArrowRight, X, ChevronUp } from "lucide-react";
-import ThemeToggle from "@/components/ThemeToggle";
+import {Package,Folder,Search,ArrowRight,X,ChevronUp,Star,MapPin, CheckCircle2, Sparkles, ShoppingBag, Clock, Shield,} from "lucide-react";
 
+/* ─────────────────────────────────────────
+   STYLES
+───────────────────────────────────────── */
 const injectStyles = () => {
-  const id = "store-home-styles";
+  const id = "store-home-styles-v2";
   if (document.getElementById(id)) return;
   const s = document.createElement("style");
   s.id = id;
@@ -14,12 +16,18 @@ const injectStyles = () => {
     @keyframes sh-float-b{0%,100%{transform:translate(0,0) rotate(0deg)}33%{transform:translate(-25px,25px) rotate(-120deg)}66%{transform:translate(20px,-10px) rotate(-240deg)}}
     @keyframes sh-float-c{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(10px,-30px) scale(1.1)}}
     @keyframes sh-slide-up{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes sh-slide-left{from{opacity:0;transform:translateX(32px)}to{opacity:1;transform:translateX(0)}}
     @keyframes sh-fade-in{from{opacity:0}to{opacity:1}}
     @keyframes sh-shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-    @keyframes sh-card-in{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @keyframes sh-card-in{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @keyframes sh-pulse-ring{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.8);opacity:0}}
+    @keyframes sh-badge-in{from{opacity:0;transform:scale(.8) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    @keyframes sh-bar-fill{from{width:0}to{width:var(--fill)}}
     .sh-su{animation:sh-slide-up .65s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
+    .sh-sl{animation:sh-slide-left .6s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
     .sh-fi{animation:sh-fade-in .4s ease forwards;opacity:0}
     .sh-card{animation:sh-card-in .55s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
+    .sh-badge{animation:sh-badge-in .5s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
     .sh-fl-a{animation:sh-float-a 12s ease-in-out infinite}
     .sh-fl-b{animation:sh-float-b 15s ease-in-out infinite}
     .sh-fl-c{animation:sh-float-c 10s ease-in-out infinite}
@@ -31,10 +39,18 @@ const injectStyles = () => {
     .sh-cat-pill{transition:left .38s cubic-bezier(.16,1,.3,1),width .38s cubic-bezier(.16,1,.3,1)}
     .sh-tilt{transition:transform .45s cubic-bezier(.16,1,.3,1),box-shadow .45s ease;transform-style:preserve-3d;will-change:transform}
     .sh-btt{transition:opacity .3s ease,transform .3s ease}
+    .sh-hero-text-gradient{background:linear-gradient(135deg,#ffffff 0%,#fed7aa 40%,#fb923c 70%,#f97316 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .sh-search-glow:focus-within{box-shadow:0 0 0 4px rgba(194,65,12,.12),0 8px 32px rgba(194,65,12,.1)}
+    .sh-card-hover:hover .sh-card-overlay{opacity:1}
+    .sh-card-overlay{opacity:0;transition:opacity .3s ease}
+    .sh-trust-badge{animation:sh-badge-in .6s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
   `;
   document.head.appendChild(s);
 };
 
+/* ─────────────────────────────────────────
+   HOOKS
+───────────────────────────────────────── */
 const useCountUp = (target, duration = 900) => {
   const [v, setV] = useState(0);
   const done = useRef(false);
@@ -62,35 +78,75 @@ const useDebounce = (value, delay) => {
   return debounced;
 };
 
+/* ─────────────────────────────────────────
+   SKELETON CARD
+───────────────────────────────────────── */
+const SkeletonCard = ({ delay = 0 }) => (
+  <div
+    className="sh-fi rounded-2xl overflow-hidden border border-stone-100 dark:border-stone-800 bg-white dark:bg-stone-900"
+    style={{ animationDelay: `${delay}s` }}
+  >
+    <div className="aspect-[4/3] sh-img-ph" />
+    <div className="p-4 space-y-3">
+      <div className="h-4 rounded-lg bg-stone-100 dark:bg-stone-800 w-4/5" />
+      <div className="h-3 rounded-lg bg-stone-50 dark:bg-stone-800/70 w-3/5" />
+      <div className="flex justify-between items-center pt-2">
+        <div className="h-5 rounded-lg bg-stone-100 dark:bg-stone-800 w-24" />
+        <div className="h-8 rounded-xl bg-stone-100 dark:bg-stone-800 w-16" />
+      </div>
+    </div>
+  </div>
+);
+
+/* ─────────────────────────────────────────
+   TRUST BADGES
+───────────────────────────────────────── */
+const TRUST_ITEMS = [
+  { icon: Shield,      label: "Quality Guaranteed" },
+  { icon: Clock,       label: "Fast Turnaround" },
+  { icon: ShoppingBag, label: "Easy Ordering" },
+  { icon: Star,        label: "Top Rated" },
+];
+
+/* ─────────────────────────────────────────
+   MAIN COMPONENT
+───────────────────────────────────────── */
 const StoreHome = () => {
   const { companySlug } = useParams();
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState(null);
-  const [search, setSearch] = useState("");
-  const [searchFocused, setSearchFocused] = useState(false);
-  const [showBTT, setShowBTT] = useState(false);
-  const [catKey, setCatKey] = useState(0);
-  const catBarRef = useRef(null);
-  const [pill, setPill] = useState({ left: 0, width: 0, opacity: 0 });
   const navigate = useNavigate();
 
-  // Debounce search to avoid re-animating cards on every keystroke
+  const [products, setProducts]           = useState([]);
+  const [categories, setCategories]       = useState([]);
+  const [company, setCompany]             = useState(null);
+  const [loading, setLoading]             = useState(true);
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [search, setSearch]               = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [showBTT, setShowBTT]             = useState(false);
+  const [catKey, setCatKey]               = useState(0);
+  const [pill, setPill]                   = useState({ left: 0, width: 0, opacity: 0 });
+
+  const catBarRef  = useRef(null);
+  const heroRef    = useRef(null);
+  const searchRef  = useRef(null);
+
   const debouncedSearch = useDebounce(search, 250);
 
   useEffect(() => { injectStyles(); }, []);
 
+  /* Fetch products + categories by company name (not slug display) */
   useEffect(() => {
     const go = async () => {
       try {
         setLoading(true);
         const [p, c] = await Promise.all([
-        productsAPI.getPublic(),
-        productsAPI.getPublicCategories()
+          productsAPI.getPublic(),
+          productsAPI.getPublicCategories(),
         ]);
         setProducts(p.data.results || p.data);
         setCategories(c.data.results || c.data);
+        /* If API returns company info, capture it */
+        if (p.data.company) setCompany(p.data.company);
       } catch (e) {
         console.error(e);
       } finally {
@@ -100,7 +156,7 @@ const StoreHome = () => {
     if (companySlug) go();
   }, [companySlug]);
 
-  // Animate pill to active category button
+  /* Animated pill for category bar */
   useEffect(() => {
     if (!catBarRef.current || loading) return;
     const t = setTimeout(() => {
@@ -113,7 +169,6 @@ const StoreHome = () => {
     return () => clearTimeout(t);
   }, [activeCategory, categories, loading]);
 
-  // Re-animate cards only when category changes (not on every search keystroke)
   useEffect(() => { setCatKey((k) => k + 1); }, [activeCategory]);
 
   useEffect(() => {
@@ -122,6 +177,18 @@ const StoreHome = () => {
     return () => window.removeEventListener("scroll", h);
   }, []);
 
+  /* Tilt effect */
+  const onTilt = useCallback((e) => {
+    const el = e.currentTarget;
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    el.style.transform = `perspective(800px) rotateY(${x * 7}deg) rotateX(${-y * 7}deg) scale(1.03)`;
+  }, []);
+  const offTilt = useCallback((e) => { e.currentTarget.style.transform = ""; }, []);
+
+  const clearFilters = () => { setSearch(""); setActiveCategory(null); };
+
   const filtered = products.filter((p) => {
     const mc = activeCategory ? p.category_id === activeCategory : true;
     const ms = p.name.toLowerCase().includes(debouncedSearch.toLowerCase());
@@ -129,83 +196,99 @@ const StoreHome = () => {
   });
 
   const prodCount = useCountUp(products.length);
-  const catCount = useCountUp(categories.length);
+  const catCount  = useCountUp(categories.length);
 
-  const onTilt = useCallback((e) => {
-    const el = e.currentTarget;
-    const r = el.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - 0.5;
-    const y = (e.clientY - r.top) / r.height - 0.5;
-    el.style.transform = `perspective(800px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) scale(1.03)`;
-  }, []);
-  const offTilt = useCallback((e) => {
-    e.currentTarget.style.transform = "";
-  }, []);
+  /* Display name: use company.name if available, else humanize the slug */
+  const displayName = company?.name
+    || companySlug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    || "Store";
 
-  const clearFilters = () => {
-    setSearch("");
-    setActiveCategory(null);
-  };
+  const initials = displayName.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
-  const searchInputClass = (focused) =>
-    `w-full pl-10 pr-10 py-2.5 rounded-xl text-sm bg-white dark:bg-stone-900 border outline-none placeholder:text-stone-400 dark:placeholder:text-stone-500 transition-all duration-300 ${
-      focused
-        ? "border-[#c2410c]/40 dark:border-[#c2410c]/60 ring-4 ring-[#c2410c]/10 dark:ring-[#c2410c]/20 shadow-lg shadow-orange-100/50 dark:shadow-orange-900/20 text-stone-800 dark:text-stone-100"
-        : "border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600 text-stone-800 dark:text-stone-200"
-    }`;
+  const searchInputBase = `w-full pl-11 pr-10 py-3 rounded-xl text-sm bg-white/10 dark:bg-white/5 border outline-none placeholder:text-stone-400 transition-all duration-300 text-white`;
+  const searchInputClass = searchFocused
+    ? `${searchInputBase} border-[#f97316]/50 ring-4 ring-[#f97316]/15 bg-white/15`
+    : `${searchInputBase} border-white/10 hover:border-white/20`;
 
   return (
     <div className="min-h-screen bg-[#faf9f6] dark:bg-stone-950 flex flex-col transition-colors duration-300">
-      {/* ─── NAVBAR ─── */}
-      <header className="sticky top-0 z-50 bg-[#faf9f6]/80 dark:bg-stone-950/80 backdrop-blur-2xl border-b border-stone-200/60 dark:border-stone-800/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+ 
+      {/* ═══════════════════════════════════════
+          STICKY NAV
+      ═══════════════════════════════════════ */}
+      <header className="sticky top-0 z-50 bg-[#faf9f6]/85 dark:bg-stone-950/85 backdrop-blur-2xl border-b border-stone-200/60 dark:border-stone-800/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
 
+          {/* Back + brand */}
           <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={() => navigate(-1)}
-              aria-label="Back"
               className="shrink-0 w-9 h-9 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 flex items-center justify-center transition-colors active:scale-95"
+              aria-label="Back"
             >
               <svg className="w-4 h-4 text-stone-600 dark:text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <div className="flex items-center gap-2.5 shrink-0">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#c2410c] to-[#ea580c] flex items-center justify-center shadow-lg shadow-orange-600/20 dark:shadow-orange-600/10">
-                <span className="text-white text-sm font-black">
-                  {companySlug?.charAt(0)?.toUpperCase()}
-                </span>
+
+            <div className="flex items-center gap-2.5 min-w-0">
+              {company?.logo ? (
+                <img src={company.logo} alt={displayName} className="w-9 h-9 rounded-xl object-cover shadow-sm" />
+              ) : (
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#c2410c] to-[#ea580c] flex items-center justify-center shadow-md shadow-orange-600/20 shrink-0">
+                  <span className="text-white text-xs font-black">{initials}</span>
+                </div>
+              )}
+              <div className="min-w-0 hidden sm:block">
+                <p className="font-bold text-stone-900 dark:text-stone-100 text-sm truncate leading-tight">
+                  {displayName}
+                </p>
+                {company?.city && (
+                  <div className="flex items-center gap-1">
+                    <MapPin className="w-2.5 h-2.5 text-stone-400 shrink-0" />
+                    <span className="text-[11px] text-stone-400 dark:text-stone-500 truncate">{company.city}</span>
+                  </div>
+                )}
               </div>
-              <span className="font-bold text-stone-900 dark:text-stone-100 text-lg capitalize tracking-tight hidden sm:inline truncate">
-                {companySlug}
-              </span>
             </div>
           </div>
-          <div className="hidden md:block relative flex-1 max-w-sm">
-            <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${searchFocused ? "text-[#c2410c]" : "text-stone-400 dark:text-stone-500"}`} />
+
+          {/* Desktop search */}
+          <div className="hidden md:block relative flex-1 max-w-xs">
+            <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none transition-colors ${searchFocused ? "text-[#c2410c]" : "text-stone-400 dark:text-stone-500"}`} />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
               placeholder="Search products..."
-              className={searchInputClass(searchFocused)}
+              className={`w-full pl-10 pr-9 py-2.5 rounded-xl text-sm bg-white dark:bg-stone-900 border outline-none placeholder:text-stone-400 dark:placeholder:text-stone-500 text-stone-800 dark:text-stone-100 transition-all duration-300 ${
+                searchFocused
+                  ? "border-[#c2410c]/40 ring-4 ring-[#c2410c]/10 shadow-lg shadow-orange-100/40 dark:shadow-orange-900/15"
+                  : "border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600"
+              }`}
             />
             {search && (
               <button
                 onClick={() => setSearch("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 flex items-center justify-center transition-colors"
               >
-                <X className="w-3 h-3 text-stone-500 dark:text-stone-400" />
+                <X className="w-3 h-3 text-stone-500" />
               </button>
             )}
           </div>
 
-          {/* Right: Theme toggle + mobile search */}
-          <div className="flex items-center gap-2 shrink-0">
+          {/* Right actions */}
+          <div className="flex items-center gap-2">
+            {company?.is_verified && (
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200/60 dark:border-emerald-800/40 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold">
+                <CheckCircle2 className="w-3 h-3" />
+                Verified
+              </div>
+            )}
             <button
-              onClick={() => document.getElementById("mob-search")?.focus()}
-              className="md:hidden shrink-0 w-9 h-9 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 flex items-center justify-center transition-colors active:scale-95"
+              onClick={() => searchRef.current?.focus()}
+              className="md:hidden w-9 h-9 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 flex items-center justify-center transition-colors active:scale-95"
               aria-label="Search"
             >
               <Search className="w-4 h-4 text-stone-600 dark:text-stone-300" />
@@ -213,96 +296,238 @@ const StoreHome = () => {
           </div>
         </div>
 
-        {/* Mobile search bar */}
+        {/* Mobile search */}
         <div className="md:hidden px-4 pb-3">
           <div className="relative">
-            <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${searchFocused ? "text-[#c2410c]" : "text-stone-400 dark:text-stone-500"}`} />
+            <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none transition-colors ${searchFocused ? "text-[#c2410c]" : "text-stone-400"}`} />
             <input
-              id="mob-search"
+              ref={searchRef}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
               placeholder="Search products..."
-              className={searchInputClass(searchFocused)}
+              className={`w-full pl-10 pr-9 py-2.5 rounded-xl text-sm bg-white dark:bg-stone-900 border outline-none placeholder:text-stone-400 text-stone-800 dark:text-stone-100 transition-all duration-300 ${
+                searchFocused
+                  ? "border-[#c2410c]/40 ring-4 ring-[#c2410c]/10 shadow-md"
+                  : "border-stone-200 dark:border-stone-700"
+              }`}
             />
             {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 flex items-center justify-center transition-colors"
-              >
-                <X className="w-3 h-3 text-stone-500 dark:text-stone-400" />
+              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-stone-100 dark:bg-stone-700 flex items-center justify-center">
+                <X className="w-3 h-3 text-stone-500" />
               </button>
             )}
           </div>
         </div>
       </header>
 
-      {/* ─── HERO (Always dark) ─── */}
-      <section className="relative overflow-hidden bg-[#1c1917]">
-        <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-          <div className="sh-fl-a absolute -top-32 -right-32 w-[520px] h-[520px] rounded-full bg-[#c2410c]/20 blur-[90px]" />
-          <div className="sh-fl-b absolute -bottom-24 -left-24 w-[420px] h-[420px] rounded-full bg-[#92400e]/15 blur-[70px]" />
-          <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(circle at 1px 1px,rgba(255,255,255,.04) 1px,transparent 0)", backgroundSize: "32px 32px" }} />
-          <div className="absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-[#1c1917] to-transparent" />
+      {/* ═══════════════════════════════════════
+          HERO — REDESIGNED
+      ═══════════════════════════════════════ */}
+      <section ref={heroRef} className="relative overflow-hidden bg-[#0f0d0c]">
+
+        {/* Multi-layer background atmosphere */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          {/* Main color blobs */}
+          <div className="sh-fl-a absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-[#c2410c]/25 blur-[100px]" />
+          <div className="sh-fl-b absolute -bottom-32 -left-32 w-[500px] h-[500px] rounded-full bg-[#92400e]/20 blur-[80px]" />
+          <div className="sh-fl-c absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-[#ea580c]/10 blur-[60px]" />
+          {/* Dot grid */}
+          <div className="absolute inset-0 opacity-[0.035]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "28px 28px" }} />
+          {/* Diagonal texture lines */}
+          <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: "repeating-linear-gradient(-45deg, white 0, white 1px, transparent 0, transparent 50%)", backgroundSize: "12px 12px" }} />
+          {/* Bottom fade */}
+          <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-[#0f0d0c] to-transparent" />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-24">
-          <div className="max-w-2xl">
-            <div className="sh-su inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/[.06] border border-white/[.08] mb-6">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f97316] opacity-60" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#f97316]" />
-              </span>
-              <span className="text-[11px] text-stone-400 font-semibold tracking-widest uppercase">Open for orders</span>
-            </div>
-            <h1 className="sh-su text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[1.08] tracking-tight" style={{ animationDelay: ".1s" }}>
-              Premium Print<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f97316] via-[#fb923c] to-[#fbbf24]">
-                Products &amp; Design
-              </span>
-            </h1>
-            <p className="sh-su text-stone-400 mt-6 text-base sm:text-lg leading-relaxed max-w-md" style={{ animationDelay: ".2s" }}>
-              Browse our curated collection of high-quality print products. Fast turnaround, professional finish.
-            </p>
-            <div className="sh-su mt-8 flex flex-wrap items-center gap-3" style={{ animationDelay: ".3s" }}>
-              <button
-                onClick={() => document.getElementById("products-section")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#c2410c] to-[#ea580c] text-white text-sm font-bold rounded-xl hover:shadow-xl hover:shadow-orange-600/25 active:scale-[.97] transition-all duration-300"
-              >
-                Browse Collection <ArrowRight className="w-4 h-4" />
-              </button>
-              <div className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/[.06] border border-white/[.08] text-stone-300 text-sm font-medium">
-                <span className="text-[#f97316] font-bold text-base tabular-nums">{prodCount}</span> Products
-              </div>
-            </div>
-          </div>
-          <div className="sh-su hidden md:flex items-center gap-8 mt-14" style={{ animationDelay: ".4s" }}>
-            {[
-              { icon: Package, value: prodCount, label: "Products" },
-              { icon: Folder, value: catCount, label: "Categories" },
-            ].map((s, i) => (
-              <React.Fragment key={s.label}>
-                {i > 0 && <div className="w-px h-10 bg-white/[.08]" />}
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/[.06] border border-white/[.08] flex items-center justify-center">
-                    <s.icon className="w-5 h-5 text-[#f97316]" />
+
+        {/* Decorative geometric shapes */}
+        <div className="absolute top-8 right-[12%] w-20 h-20 rounded-3xl border border-white/5 rotate-12 sh-fl-a hidden lg:block" aria-hidden="true" />
+        <div className="absolute bottom-16 left-[8%] w-12 h-12 rounded-full border border-[#f97316]/15 sh-fl-b hidden lg:block" aria-hidden="true" />
+        <div className="absolute top-1/3 right-[5%] w-8 h-8 rounded-xl bg-[#c2410c]/15 rotate-45 sh-fl-c hidden lg:block" aria-hidden="true" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-14 pb-0">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+
+            {/* LEFT — Store identity + headline */}
+            <div>
+              {/* Store identity card */}
+              <div className="sh-su inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white/[.06] border border-white/[.08] mb-8 backdrop-blur-sm">
+                {company?.logo ? (
+                  <img src={company.logo} alt={displayName} className="w-10 h-10 rounded-xl object-cover" />
+                ) : (
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c2410c] to-[#ea580c] flex items-center justify-center text-white text-sm font-black shadow-lg shadow-orange-600/30">
+                    {initials}
                   </div>
-                  <div>
-                    <p className="text-2xl font-black text-white tabular-nums">{s.value}</p>
-                    <p className="text-[10px] text-stone-500 mt-0.5 uppercase tracking-[.15em] font-semibold">{s.label}</p>
+                )}
+                <div>
+                  <p className="text-white font-bold text-sm leading-tight">{displayName}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    {company?.is_verified && (
+                      <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-semibold">
+                        <CheckCircle2 className="w-2.5 h-2.5" />Verified
+                      </span>
+                    )}
+                    {company?.rating && (
+                      <span className="flex items-center gap-1 text-[10px] text-amber-400 font-semibold">
+                        <Star className="w-2.5 h-2.5 fill-amber-400" />
+                        {parseFloat(company.rating).toFixed(1)}
+                      </span>
+                    )}
+                    {company?.city && (
+                      <span className="flex items-center gap-1 text-[10px] text-stone-400">
+                        <MapPin className="w-2.5 h-2.5" />{company.city}
+                      </span>
+                    )}
                   </div>
                 </div>
-              </React.Fragment>
-            ))}
+              </div>
+
+              {/* Live badge */}
+              <div className="sh-su flex items-center gap-2 mb-5" style={{ animationDelay: ".06s" }}>
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f97316] opacity-60" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#f97316]" />
+                </span>
+                <span className="text-[11px] text-stone-400 font-semibold tracking-widest uppercase">Open for orders</span>
+              </div>
+
+              {/* Main headline */}
+              <h1 className="sh-su text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight mb-5" style={{ animationDelay: ".12s" }}>
+                <span className="text-white">Premium</span>
+                <br />
+                <span className="sh-hero-text-gradient">Print Products</span>
+                <br />
+                <span className="text-white">& Design.</span>
+              </h1>
+
+              <p className="sh-su text-stone-400 text-base sm:text-lg leading-relaxed max-w-md mb-8" style={{ animationDelay: ".2s" }}>
+                {company?.description
+                  ? company.description
+                  : "Browse our curated collection of high-quality print products. Professional finish, fast turnaround."}
+              </p>
+
+              {/* CTA row */}
+              <div className="sh-su flex flex-wrap items-center gap-3 mb-10" style={{ animationDelay: ".28s" }}>
+                <button
+                  onClick={() => document.getElementById("products-section")?.scrollIntoView({ behavior: "smooth" })}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-[#c2410c] to-[#ea580c] text-white text-sm font-bold rounded-xl shadow-xl shadow-orange-600/30 hover:from-[#a3360a] hover:to-[#c2410c] hover:shadow-orange-600/40 active:scale-[.97] transition-all duration-300"
+                >
+                  <ShoppingBag className="w-4 h-4" />
+                  Browse Collection
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+
+                <div className="inline-flex items-center gap-3 px-4 py-3.5 rounded-xl bg-white/[.06] border border-white/[.08]">
+                  <div className="flex -space-x-1.5">
+                    {["#c2410c", "#ea580c", "#f97316"].map((c, i) => (
+                      <div key={i} className="w-5 h-5 rounded-full border-2 border-[#0f0d0c]" style={{ backgroundColor: c }} />
+                    ))}
+                  </div>
+                  <span className="text-stone-300 text-sm font-medium">
+                    <span className="text-[#f97316] font-black tabular-nums">{prodCount}</span> products
+                  </span>
+                </div>
+              </div>
+
+              {/* Trust badges */}
+              <div className="sh-su flex flex-wrap gap-3 pb-10 lg:pb-14" style={{ animationDelay: ".36s" }}>
+                {TRUST_ITEMS.map((item, i) => (
+                  <div
+                    key={item.label}
+                    className="sh-trust-badge flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[.05] border border-white/[.07] text-stone-400"
+                    style={{ animationDelay: `${.4 + i * .07}s` }}
+                  >
+                    <item.icon className="w-3.5 h-3.5 text-[#f97316]" />
+                    <span className="text-[11px] font-semibold">{item.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* RIGHT — Stats panel + floating cards */}
+            <div className="hidden lg:flex flex-col items-end gap-5 pb-10">
+              {/* Big stats card */}
+              <div className="sh-sl w-full max-w-sm bg-white/[.05] border border-white/[.08] rounded-3xl p-6 backdrop-blur-sm" style={{ animationDelay: ".15s" }}>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c2410c] to-[#ea580c] flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-white font-bold text-sm">Store Overview</p>
+                    <p className="text-stone-500 text-[11px]">Live stats</p>
+                  </div>
+                </div>
+
+                <div className="space-y-5">
+                  {[
+                    { label: "Total Products", value: prodCount, max: Math.max(prodCount, 1), color: "#ea580c" },
+                    { label: "Categories", value: catCount, max: Math.max(catCount, 1), color: "#f97316" },
+                  ].map((stat) => (
+                    <div key={stat.label}>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-stone-400 text-xs font-medium">{stat.label}</span>
+                        <span className="text-white text-sm font-black tabular-nums">{stat.value}</span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-white/[.06] overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-1000 ease-out"
+                          style={{ width: `${Math.min((stat.value / Math.max(stat.max, 1)) * 100, 100)}%`, backgroundColor: stat.color }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+
+                  {company?.rating && (
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-stone-400 text-xs font-medium">Customer Rating</span>
+                        <span className="text-white text-sm font-black">{parseFloat(company.rating).toFixed(1)}/5.0</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {[1,2,3,4,5].map((n) => (
+                          <Star
+                            key={n}
+                            className={`w-4 h-4 ${n <= Math.round(parseFloat(company.rating)) ? "text-amber-400 fill-amber-400" : "text-stone-700"}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Category count pills */}
+              <div className="sh-sl flex flex-wrap gap-2 justify-end max-w-sm" style={{ animationDelay: ".25s" }}>
+                {categories.slice(0, 4).map((c, i) => (
+                  <button
+                    key={c.id}
+                    onClick={() => { setActiveCategory(c.id); document.getElementById("products-section")?.scrollIntoView({ behavior: "smooth" }); }}
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/[.06] border border-white/[.08] text-stone-300 text-xs font-semibold hover:bg-white/[.10] hover:text-white hover:border-[#f97316]/30 transition-all duration-200 active:scale-95"
+                    style={{ animationDelay: `${.3 + i * .06}s` }}
+                  >
+                    <Folder className="w-3 h-3 text-[#f97316]" />
+                    {c.name}
+                  </button>
+                ))}
+                {categories.length > 4 && (
+                  <span className="px-3.5 py-2 rounded-xl bg-white/[.03] border border-white/[.06] text-stone-500 text-xs font-semibold">
+                    +{categories.length - 4} more
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ─── PRODUCTS ─── */}
+      {/* ═══════════════════════════════════════
+          PRODUCTS SECTION
+      ═══════════════════════════════════════ */}
       <main className="flex-1" id="products-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-16">
 
-          {/* Category bar */}
+          {/* Sticky category bar */}
           {!loading && categories.length > 0 && (
             <div className="sh-su sticky top-16 z-40 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 bg-[#faf9f6]/90 dark:bg-stone-950/90 backdrop-blur-xl" style={{ animationDelay: ".05s" }}>
               <div
@@ -333,26 +558,16 @@ const StoreHome = () => {
           )}
 
           <div className="mt-6">
-            {/* Loading skeletons */}
+            {/* Loading */}
             {loading && (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
                 {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="sh-fi rounded-2xl overflow-hidden border border-stone-100 dark:border-stone-800 bg-white dark:bg-stone-900" style={{ animationDelay: `${i * .05}s` }}>
-                    <div className="aspect-[4/3] sh-img-ph" />
-                    <div className="p-4 space-y-3">
-                      <div className="h-4 rounded-lg bg-stone-100 dark:bg-stone-800" />
-                      <div className="h-3 rounded-lg bg-stone-50 dark:bg-stone-800 w-3/4" />
-                      <div className="flex justify-between items-center pt-2">
-                        <div className="h-5 rounded-lg bg-stone-100 dark:bg-stone-800 w-20" />
-                        <div className="h-7 rounded-lg bg-stone-100 dark:bg-stone-800 w-16" />
-                      </div>
-                    </div>
-                  </div>
+                  <SkeletonCard key={i} delay={i * 0.05} />
                 ))}
               </div>
             )}
 
-            {/* Empty state */}
+            {/* Empty */}
             {!loading && filtered.length === 0 && (
               <div className="sh-su text-center py-24">
                 <div className="inline-flex flex-col items-center gap-4">
@@ -366,74 +581,98 @@ const StoreHome = () => {
                     </p>
                   </div>
                   {(debouncedSearch || activeCategory) && (
-                    <button onClick={clearFilters} className="mt-1 text-sm font-semibold text-[#c2410c] hover:text-[#ea580c] transition-colors">
-                      Clear filters
+                    <button onClick={clearFilters} className="text-sm font-semibold text-[#c2410c] hover:text-[#ea580c] transition-colors flex items-center gap-1.5">
+                      <X className="w-3.5 h-3.5" /> Clear filters
                     </button>
                   )}
                 </div>
               </div>
             )}
 
-            {/* Product grid */}
+            {/* Results header */}
             {!loading && filtered.length > 0 && (
               <>
                 <div className="sh-fi flex items-center justify-between mb-6">
-                  <p className="text-xs text-stone-400 dark:text-stone-500 font-semibold tracking-wide">
-                    <span className="text-stone-600 dark:text-stone-300">{filtered.length}</span> product{filtered.length !== 1 && "s"}
-                  </p>
+                  <div>
+                    <p className="text-xs text-stone-400 dark:text-stone-500 font-semibold tracking-wide">
+                      <span className="text-stone-600 dark:text-stone-300 font-bold">{filtered.length}</span>{" "}
+                      product{filtered.length !== 1 && "s"}
+                      {activeCategory && (
+                        <span className="text-stone-400"> in {categories.find((c) => c.id === activeCategory)?.name}</span>
+                      )}
+                    </p>
+                  </div>
                   {(debouncedSearch || activeCategory) && (
-                    <button onClick={clearFilters} className="text-xs font-semibold text-stone-400 dark:text-stone-500 hover:text-[#c2410c] transition-colors flex items-center gap-1">
-                      <X className="w-3 h-3" /> Clear filter
+                    <button onClick={clearFilters} className="text-xs font-semibold text-stone-400 hover:text-[#c2410c] transition-colors flex items-center gap-1">
+                      <X className="w-3 h-3" /> Clear
                     </button>
                   )}
                 </div>
+
+                {/* Product grid */}
                 <div key={catKey} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
                   {filtered.map((p, i) => (
                     <div
                       key={p.id}
-                      className="sh-tilt sh-card group bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 hover:border-[#c2410c]/15 dark:hover:border-[#c2410c]/30 hover:shadow-2xl hover:shadow-orange-100/40 dark:hover:shadow-orange-900/20 cursor-pointer overflow-hidden"
-                      style={{ animationDelay: `${i * .06}s` }}
-                      onClick={() => navigate(`/store/${companySlug}/product/${p.id}`)}
+                      className="sh-tilt sh-card sh-card-hover group bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 hover:border-[#c2410c]/15 dark:hover:border-[#c2410c]/30 hover:shadow-2xl hover:shadow-orange-100/40 dark:hover:shadow-orange-900/20 cursor-pointer overflow-hidden"
+                      style={{ animationDelay: `${i * 0.055}s` }}
+                      onClick={() => navigate(`/company/${companySlug}/product/${p.id}`)}
                       onMouseMove={onTilt}
                       onMouseLeave={offTilt}
                     >
+                      {/* Image */}
                       <div className="relative aspect-[4/3] overflow-hidden bg-stone-50 dark:bg-stone-800">
                         {p.image ? (
-                          <img src={p.image} alt={p.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                          <img
+                            src={p.image}
+                            alt={p.name}
+                            loading="lazy"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                          />
                         ) : (
                           <div className="sh-img-ph w-full h-full flex items-center justify-center">
                             <Package className="w-8 h-8 text-stone-300 dark:text-stone-600" />
                           </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-stone-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                          <div className="w-11 h-11 rounded-full bg-white/95 dark:bg-stone-800/95 backdrop-blur-sm flex items-center justify-center shadow-lg shadow-black/10 scale-75 group-hover:scale-100 transition-transform duration-300">
+
+                        {/* Hover overlay */}
+                        <div className="sh-card-overlay absolute inset-0 bg-gradient-to-t from-stone-900/50 via-transparent to-transparent" />
+                        <div className="sh-card-overlay absolute inset-0 flex items-center justify-center">
+                          <div className="w-11 h-11 rounded-full bg-white/95 dark:bg-stone-800/95 backdrop-blur-sm flex items-center justify-center shadow-lg scale-75 group-hover:scale-100 transition-transform duration-300">
                             <ArrowRight className="w-5 h-5 text-[#1c1917] dark:text-stone-100" />
                           </div>
                         </div>
+
+                        {/* Category chip */}
                         {p.category_name && (
-                          <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-white/90 dark:bg-stone-900/90 backdrop-blur-sm text-[10px] font-bold text-stone-600 dark:text-stone-300 uppercase tracking-wider">
+                          <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-white/90 dark:bg-stone-900/90 backdrop-blur-sm text-[10px] font-bold text-stone-600 dark:text-stone-300 uppercase tracking-wider shadow-sm">
                             {p.category_name}
                           </div>
                         )}
                       </div>
+
+                      {/* Info */}
                       <div className="p-3.5 sm:p-4">
                         <h3 className="font-bold text-stone-800 dark:text-stone-200 text-[13px] sm:text-sm leading-snug group-hover:text-[#c2410c] transition-colors line-clamp-2 min-h-[2.5rem]">
                           {p.name}
                         </h3>
                         {p.description && (
-                          <p className="text-[11px] text-stone-400 dark:text-stone-500 mt-1.5 line-clamp-1">{p.description}</p>
+                          <p className="text-[11px] text-stone-400 dark:text-stone-500 mt-1 line-clamp-1">{p.description}</p>
                         )}
                         <div className="flex items-end justify-between mt-3.5 pt-3 border-t border-stone-100 dark:border-stone-800">
-                          <span className="font-black text-stone-900 dark:text-stone-100 text-sm sm:text-[15px] tracking-tight">
-                            KES {p.price?.toLocaleString()}
-                          </span>
+                          <div>
+                            <span className="font-black text-stone-900 dark:text-stone-100 text-sm sm:text-[15px] tracking-tight">
+                              KES {p.price?.toLocaleString()}
+                            </span>
+                            {p.original_price && p.original_price > p.price && (
+                              <span className="ml-1.5 text-[11px] text-stone-400 line-through">
+                                KES {p.original_price?.toLocaleString()}
+                              </span>
+                            )}
+                          </div>
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/store/${companySlug}/product/${p.id}`);
-                            }}
-                            className="flex items-center gap-1 text-[11px] font-bold px-3 py-2 bg-[#1c1917] dark:bg-white text-white dark:text-stone-900 rounded-xl hover:bg-[#c2410c] dark:hover:bg-[#c2410c] dark:hover:text-white active:scale-95 transition-all duration-200 shadow-sm shadow-stone-900/10 dark:shadow-black/20"
+                            onClick={(e) => { e.stopPropagation(); navigate(`/company/${companySlug}/product/${p.id}`); }}
+                            className="flex items-center gap-1 text-[11px] font-bold px-3 py-2 bg-[#1c1917] dark:bg-white text-white dark:text-stone-900 rounded-xl hover:bg-[#c2410c] dark:hover:bg-[#c2410c] dark:hover:text-white active:scale-95 transition-all duration-200 shadow-sm"
                           >
                             View <ArrowRight className="w-3 h-3" />
                           </button>
@@ -448,36 +687,56 @@ const StoreHome = () => {
         </div>
       </main>
 
-      {/* ─── FOOTER ─── */}
+      {/* ═══════════════════════════════════════
+          FOOTER
+      ═══════════════════════════════════════ */}
       <footer className="border-t border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#c2410c] to-[#ea580c] flex items-center justify-center">
-              <span className="text-white text-[10px] font-black">{companySlug?.charAt(0)?.toUpperCase()}</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              {company?.logo ? (
+                <img src={company.logo} alt={displayName} className="w-8 h-8 rounded-lg object-cover" />
+              ) : (
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c2410c] to-[#ea580c] flex items-center justify-center shadow-sm">
+                  <span className="text-white text-[11px] font-black">{initials}</span>
+                </div>
+              )}
+              <div>
+                <p className="text-sm font-bold text-stone-700 dark:text-stone-300">{displayName}</p>
+                <p className="text-[11px] text-stone-400 dark:text-stone-500">
+                  &copy; {new Date().getFullYear()} · All rights reserved
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-stone-400 dark:text-stone-500">
-              &copy; {new Date().getFullYear()}{" "}
-              <span className="font-semibold text-stone-600 dark:text-stone-300 capitalize">{companySlug}</span>. All rights reserved.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 text-[11px] text-stone-400 dark:text-stone-600">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#c2410c] opacity-50" />
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#c2410c]" />
-            </span>
-            Powered by PrintFlow
+
+            <div className="flex items-center gap-4">
+              {company?.city && (
+                <div className="flex items-center gap-1 text-[11px] text-stone-400 dark:text-stone-500">
+                  <MapPin className="w-3 h-3" />
+                  {company.city}
+                </div>
+              )}
+              <div className="flex items-center gap-1.5 text-[11px] text-stone-400 dark:text-stone-500">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#c2410c] opacity-50" />
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#c2410c]" />
+                </span>
+                Powered by PrintFlow
+              </div>
+            </div>
           </div>
         </div>
       </footer>
 
-      {/* ─── BACK TO TOP ─── */}
+      {/* ═══════════════════════════════════════
+          BACK TO TOP
+      ═══════════════════════════════════════ */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         aria-label="Back to top"
-        className={`sh-btt fixed bottom-6 right-6 z-50 w-11 h-11 rounded-xl bg-[#1c1917] dark:bg-white text-white dark:text-stone-900 shadow-xl shadow-stone-900/20
-           dark:shadow-white/10 flex
-           items-center justify-center hover:bg-[#c2410c] dark:hover:bg-[#c2410c] dark:hover:text-white active:scale-90 
-          transition-all duration-300 ${showBTT ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}`}
+        className={`sh-btt fixed bottom-6 right-6 z-50 w-11 h-11 rounded-xl bg-[#1c1917] dark:bg-white text-white dark:text-stone-900 shadow-xl shadow-stone-900/20 dark:shadow-white/10 flex items-center justify-center hover:bg-[#c2410c] dark:hover:bg-[#c2410c] dark:hover:text-white active:scale-90 transition-all duration-300 ${
+          showBTT ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+        }`}
       >
         <ChevronUp className="w-5 h-5" />
       </button>
