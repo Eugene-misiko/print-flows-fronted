@@ -341,7 +341,7 @@ const OrderDetail = () => {
                   </a>))}</div>)}
                 {!order.design_description && order.client_files?.length === 0 && <p className="text-sm text-stone-400">Nothing provided</p>}
               </div>
-              {order.design_file ? (
+              {order.design_file_url ? (
                 <div className="mb-5 p-4 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200/50 dark:border-emerald-800/30 rounded-xl">
                   <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300 mb-2">
                     Designer's Submission:</p>

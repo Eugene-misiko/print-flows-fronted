@@ -104,7 +104,7 @@ const ProductDetail = () => {
 
   useEffect(() => { injectStyles(); }, []);
   useEffect(() => {
-    if (id && companySlug) dispatch(fetchPublicProduct(id));;
+    if (id && companySlug) dispatch(fetchPublicProduct(id, companySlug));
     window.scrollTo(0, 0);
     setImgLoaded(false);
   }, [dispatch, id, companySlug]);
