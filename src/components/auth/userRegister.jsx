@@ -3,8 +3,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser, clearError } from "../../store/slices/authSlice";
 import toast from "react-hot-toast";
-import {User,Lock,Eye,EyeOff,Sparkles,Mail,Phone,ArrowRight,Loader2,} from "lucide-react";
-import { companyAPI } from "@/api/api";
+import {User,Lock,Eye,EyeOff,Sparkles,Mail,Phone,ArrowRight,Loader2,Printer} from "lucide-react";
+
 
 const injectRegisterStyles = () => {
   const id = "register-page-styles";
@@ -32,8 +32,8 @@ const injectRegisterStyles = () => {
 const UserRegister = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [companyId, setCompanyId] = useState(null);
-  const { companySlug } = useParams();
+  const [company, setCompany] = useState(null);
+  const { slug: companySlug } = useParams();
   const { isLoading, error } = useSelector((state) => state.auth);
   const [form, setForm] = useState({
     first_name: "",
@@ -48,40 +48,16 @@ const UserRegister = () => {
   useEffect(() => {
     injectRegisterStyles();
   }, []);
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     if (error) dispatch(clearError());
   };
 
-useEffect(() => {
-  const fetchCompany = async () => {
-    try {
-      const res = await companyAPI.getCompanies();
-
-      const company = res.data.find(
-        (c) => c.slug === companySlug
-      );
-
-      if (!company) {
-        toast.error("Company not found");
-        return;
-      }
-
-      setCompanyId(company.id);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to load company");
-    }
-  };
-
-  if (companySlug) fetchCompany();
-}, [companySlug]);
 
 const handleSubmit = async (e) => {
   e.preventDefault();
 
-  if (!companyId) {
+  if (!companySlug) {
     toast.error("Company not loaded. Please refresh page.");
     return;
   }
@@ -94,13 +70,13 @@ const handleSubmit = async (e) => {
     return toast.error("Password must be at least 8 characters");
 
   const payload = {
-    company_id: companyId,
     first_name: form.first_name,
     last_name: form.last_name,
     email: form.email,
     phone: form.phone,
     password: form.password,
     role: "client",
+    company_slug: companySlug,
   };
 
   console.log("REGISTER PAYLOAD:", payload);
@@ -110,7 +86,7 @@ const handleSubmit = async (e) => {
 
     if (registerUser.fulfilled.match(result)) {
       toast.success("Account created successfully! Please login");
-      navigate(`/store/${companySlug}/login`);
+      navigate(`/login`);
     } else {
       console.log("REGISTER ERROR:", result);
       toast.error(result.payload || "Registration failed");
@@ -153,14 +129,14 @@ const handleSubmit = async (e) => {
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5 group">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c2410c] to-[#ea580c] flex items-center justify-center shadow-md shadow-orange-600/20 dark:shadow-orange-600/10 group-hover:shadow-lg group-hover:shadow-orange-600/30 transition-shadow duration-300">
-              <Sparkles className="w-4 h-4 text-white" />
+              <Printer className="w-4 h-4 text-white" />
             </div>
             <span className="text-lg font-extrabold text-[#1c1917] dark:text-stone-100 tracking-tight">
               Print<span className="text-[#c2410c]">Flow</span>
             </span>
           </Link>
           <Link
-            to={`/store/${companySlug}/login`}
+            to={`/login`}
             className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-stone-600 dark:text-stone-300 bg-white/70 dark:bg-stone-800/70 backdrop-blur-sm border border-stone-200/60 dark:border-stone-700/60 rounded-xl hover:bg-white dark:hover:bg-stone-800 hover:border-stone-300/70 dark:hover:border-stone-600/60 shadow-sm hover:shadow-md active:scale-[0.97] transition-all duration-200"
           >
             Sign In
@@ -176,7 +152,7 @@ const handleSubmit = async (e) => {
           {/* Header */}
           <div className="text-center mb-7">
             <div className="reg-su inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#c2410c] to-[#ea580c] shadow-xl shadow-orange-600/20 dark:shadow-orange-600/10 mb-5">
-              <Sparkles className="w-6 h-6 text-white" />
+              <Printer className="w-6 h-6 text-white" />
             </div>
             <h1 className="reg-su text-2xl sm:text-3xl font-black text-[#1c1917] dark:text-stone-100 tracking-tight" style={{ animationDelay: ".08s" }}>
               Create your account
@@ -223,7 +199,6 @@ const handleSubmit = async (e) => {
                     onFocus={(e) => handleFocus(e, "first_name")}
                     onBlur={() => setFocusedField(null)}
                     placeholder="First name"
-                    readOnly
                     className={inputClasses("first_name")}
                   />
                 </div>
@@ -238,7 +213,6 @@ const handleSubmit = async (e) => {
                     onFocus={(e) => handleFocus(e, "last_name")}
                     onBlur={() => setFocusedField(null)}
                     placeholder="Last name"
-                    readOnly
                     className={inputClasses("last_name")}
                   />
                 </div>
@@ -257,7 +231,6 @@ const handleSubmit = async (e) => {
                   onFocus={(e) => handleFocus(e, "email")}
                   onBlur={() => setFocusedField(null)}
                   placeholder="Email address"
-                  readOnly
                   autoComplete="off"
                   className={inputClasses("email")}
                 />
@@ -276,7 +249,6 @@ const handleSubmit = async (e) => {
                   onFocus={(e) => handleFocus(e, "phone")}
                   onBlur={() => setFocusedField(null)}
                   placeholder="Phone number (optional)"
-                  readOnly
                   autoComplete="off"
                   className={inputClasses("phone")}
                 />
@@ -295,7 +267,6 @@ const handleSubmit = async (e) => {
                   onFocus={(e) => handleFocus(e, "password")}
                   onBlur={() => setFocusedField(null)}
                   placeholder="Create password"
-                  readOnly
                   autoComplete="new-password"
                   className={inputClasses("password")}
                 />
@@ -338,7 +309,7 @@ const handleSubmit = async (e) => {
           <p className="reg-su text-center mt-6 text-sm text-stone-500 dark:text-stone-400" style={{ animationDelay: ".32s" }}>
             Already have an account?{" "}
             <Link
-              to={`/store/${companySlug}/login`}
+              to={`/login`}
               className="font-semibold text-[#c2410c] hover:text-[#a3360a] dark:hover:text-[#f97316] transition-colors duration-200"
             >
               Sign in
@@ -350,10 +321,10 @@ const handleSubmit = async (e) => {
       {/* ─── BOTTOM TEXT ─── */}
       <div className="reg-fi relative z-10 pb-5 text-center" style={{ animationDelay: ".5s" }}>
         <p className="text-[11px] text-stone-400 dark:text-stone-600">
-          © 2025 PrintFlow ·{" "}
-          <Link to={`/store/${companySlug}/privacy`} className="hover:text-stone-500 dark:hover:text-stone-400 transition-colors duration-200">Privacy</Link>
+          &copy; {new Date().getFullYear()} PrintFlow ·{" "}
+          <Link to={`/privacy`} className="hover:text-stone-500 dark:hover:text-stone-400 transition-colors duration-200">Privacy</Link>
           {" · "}
-          <Link to={`/store/${companySlug}/terms`} className="hover:text-stone-500 dark:hover:text-stone-400 transition-colors duration-200">Terms</Link>
+          <Link to={`/terms`} className="hover:text-stone-500 dark:hover:text-stone-400 transition-colors duration-200">Terms</Link>
         </p>
       </div>
     </div>

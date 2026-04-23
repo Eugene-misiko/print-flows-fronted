@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { login, clearError } from "../../store/slices/authSlice";
 import toast from "react-hot-toast";
-import { Mail, Lock, Eye, EyeOff, Sparkles, ArrowRight } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Sparkles, ArrowRight, Printer } from "lucide-react";
 
 const injectLoginStyles = () => {
   const id = "login-page-styles";
@@ -39,7 +39,6 @@ const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
-  const { companySlug } = useParams();
   useEffect(() => {
     injectLoginStyles();
   }, []);
@@ -90,14 +89,14 @@ const Login = () => {
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5 group">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c2410c] to-[#ea580c] flex items-center justify-center shadow-md shadow-orange-600/20 dark:shadow-orange-600/10 group-hover:shadow-lg group-hover:shadow-orange-600/30 transition-shadow duration-300">
-              <Sparkles className="w-4 h-4 text-white" />
+              <Printer className="w-4 h-4 text-white" />
             </div>
             <span className="text-lg font-extrabold text-[#1c1917] dark:text-stone-100 tracking-tight">
               Print<span className="text-[#c2410c]">Flow</span>
             </span>
           </Link>
           <Link
-            to={`/store/${companySlug}/register`}
+            to={`/register`}
             className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-stone-600 dark:text-stone-300 bg-white/70 dark:bg-stone-800/70 backdrop-blur-sm border border-stone-200/60 dark:border-stone-700/60 rounded-xl hover:bg-white dark:hover:bg-stone-800 hover:border-stone-300/70 dark:hover:border-stone-600/60 shadow-sm hover:shadow-md active:scale-[0.97] transition-all duration-200"
           >
             Create Account
@@ -113,7 +112,7 @@ const Login = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="login-su inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#c2410c] to-[#ea580c] shadow-xl shadow-orange-600/20 dark:shadow-orange-600/10 mb-5">
-              <Sparkles className="w-6 h-6 text-white" />
+              <Printer className="w-6 h-6 text-white" />
             </div>
             <h1 className="login-su text-2xl sm:text-3xl font-black text-[#1c1917] dark:text-stone-100 tracking-tight" style={{ animationDelay: ".08s" }}>
               Welcome back
@@ -173,7 +172,7 @@ const Login = () => {
                     Password
                   </label>
                   <Link
-                   to={`/store/${companySlug}/forgot-password`}
+                   to={`/forgot-password`}
                     className="text-[12px] font-medium text-[#c2410c] hover:text-[#a3360a] dark:hover:text-[#f97316] transition-colors duration-200"
                   >
                     Forgot password?
@@ -204,8 +203,7 @@ const Login = () => {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 transition-colors duration-200 rounded-md"
-                    tabIndex={-1}
-                  >
+                    tabIndex={-1}>
                     {showPassword ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
                   </button>
                 </div>
@@ -239,7 +237,7 @@ const Login = () => {
           <p className="login-su text-center mt-6 text-sm text-stone-500 dark:text-stone-400" style={{ animationDelay: ".32s" }}>
             Don't have an account?{" "}
             <Link
-              to={`/store/${companySlug}/register`}
+              to={`/register`}
               className="font-semibold text-[#c2410c] hover:text-[#a3360a] dark:hover:text-[#f97316] transition-colors duration-200"
             >
               Sign up for free
@@ -251,10 +249,10 @@ const Login = () => {
       {/* ─── BOTTOM TEXT ─── */}
       <div className="login-fi relative z-10 pb-5 text-center" style={{ animationDelay: ".5s" }}>
         <p className="text-[11px] text-stone-400 dark:text-stone-600">
-          © 2025 PrintFlow ·{" "}
-          <Link to={`/store/${companySlug}/privacy`} className="hover:text-stone-500 dark:hover:text-stone-400 transition-colors duration-200">Privacy</Link>
+          &copy; {new Date().getFullYear()} PrintFlow ·{" "}
+          <Link to={`/privacy`} className="hover:text-stone-500 dark:hover:text-stone-400 transition-colors duration-200">Privacy</Link>
           {" · "}
-          <Link to="/" className="hover:text-stone-500 dark:hover:text-stone-400 transition-colors duration-200">Terms</Link>
+          <Link to={`/terms`} className="hover:text-stone-500 dark:hover:text-stone-400 transition-colors duration-200">Terms</Link>
         </p>
       </div>
     </div>

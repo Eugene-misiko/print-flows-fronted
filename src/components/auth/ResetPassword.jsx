@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { authAPI } from "../../api/api";
 import toast from "react-hot-toast";
-import { Lock, Eye, EyeOff, Sparkles, ArrowRight, Loader2 } from "lucide-react";
+import { Lock, Eye, EyeOff, Sparkles, ArrowRight, Loader2, Printer } from "lucide-react";
 
 const injectStyles = () => {
   const id = "reset-pw-styles";
@@ -115,7 +115,7 @@ const ResetPassword = () => {
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5 group">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c2410c] to-[#ea580c] flex items-center justify-center shadow-md shadow-orange-600/20 dark:shadow-orange-600/10 group-hover:shadow-lg group-hover:shadow-orange-600/30 transition-shadow duration-300">
-              <Sparkles className="w-4 h-4 text-white" />
+              <Printer className="w-4 h-4 text-white" />
             </div>
             <span className="text-lg font-extrabold text-[#1c1917] dark:text-stone-100 tracking-tight">
               Print<span className="text-[#c2410c]">Flow</span>
@@ -269,10 +269,10 @@ const ResetPassword = () => {
       {/* ─── FOOTER ─── */}
       <div className="rp-fi relative z-10 pb-5 text-center" style={{ animationDelay: ".5s" }}>
         <p className="text-[11px] text-stone-400 dark:text-stone-600">
-          © 2025 PrintFlow ·{" "}
-          <Link to="/" className="hover:text-stone-500 dark:hover:text-stone-400 transition-colors duration-200">Privacy</Link>
+          &copy; {new Date().getFullYear()} PrintFlow ·{" "}
+          <Link to="/privacy" className="hover:text-stone-500 dark:hover:text-stone-400 transition-colors duration-200">Privacy</Link>
           {" · "}
-          <Link to="/" className="hover:text-stone-500 dark:hover:text-stone-400 transition-colors duration-200">Terms</Link>
+          <Link to="/terms" className="hover:text-stone-500 dark:hover:text-stone-400 transition-colors duration-200">Terms</Link>
         </p>
       </div>
     </div>
