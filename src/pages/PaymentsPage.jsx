@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {fetchPayments,recordPayment,fetchPaymentStats,initiateMpesaPayment,fetchInvoices,} from "@/store/slices/paymentsSlice";
 import { fetchOrders } from "@/store/slices/ordersSlice";
 import toast from "react-hot-toast";
 import {CreditCard,Smartphone,TrendingUp,Clock,Search,FileText,Receipt,User,X,Loader2,Inbox,} from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 
 const PaymentsPage = () => {
   const dispatch = useDispatch();
   const { payments, stats, loading, invoices } = useSelector((s) => s.payments);
   const { user } = useSelector((s) => s.auth);
   const { orders } = useSelector((s) => s.orders);
+  const [searchParams] = useSearchParams();
+  const wsRef = useRef(null);
   const isAdmin = user?.role === "admin" || user?.role === "platform_admin";
 
   const [showModal, setShowModal] = useState(false);
@@ -44,45 +47,190 @@ const PaymentsPage = () => {
   if (!invoices) return null;
   return invoices.find((i) => i.id === invId);
 };
+// Auto-open payment modal if "invoice" query param is present
+useEffect(() => {
+  const invoiceFromUrl = searchParams.get("invoice");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!form.invoice_id) return toast.error("Select an invoice");
-    setSubmitting(true);
-    try {
-      if (form.payment_method === "mpesa") {
-        let phone = form.phone_number.replace(/\D/g, "");
-        if (phone.startsWith("0")) phone = "254" + phone.substring(1);
-        if (!phone.startsWith("254") || phone.length !== 12) {
-          setSubmitting(false);
-          return toast.error("Phone format: 2547XXXXXXXX");
-        }
-        const r = await dispatch(initiateMpesaPayment({ invoice_id: parseInt(form.invoice_id), phone_number: phone }));
-        if (initiateMpesaPayment.fulfilled.match(r)) {
-          const checkoutId = r.payload.checkout_request_id;
+  if (invoiceFromUrl) {
+    setForm((prev) => ({
+      ...prev,
+      invoice_id: invoiceFromUrl
+    }));
 
-          toast.success("Check your phone for M-Pesa prompt");
-          dispatch(fetchPayments());
-          dispatch(fetchInvoices());
-          setShowModal(false);
-          resetForm();
-        }
-        else toast.error(r.payload || "Failed to initiate M-Pesa");
-      } else {
-        if (!form.amount) { setSubmitting(false); return toast.error("Enter amount"); }
-        const r = await dispatch(recordPayment({ invoice_id: parseInt(form.invoice_id), amount: parseFloat(form.amount), payment_type: form.payment_type, payment_method: form.payment_method }));
-        if (recordPayment.fulfilled.match(r)) { toast.success("Payment recorded successfully"); setShowModal(false); resetForm(); 
-                  setTimeout(() => {
-          dispatch(fetchPayments());
-          dispatch(fetchPaymentStats());
-          dispatch(fetchInvoices());
-        }, 5000);
-        }
-        
-        else toast.error(r.payload || "Failed to record payment");
+    setShowModal(true); // open modal automatically
+  }
+}, [searchParams]);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!form.invoice_id) return toast.error("Select an invoice");
+
+  setSubmitting(true);
+
+  try {
+    if (form.payment_method === "mpesa") {
+      let phone = form.phone_number.replace(/\D/g, "");
+
+      if (phone.startsWith("0")) phone = "254" + phone.substring(1);
+
+      if (!phone.startsWith("254") || phone.length !== 12) {
+        return toast.error("Phone format: 2547XXXXXXXX");
       }
-    } finally { setSubmitting(false); }
+
+      const invoiceId = parseInt(form.invoice_id);
+
+      const r = await dispatch(
+        initiateMpesaPayment({
+          invoice_id: invoiceId,
+          phone_number: phone,
+        })
+      );
+
+      if (!initiateMpesaPayment.fulfilled.match(r)) {
+        return toast.error(r.payload || "Failed to initiate M-Pesa");
+      }
+
+      const checkoutId = r.payload.checkout_request_id;
+
+      toast.success("Check your phone for M-Pesa prompt");
+
+      // ─────────────────────────────
+      // POLLING (invoice-based)
+      // ─────────────────────────────
+      const checkPayment = async () => {
+  try {
+    const res = await dispatch(fetchInvoices());
+    const invoices = res.payload;
+
+    const updated = invoices?.find(i => i.id === invoiceId);
+
+    if (!updated) return false;
+
+    if (updated.status === "paid") {
+      toast.success("Payment completed");
+      setShowModal(false);
+      resetForm();
+
+      dispatch(fetchPayments());
+      dispatch(fetchPaymentStats());
+      return true;
+    }
+
+    if (updated.status === "partial") {
+      toast.success("Deposit received");
+      setShowModal(false);
+      resetForm();
+
+      dispatch(fetchPayments());
+      dispatch(fetchPaymentStats());
+      return true;
+    }
+
+    return false;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+};
+
+// retry loop (clean + controlled)
+let attempts = 0;
+const maxAttempts = 12;
+
+const interval = setInterval(async () => {
+  attempts++;
+
+  const done = await checkPayment();
+
+  if (done || attempts >= maxAttempts) {
+    clearInterval(interval);
+
+    if (!done) {
+      toast("Still processing payment. Check your phone.", {
+        icon: "⏳",
+      });
+    }
+  }
+}, 5000);
+
+      return;
+    }
+
+    // ─────────────────────────────
+    // MANUAL PAYMENTS (cash/card)
+    // ─────────────────────────────
+    if (!form.amount) {
+      return toast.error("Enter amount");
+    }
+
+    const r = await dispatch(
+      recordPayment({
+        invoice_id: parseInt(form.invoice_id),
+        amount: parseFloat(form.amount),
+        payment_type: form.payment_type,
+        payment_method: form.payment_method,
+      })
+    );
+
+    if (recordPayment.fulfilled.match(r)) {
+      toast.success("Payment recorded successfully");
+
+      setShowModal(false);
+      resetForm();
+
+      dispatch(fetchPayments());
+      dispatch(fetchPaymentStats());
+      dispatch(fetchInvoices());
+    } else {
+      toast.error(r.payload || "Failed to record payment");
+    }
+  } finally {
+    setSubmitting(false);
+  }
+};
+
+useEffect(() => {
+  if (wsRef.current) return;
+
+  const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+
+  const ws = new WebSocket(
+    `${protocol}://localhost:8000/ws/notifications/`
+  );
+
+  wsRef.current = ws;
+
+  ws.onopen = () => {
+    console.log("WebSocket connected");
   };
+
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+
+    if (data.type === "payment_update") {
+      console.log("REALTIME UPDATE:", data);
+
+      dispatch(fetchPayments());
+      dispatch(fetchPaymentStats());
+      dispatch(fetchInvoices());
+
+      toast.success("Payment updated in real-time");
+    }
+  };
+
+  ws.onerror = (err) => {
+    console.error(" WS error:", err);
+  };
+
+  ws.onclose = () => {
+    console.log(" WS closed");
+  };
+
+  return () => {
+    ws.close();
+    wsRef.current = null;
+  };
+}, []);
 
   const resetForm = () => setForm({ invoice_id: "", amount: "", payment_type: "deposit", payment_method: "mpesa", phone_number: "" });
 
@@ -363,7 +511,8 @@ const PaymentsPage = () => {
                 </div>
 
                 {/* Conditional Fields */}
-                {form.payment_method === "mpesa" ? (
+                {form.payment_method === "mpesa" && !isAdmin ? (
+                  
                   <div>
                     <label className={labelCls}>Phone Number <span className="text-[#c2410c]">*</span></label>
                     <input
@@ -379,6 +528,11 @@ const PaymentsPage = () => {
                   </div>
                 ) : (
                   <>
+                  {form.payment_method === "mpesa" && isAdmin && (
+                  <p className="text-sm text-stone-500">
+                    Client will complete payment via M-Pesa from their phone.
+                  </p>
+                  )}
                     <div>
                       <label className={labelCls}>Amount (KES) <span className="text-[#c2410c]">*</span></label>
                       <input type="number" step="0.01" min="0" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} inputMode="decimal" className={inputCls} />
