@@ -175,12 +175,26 @@ export const usersAPI = {
 };
 
 // ===================== INVITATIONS =====================
+// Used by company admins to invite designers, printers, clients, etc.
+// Keep this separate – do NOT mix with companyInvitationsAPI above.
 export const invitationsAPI = {
+  // GET all staff invitations for this company
   getAll: () => api.get("/invitations/"),
-  getByToken: (token) => api.get(`/invitations/${token}/`),
+ 
+  // GET by token (public validation during staff registration)
+  getByToken: (token) => publicAPI.get(`/invitations/${token}/`),
+ 
+  // POST validate a company invitation token (reuses companyInvitationsAPI)
+  validateToken: (token) => publicAPI.get(`/company-invitations/${token}/`),
+ 
+  // POST create a new staff invitation
   create: (data) => api.post("/invitations/", data),
+ 
+  // POST cancel a staff invitation
   cancel: (token) => api.post(`/invitations/${token}/cancel/`),
-  resend: (token) => api.post(`/invitations/${token}/resend/`),
+ 
+  // POST resend a staff invitation
+  resend: (id) => api.post(`/invitations/${id}/resend/`),
 };
 
 // ===================== COMPANY =====================
@@ -198,12 +212,22 @@ export const companyAPI = {
   getStaffStats: () => api.get("/company/staff/stats/"),
   search: (params) => api.get("/companies/", { params }),
 };
+ 
 // ===================== COMPANY INVITATIONS =====================
+// These are for the PLATFORM ADMIN managing company-level admin invitations.
+// Separate from invitationsAPI which handles per-company staff invitations.
 export const companyInvitationsAPI = {
-  // Platform admin sends invite
+  // GET  /company/invitations/          – list all invitations
+  getAll: () => api.get("/company/invitations/"),
+ 
+  // POST /company/invitations/          – send a new invitation
   create: (data) => api.post("/company/invitations/", data),
-  // Validate company invite token
-  getByToken: (token) => publicAPI.get(`/company-invitations/${token}/`)
+ 
+  // GET  /company-invitations/<token>/  – validate token (public, no auth)
+  validateToken: (token) => publicAPI.get(`/company-invitations/${token}/`),
+ 
+  // POST /company/invitations/<token>/cancel/  – cancel by token
+  cancel: (token) => api.post(`/company/invitations/${token}/cancel/`),
 };
 
 // ===================== CATEGORIES =====================
@@ -285,7 +309,7 @@ export const invoicesAPI = {
 export const paymentsAPI = {
   getAll: (params) => api.get("/payments/", { params }),
   getById: (id) => api.get(`/payments/${id}/`),
-  // Required: invoice_id, amount, payment_type ('deposit'|'balance'|'full'), payment_method ('mpesa'|'cash'|'card')
+  // Required: invoice_id, amount, payment_type ('deposit'/'balance'/'full'), payment_method ('mpesa'/'cash'/'card')
   record: (data) => api.post("/record-payment/", data),
   getStats: () => api.get("/payment-stats/"),
 };

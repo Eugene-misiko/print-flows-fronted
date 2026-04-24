@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { authAPI, invitationsAPI,companyAPI } from "../../api/api";
+import { authAPI, invitationsAPI, companyAPI, companyInvitationsAPI } from "../../api/api";
 
 // ===================== LOGIN =====================
 export const login = createAsyncThunk(
@@ -17,8 +17,25 @@ export const login = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.error ||
-        error.response?.data?.detail ||
-        "Invalid email or password"
+          error.response?.data?.detail ||
+          "Invalid email or password"
+      );
+    }
+  }
+);
+
+// ===================== VALIDATE COMPANY INVITATION TOKEN =====================
+// Called by the Register page on mount when a ?token= param is present.
+// Uses companyInvitationsAPI.validateToken → GET /company-invitations/<token>/
+export const validateInvitationToken = createAsyncThunk(
+  "auth/validateInvitationToken",
+  async (token, { rejectWithValue }) => {
+    try {
+      const response = await companyInvitationsAPI.validateToken(token);
+      return response.data; // { email, company_name, company_slug, is_valid }
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error || "Invalid or expired invitation"
       );
     }
   }
@@ -29,7 +46,7 @@ export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await authAPI.registerUser(data); 
+      const response = await authAPI.registerUser(data);
       const { user, tokens } = response.data;
 
       localStorage.setItem("access_token", tokens.access);
@@ -39,14 +56,12 @@ export const registerUser = createAsyncThunk(
       return { user };
     } catch (error) {
       const errors = error.response?.data;
-
       if (errors && typeof errors === "object") {
         const firstError = Object.values(errors)[0];
         return rejectWithValue(
           Array.isArray(firstError) ? firstError[0] : firstError
         );
       }
-
       return rejectWithValue("User registration failed");
     }
   }
@@ -57,28 +72,25 @@ export const fetchCompanies = createAsyncThunk(
   "auth/fetchCompanies",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await companyAPI.getCompanies(); 
+      const response = await companyAPI.getCompanies();
       return response.data;
     } catch (error) {
       return rejectWithValue("Failed to fetch companies");
     }
   }
 );
+
 // ===================== REGISTER COMPANY =====================
 const getErrorMessage = (errors) => {
   if (!errors) return "Registration failed";
-
   if (typeof errors === "string") return errors;
-
   if (errors.detail) return errors.detail;
-
   const firstKey = Object.keys(errors)[0];
   const firstValue = errors[firstKey];
-
   if (Array.isArray(firstValue)) return firstValue[0];
-
   return firstValue || "Registration failed";
 };
+
 export const registerCompany = createAsyncThunk(
   "auth/registerCompany",
   async (data, { rejectWithValue }) => {
@@ -105,21 +117,20 @@ export const registerWithInvitation = createAsyncThunk(
     try {
       const response = await authAPI.register(data);
       const { user, tokens } = response.data;
-
-      // localStorage.setItem("access_token", tokens.access);
-      // localStorage.setItem("refresh_token", tokens.refresh);
-      // localStorage.setItem("user", JSON.stringify(user));
-
       return { user };
     } catch (error) {
       const errors = error.response?.data;
       if (errors && typeof errors === "object") {
         if (errors.password) return rejectWithValue(errors.password[0]);
         if (errors.email) return rejectWithValue(errors.email[0]);
-        if (errors.invitation_token) return rejectWithValue(errors.invitation_token[0]);
-        if (errors.non_field_errors) return rejectWithValue(errors.non_field_errors[0]);
+        if (errors.invitation_token)
+          return rejectWithValue(errors.invitation_token[0]);
+        if (errors.non_field_errors)
+          return rejectWithValue(errors.non_field_errors[0]);
         const firstError = Object.values(errors)[0];
-        return rejectWithValue(Array.isArray(firstError) ? firstError[0] : firstError);
+        return rejectWithValue(
+          Array.isArray(firstError) ? firstError[0] : firstError
+        );
       }
       return rejectWithValue("Registration failed");
     }
@@ -152,8 +163,11 @@ export const changePassword = createAsyncThunk(
       const errors = error.response?.data;
       if (errors?.old_password) return rejectWithValue(errors.old_password[0]);
       if (errors?.new_password) return rejectWithValue(errors.new_password[0]);
-      if (errors?.non_field_errors) return rejectWithValue(errors.non_field_errors[0]);
-      return rejectWithValue(error.response?.data?.error || "Failed to change password");
+      if (errors?.non_field_errors)
+        return rejectWithValue(errors.non_field_errors[0]);
+      return rejectWithValue(
+        error.response?.data?.error || "Failed to change password"
+      );
     }
   }
 );
@@ -193,12 +207,12 @@ const getStoredUser = () => {
   }
 };
 
-
 const initialState = {
   user: getStoredUser(),
   currentInvitation: null,
   companies: [],
-  isAuthenticated: !!localStorage.getItem("access_token")&& !! getStoredUser(),
+  isAuthenticated:
+    !!localStorage.getItem("access_token") && !!getStoredUser(),
   isLoading: false,
   error: null,
   successMessage: null,
@@ -209,15 +223,18 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    clearError: (state) => { state.error = null; },
-    clearSuccess: (state) => { state.successMessage = null; },
+    clearError: (state) => {
+      state.error = null;
+    },
+    clearSuccess: (state) => {
+      state.successMessage = null;
+    },
     logoutLocal: (state) => {
       state.user = null;
       state.isAuthenticated = false;
-
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
-      localStorage.removeItem("user");      
+      localStorage.removeItem("user");
     },
     clearCurrentInvitation: (state) => {
       state.currentInvitation = null;
@@ -225,72 +242,144 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-    // FETCH COMPANIES
-    .addCase(fetchCompanies.pending, (state) => {
-      state.isLoading = true;
-    })
-    .addCase(fetchCompanies.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.companies = action.payload.results || action.payload;
-    })
-    .addCase(fetchCompanies.rejected, (state, action) => {
-      state.isLoading = false;
-      state.error = action.payload;
-    })
+      // FETCH COMPANIES
+      .addCase(fetchCompanies.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchCompanies.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.companies = action.payload.results || action.payload;
+      })
+      .addCase(fetchCompanies.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
 
-    // REGISTER USER
-    .addCase(registerUser.pending, (state) => {
-      state.isLoading = true;
-      state.error = null;
-    })
-    .addCase(registerUser.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.user = action.payload.user;
-      state.isAuthenticated = true;
-    })
-    .addCase(registerUser.rejected, (state, action) => {
-      state.isLoading = false;
-      state.error = action.payload;
-    })    
+      // REGISTER USER
+      .addCase(registerUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
       // LOGIN
-      .addCase(login.pending, (state) => { state.isLoading = true; state.error = null; })
-      .addCase(login.fulfilled, (state, action) => { state.isLoading = false; state.user = action.payload.user; state.isAuthenticated = true; })
-      .addCase(login.rejected, (state, action) => { state.isLoading = false; state.error = action.payload; })
+      .addCase(login.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+      // VALIDATE INVITATION TOKEN (no state mutation needed beyond loading)
+      .addCase(validateInvitationToken.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(validateInvitationToken.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(validateInvitationToken.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
 
       // REGISTER COMPANY
-      .addCase(registerCompany.pending, (state) => { state.isLoading = true; state.error = null; })
-      .addCase(registerCompany.fulfilled, (state, action) => { state.isLoading = false; state.user = action.payload.user; state.isAuthenticated = true; })
-      .addCase(registerCompany.rejected, (state, action) => { state.isLoading = false; state.error = action.payload; })
+      .addCase(registerCompany.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(registerCompany.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+      })
+      .addCase(registerCompany.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
 
       // REGISTER INVITATION
-      .addCase(registerWithInvitation.pending, (state) => { state.isLoading = true; state.error = null; })
-      .addCase(registerWithInvitation.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.user = null;
-      state.isAuthenticated = false;
-      state.successMessage = "Account created. Please login.";
-       })
-      .addCase(registerWithInvitation.rejected, (state, action) => { state.isLoading = false; state.error = action.payload; })
+      .addCase(registerWithInvitation.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(registerWithInvitation.fulfilled, (state) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+        state.successMessage = "Account created. Please login.";
+      })
+      .addCase(registerWithInvitation.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
 
       // FETCH INVITATION
-      .addCase(fetchInvitationByToken.pending, (state) => { state.isLoading = true; state.error = null; })
-      .addCase(fetchInvitationByToken.fulfilled, (state, action) => { state.isLoading = false; state.currentInvitation = action.payload; })
-      .addCase(fetchInvitationByToken.rejected, (state, action) => { state.isLoading = false; state.error = action.payload; })
+      .addCase(fetchInvitationByToken.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchInvitationByToken.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentInvitation = action.payload;
+      })
+      .addCase(fetchInvitationByToken.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
 
       // CHANGE PASSWORD
-      .addCase(changePassword.pending, (state) => { state.isLoading = true; })
-      .addCase(changePassword.fulfilled, (state, action) => { state.isLoading = false; state.successMessage = action.payload.message || "Password changed successfully"; })
-      .addCase(changePassword.rejected, (state, action) => { state.isLoading = false; state.error = action.payload; })
+      .addCase(changePassword.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(changePassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.successMessage =
+          action.payload.message || "Password changed successfully";
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
 
       // PROFILE
-      .addCase(fetchProfile.pending, (state) => { state.isLoading = true; })
-      .addCase(fetchProfile.fulfilled, (state, action) => { state.isLoading = false; state.user = action.payload; })
-      .addCase(fetchProfile.rejected, (state, action) => { state.isLoading = false; state.user = null; state.isAuthenticated = false; state.error = action.payload; })
+      .addCase(fetchProfile.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(fetchProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+        state.error = action.payload;
+      })
 
       // LOGOUT
-      .addCase(logout.fulfilled, (state) => { state.user = null; state.isAuthenticated = false; });
+      .addCase(logout.fulfilled, (state) => {
+        state.user = null;
+        state.isAuthenticated = false;
+      });
   },
 });
 
-export const { clearError, clearSuccess, logoutLocal, clearCurrentInvitation } = authSlice.actions;
+export const { clearError, clearSuccess, logoutLocal, clearCurrentInvitation } =
+  authSlice.actions;
 export default authSlice.reducer;
