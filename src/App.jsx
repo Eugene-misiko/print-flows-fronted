@@ -86,7 +86,7 @@ useEffect(() => {
         <Route path="/company/:slug/product/:id" element={<ProductDetail />} />
         <Route path="/company/:slug/category/:id" element={<CategoryPage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/platform/register-company/" element={<Register />} />
+        <Route path="/:company/platform/register-company" element={<Register />} />
         <Route path="/register" element={<UserRegister />} />
         <Route path="accept-invitation/:token"  element={<AcceptInvitation />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

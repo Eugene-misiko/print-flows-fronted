@@ -106,6 +106,7 @@ const Register = () => {
   const token = queryParams.get("token");
   //const companyFromUrl = queryParams.get("company");
   const hostname = window.location.hostname;
+  const { company } = useParams();
   const subdomain = hostname.split(".")[0];
   const isLocal = hostname.includes("localhost");
   const [isValidating, setIsValidating] = useState(!!token);
@@ -194,10 +195,11 @@ const Register = () => {
 
     if (registerCompany.fulfilled.match(result)) {
       toast.success("Company registered successfully!");
-      const isLocal = window.location.hostname === "localhost";
-     const target = isLocal
-  ? "http://localhost:5173/app/dashboard"
-  : "/app/dashboard";
+  //     const isLocal = window.location.hostname === "localhost";
+  //    const target = isLocal
+  // ? "http://localhost:5173/app/dashboard"
+  // : "/app/dashboard";
+   navigate(`/${company}/app/dashboard`);
 
 window.location.href = target;
     } else {
