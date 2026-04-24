@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {registerCompany,clearError,validateInvitationToken,} from "../../store/slices/authSlice";
 import toast from "react-hot-toast";
@@ -158,7 +158,11 @@ const Register = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
     if (error) dispatch(clearError());
   };
-
+const generatedSlug = form.company_name
+  .toLowerCase()
+  .trim()
+  .replace(/[^a-z0-9]+/g, "-")
+  .replace(/^-+|-+$/g, "");
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -199,9 +203,9 @@ const Register = () => {
   //    const target = isLocal
   // ? "http://localhost:5173/app/dashboard"
   // : "/app/dashboard";
-   navigate(`/${company}/app/dashboard`);
+  navigate(`/${company}/app/dashboard`);
 
-window.location.href = target;
+//window.location.href = target;
     } else {
       toast.error(result.payload || "Registration failed. Please try again.");
     }
