@@ -37,6 +37,7 @@ import StoreHome from "./publicitems/StoreHome";
 import ProductDetail from "./publicitems/ProductDetail";
 import CategoryPage from "./publicitems/CategoryPage";
 import CompanyHome from "./components/CompanyHome";
+import ReceiptsPage from "./pages/Receiptspage";
 
 // DASHBOARD ROUTER 
 const DashboardRouter = () => {
@@ -118,6 +119,7 @@ useEffect(() => {
           <Route path="products" element={<ProductsList />} />
           <Route path="payments" element={<PaymentsPage />} />
           <Route path="invoices" element={<InvoicesPage />} />
+          <Route path="receipts" element={<ReceiptsPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="messages" element={<MessagesPage />} />

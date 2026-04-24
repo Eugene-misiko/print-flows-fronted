@@ -266,6 +266,9 @@ export const printJobsAPI = {
 export const transportationAPI = {
   getAll: (params) => api.get("/transportation/", { params }),
   getById: (id) => api.get(`/transportation/${id}/`),
+  outForDelivery: (id) => api.post(`/transportation/${id}/out-for-delivery/`),
+  delivered: (id) => api.post(`/transportation/${id}/delivered/`), 
+  create: (data) => api.post("/transportation/", data), 
 };
 
 // ===================== INVOICES =====================
