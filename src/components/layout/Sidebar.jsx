@@ -1,24 +1,8 @@
-// ═══════════════════════════════════════════════
-// Sidebar.jsx
-// ═══════════════════════════════════════════════
 import React from "react";
 import { useDispatch } from "react-redux";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { logout } from "../../store/slices/authSlice";
-import {
-  LayoutDashboard,
-  ShoppingBag,
-  Users,
-  Package,
-  CreditCard,
-  FileText,
-  Settings,
-  MessageSquare,
-  Printer,
-  PlusCircle,
-  LogOut,
-  ChevronRight,
-} from "lucide-react";
+import {LayoutDashboard,ShoppingBag,Users,Package,CreditCard,FileText,Settings,MessageSquare,Printer,PlusCircle,LogOut,ChevronRight,Receipt,} from "lucide-react";
 
 const Sidebar = ({ user }) => {
   const { companySlug } = useParams();
@@ -29,10 +13,9 @@ const Sidebar = ({ user }) => {
   const isDesigner = user?.role === "designer";
   const isPrinter = user?.role === "printer";
   const isClient = user?.role === "client";
-
   const handleLogout = async () => {
     await dispatch(logout());
-    navigate(`/store/${companySlug}/login`);
+    navigate(`/login`);
   };
 
   const linkClass = ({ isActive }) =>
@@ -92,11 +75,18 @@ const Sidebar = ({ user }) => {
         )}
 
         {(isAdmin || isClient) && (
+          <>
           <NavLink to="/app/products" className={linkClass}>
             <Package className="w-[18px] h-[18px] shrink-0" />
             <span className="text-sm flex-1">Products</span>
             <ChevronRight className="w-3.5 h-3.5 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-50 group-hover:translate-x-0" />
           </NavLink>
+            <NavLink to="/app/receipts" className={linkClass}>
+              <Receipt className="w-[18px] h-[18px] shrink-0" />
+              <span className="text-sm flex-1">Receipts</span>
+              <ChevronRight className="w-3.5 h-3.5 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-50 group-hover:translate-x-0" />
+            </NavLink>
+            </>
         )}
 
         <NavLink to="/app/messages" className={linkClass}>
@@ -118,7 +108,7 @@ const Sidebar = ({ user }) => {
           <ChevronRight className="w-3.5 h-3.5 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-50 group-hover:translate-x-0" />
         </NavLink>
 
-        {(isAdmin || isDesigner || isPrinter) && (
+        {(isAdmin || isDesigner || isPrinter || isClient) && (
           <NavLink to="/app/invoices" className={linkClass}>
             <FileText className="w-[18px] h-[18px] shrink-0" />
             <span className="text-sm flex-1">Invoices</span>
