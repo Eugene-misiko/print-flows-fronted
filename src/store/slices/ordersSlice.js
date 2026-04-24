@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { ordersAPI, printJobsAPI, transportationAPI } from "../../api/api";
 
-// ==================== ORDERS ====================
-
 export const fetchOrders = createAsyncThunk(
   "orders/fetchOrders",
   async (params, { rejectWithValue }) => {
@@ -249,7 +247,18 @@ export const completePrintJob = createAsyncThunk(
     }
   }
 );
-
+//mark out for delivery
+export const markOutForDelivery = createAsyncThunk(
+  "orders/markOutForDelivery",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await transportationAPI.outForDelivery(id);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.error || "Failed to mark out for delivery");
+    }
+  }
+);
 // ==================== TRANSPORTATION ====================
 
 export const fetchTransportation = createAsyncThunk(
@@ -260,6 +269,36 @@ export const fetchTransportation = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || "Failed to fetch transportation");
+    }
+  }
+);
+// Create transportation entry
+export const createTransportation = createAsyncThunk(
+  "orders/createTransportation",
+  async (data, thunkAPI) => {
+    try {
+      const response = await transportationAPI.create(data);
+      return response.data;
+    } catch (error) {
+     console.log("ERROR OBJECT:", error);
+     console.log("ERROR MESSAGE:", error.message);
+     console.log("ERROR RESPONSE:", error.response);
+     console.log("ERROR REQUEST:", error.request);
+     return thunkAPI.rejectWithValue(
+    error.response?.data || "Failed to create transportation"
+  );
+ }
+  }
+);
+//mark delivered
+export const markDelivered = createAsyncThunk(
+  "orders/markDelivered",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await transportationAPI.delivered(id);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.error || "Failed to mark delivered");
     }
   }
 );
@@ -377,6 +416,15 @@ const ordersSlice = createSlice({
       .addCase(completePrintJob.fulfilled, (state, action) => {
         state.successMessage = "Print job completed";
       })
+      // Mark out for delivery
+      .addCase(markOutForDelivery.fulfilled, (state, action) => {
+        state.currentOrder = action.payload;
+        state.successMessage = "Order is out for delivery";
+      })
+      .addCase(markDelivered.fulfilled, (state, action) => {
+        state.currentOrder = action.payload;
+        state.successMessage = "Order delivered successfully";
+      })      
       // Transportation
       .addCase(fetchTransportation.fulfilled, (state, action) => {
         state.transportation = action.payload.results || action.payload;
