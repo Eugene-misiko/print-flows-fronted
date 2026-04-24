@@ -1,25 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  registerCompany,
-  clearError,
-  validateInvitationToken,
-} from "../../store/slices/authSlice";
+import {registerCompany,clearError,validateInvitationToken,} from "../../store/slices/authSlice";
 import toast from "react-hot-toast";
-import {
-  Building2,
-  User,
-  Lock,
-  Eye,
-  EyeOff,
-  Printer,
-  Mail,
-  Phone,
-  MapPin,
-  CheckCircle2,
-  Loader2,
-} from "lucide-react";
+import {Building2,User,Lock,Eye,EyeOff,Printer,Mail,Phone,MapPin,CheckCircle2,Loader2,} from "lucide-react";
 
 // ─── Tiny reusable field wrapper ───────────────────────────────────────────
 const Field = ({ label, icon: Icon, children, span }) => (
@@ -108,9 +92,9 @@ const TokenValidating = () => (
   </div>
 );
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  Register Component
-// ═══════════════════════════════════════════════════════════════════════════
+
+//main component
+
 const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -120,11 +104,16 @@ const Register = () => {
 
   const queryParams = new URLSearchParams(location.search);
   const token = queryParams.get("token");
-  const companyFromUrl = queryParams.get("company");
-
+  //const companyFromUrl = queryParams.get("company");
+  const hostname = window.location.hostname;
+  const subdomain = hostname.split(".")[0];
+  const isLocal = hostname.includes("localhost");
   const [isValidating, setIsValidating] = useState(!!token);
   const [isInvitation, setIsInvitation] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const company_slug = isLocal
+  ? generatedSlug
+  : subdomain;
 
   const [form, setForm] = useState({
     company_name: "",
@@ -139,7 +128,7 @@ const Register = () => {
     admin_phone: "",
   });
 
-  // ── Validate token on mount ───────────────────────────────────────────────
+  // ── Validate token on mount 
   useEffect(() => {
     if (!token) return;
 
@@ -172,7 +161,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ── Client-side validation ────────────────────────────────────────────
+    // ── Client-side validation 
     if (!form.company_name.trim())
       return toast.error("Company name is required.");
     if (!form.company_email.trim())
@@ -206,9 +195,11 @@ const Register = () => {
     if (registerCompany.fulfilled.match(result)) {
       toast.success("Company registered successfully!");
       const isLocal = window.location.hostname === "localhost";
-      window.location.href = isLocal
-        ? "http://localhost:5173/app/dashboard"
-        : `https://${company_slug}.printflow.com/app/dashboard`;
+     const target = isLocal
+  ? "http://localhost:5173/app/dashboard"
+  : "/app/dashboard";
+
+window.location.href = target;
     } else {
       toast.error(result.payload || "Registration failed. Please try again.");
     }
