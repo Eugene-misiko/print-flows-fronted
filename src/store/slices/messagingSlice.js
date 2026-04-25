@@ -189,7 +189,19 @@ const messagingSlice = createSlice({
       state.messages.push(action.payload.message);
     })
       .addCase(fetchMessages.fulfilled, (state, action) => {
-        state.messages = action.payload.results || action.payload;
+        const data = action.payload;
+        const incoming = Array.isArray(data)
+          ? data
+          : data?.results || [];
+
+        const existingIds = new Set(state.messages.map(m => m.id));
+
+        const merged = [
+          ...state.messages,
+          ...incoming.filter(m => !existingIds.has(m.id))
+        ];
+
+        state.messages = merged;
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.messages.push(action.payload);
